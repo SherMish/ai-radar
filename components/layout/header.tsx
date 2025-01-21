@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { useLoginModal } from "@/components/providers/login-modal-provider";
 
 const navigation = [
-  { name: "For Businesses", href: "/business" },
+  // { name: "For Businesses", href: "/business" },
   { name: "Blog", href: "/blog" },
   { name: "About", href: "/about" },
 ];
