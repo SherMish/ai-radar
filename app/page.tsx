@@ -183,7 +183,7 @@ export default function Home() {
           </div>
 
           {/* Latest Reviews Section */}
-          <div className="space-y-6">
+          {/* <div className="space-y-6">
             <h2 className="text-2xl font-bold gradient-text text-left">Latest Reviews</h2>
             <div className="overflow-hidden" ref={emblaRef}>
               <div className="flex gap-6 pl-6">
@@ -224,7 +224,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Categories Section */}
           {/* <div className="space-y-6">
