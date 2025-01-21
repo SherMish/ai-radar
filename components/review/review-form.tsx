@@ -20,6 +20,7 @@ import {
 
 interface ReviewData {
   url?: string;
+  name?: string;
   rating: number;
   title: string;
   content: string;
@@ -99,10 +100,60 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validateForm()) return;
-    // Handle submission logic here
-    router.push(`/tool/${encodeURIComponent(reviewData.url || initialUrl)}`);
+    
+    try {
+      let websiteId = initialUrl;
+
+      // If it's a new tool, create it first
+      if (isNewTool) {
+        const websiteResponse = await fetch("/api/websites", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: reviewData.name,
+            URL: reviewData.url,
+            description: "", // Can be added later
+            features: [], // Can be added later
+            isVerified: false,
+          }),
+        });
+
+        if (!websiteResponse.ok) {
+          throw new Error("Failed to create website");
+        }
+
+        const website = await websiteResponse.json();
+        websiteId = website._id;
+      }
+
+      // Create the review
+      const reviewResponse = await fetch("/api/reviews/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: reviewData.title,
+          body: reviewData.content,
+          rating: reviewData.rating,
+          relatedWebsite: websiteId,
+          // proof and relatedPlan can be added if needed
+        }),
+      });
+
+      if (!reviewResponse.ok) {
+        throw new Error("Failed to create review");
+      }
+
+      // Redirect to the tool page
+      router.push(`/tool/${encodeURIComponent(reviewData.url || initialUrl)}`);
+    } catch (error) {
+      console.error("Error submitting:", error);
+      setFormErrors(prev => ({
+        ...prev,
+        submit: "Failed to submit. Please try again.",
+      }));
+    }
   };
 
   const renderPreview = () => (
