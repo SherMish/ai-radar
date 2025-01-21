@@ -178,6 +178,16 @@ export default function Home() {
                     </div>
                   </Link>
                 ))}
+                <div className="border-t border-border mt-2 pt-2">
+                  <Link
+                    href="/tool/new"
+                    className="flex items-center p-3 rounded-md hover:bg-muted/50 transition-colors text-primary"
+                  >
+                    <div className="font-medium">
+                      Can&apos;t find the tool? Add it now in seconds!
+                    </div>
+                  </Link>
+                </div>
               </div>
             )}
           </div>
