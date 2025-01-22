@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Star, ThumbsUp, Flag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -19,7 +20,18 @@ interface ReviewCardProps {
 }
 
 export function ReviewCard({ review }: ReviewCardProps) {
+  const [hasVoted, setHasVoted] = useState(false);
+
+  // Check if user has already voted on mount
+  useEffect(() => {
+    const votedReviews = JSON.parse(localStorage.getItem('votedReviews') || '[]');
+    setHasVoted(votedReviews.includes(review._id));
+  }, [review._id]);
+
   const handleHelpfulClick = async () => {
+    // Prevent voting if already voted
+    if (hasVoted) return;
+
     try {
       const response = await fetch('/api/reviews/helpful', {
         method: 'POST',
@@ -28,7 +40,14 @@ export function ReviewCard({ review }: ReviewCardProps) {
       });
       
       if (response.ok) {
-        // Optimistically update the UI
+        // Update localStorage
+        const votedReviews = JSON.parse(localStorage.getItem('votedReviews') || '[]');
+        localStorage.setItem('votedReviews', JSON.stringify([...votedReviews, review._id]));
+        
+        // Update UI state
+        setHasVoted(true);
+        
+        // Update helpful count display
         const reviewElement = document.getElementById(`helpful-count-${review._id}`);
         if (reviewElement) {
           const currentCount = parseInt(reviewElement.textContent || '0');
@@ -76,8 +95,10 @@ export function ReviewCard({ review }: ReviewCardProps) {
             variant="outline" 
             size="sm"
             onClick={handleHelpfulClick}
+            disabled={hasVoted}
+            className={hasVoted ? "opacity-50 cursor-not-allowed" : ""}
           >
-            <ThumbsUp className="w-4 h-4 mr-2" />
+            <ThumbsUp className={`w-4 h-4 mr-2 ${hasVoted ? "fill-current" : ""}`} />
             Helpful (<span id={`helpful-count-${review._id}`}>{review.helpfulCount || 0}</span>)
           </Button>
           <Button variant="outline" size="sm">
