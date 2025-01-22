@@ -21,6 +21,7 @@ import { Review } from "@/lib/models";
 import connectDB from "@/lib/mongodb";
 import { Card } from "@/components/ui/card";
 import { SearchSection } from "./components/search-section";
+import { MarketingSection } from "./components/marketing-section";
 import { LatestReviewsCarousel } from "./components/latest-reviews-carousel";
 
 const categories = [
@@ -72,6 +73,7 @@ export default async function Home() {
   return (
     <main>
       <SearchSection />
+      <MarketingSection />
       <LatestReviewsCarousel reviews={latestReviews} />
     </main>
   );
