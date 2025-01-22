@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { Star, ThumbsUp, Flag, Globe, Users, Calendar, Check } from "lucide-react";
+import { Star, ThumbsUp, Flag, Globe, Users, Calendar, Check, ShieldCheck, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
@@ -7,11 +7,18 @@ import connectDB from "@/lib/mongodb";
 import { Website, Review } from "@/lib/models";
 import { Types } from 'mongoose';
 import { ReviewCard } from "@/components/review-card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface WebsiteDoc {
   _id: Types.ObjectId;
   name: string;
   URL: string;
+  isVerified: boolean;
   relatedCategory: { name: string };
   owner: { name: string };
 }
@@ -91,7 +98,26 @@ export default async function ToolPage({ params }: { params: { url: string } }) 
                 </span>
               </div>
               <div className="flex-1">
-                <h1 className="text-3xl font-bold mb-2">{website.name}</h1>
+                <div className="flex items-center gap-2 mb-2">
+                  <h1 className="text-3xl font-bold">{website.name}</h1>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        {website.isVerified ? (
+                          <ShieldCheck className="w-5 h-5 text-emerald-500 fill-emerald-500/10" />
+                        ) : (
+                          <ShieldAlert className="w-5 h-5 text-muted-foreground" />
+                        )}
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {website.isVerified 
+                          ? "This tool has been verified by its owner" 
+                          : "This tool hasn't been verified by its owner yet"
+                        }
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <Globe className="w-4 h-4" />

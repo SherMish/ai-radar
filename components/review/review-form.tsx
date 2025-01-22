@@ -290,8 +290,7 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
               <div className="flex-1">
                 <h3 className="text-sm font-medium">Verify Your Experience</h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Adding proof of your experience helps build trust in your review.
-                  Remember to remove any sensitive information before uploading.
+                  Adding proof of your experience helps build trust in your review. The proof will not be visible to other users but may be shared with the business owner as part of the verification process. Please note that reviews without proof may be subject to removal if requested by the business owner.
                 </p>
               </div>
             </div>
