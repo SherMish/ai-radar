@@ -113,6 +113,7 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
     try {
       setIsSubmitting(true);
       let websiteId = initialUrl;
+      let websiteUrl = initialUrl;
 
       // If it's a new tool, create it first
       if (isNewTool) {
@@ -122,8 +123,8 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
           body: JSON.stringify({
             name: reviewData.name,
             URL: reviewData.url,
-            description: "", // Can be added later
-            features: [], // Can be added later
+            description: "",
+            features: [],
             isVerified: false,
           }),
         });
@@ -142,6 +143,7 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
 
         const website = await websiteResponse.json();
         websiteId = website._id;
+        websiteUrl = website.URL;
       }
 
       // Create the review
@@ -153,7 +155,6 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
           body: reviewData.content,
           rating: reviewData.rating,
           relatedWebsite: websiteId,
-          // proof and relatedPlan can be added if needed
         }),
       });
 
@@ -161,8 +162,8 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
         throw new Error("Failed to create review");
       }
 
-      // Redirect to the tool page
-      router.push(`/tool/${encodeURIComponent(reviewData.url || initialUrl)}`);
+      // Redirect to the tool page using the website URL
+      router.push(`/tool/${encodeURIComponent(websiteUrl || initialUrl)}`);
     } catch (error) {
       console.error("Error submitting:", error);
       setFormErrors(prev => ({

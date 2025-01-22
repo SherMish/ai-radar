@@ -68,15 +68,17 @@ const latestReviews = [
   }
 ];
 
+interface Suggestion {
+  _id: string;
+  name: string;
+  URL: string;
+}
+
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [suggestions, setSuggestions] = useState([
-    { name: "ChatGPT", url: "openai.com/chatgpt" },
-    { name: "Midjourney", url: "midjourney.com" },
-    { name: "Claude", url: "anthropic.com/claude" },
-    { name: "Jasper", url: "jasper.ai" },
-  ]);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchTimeout = useRef<NodeJS.Timeout>();
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -85,6 +87,35 @@ export default function Home() {
     dragFree: true,
     containScroll: "trimSnaps",
   });
+
+  // Add debounced search effect
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      if (searchTimeout.current) {
+        clearTimeout(searchTimeout.current);
+      }
+
+      searchTimeout.current = setTimeout(async () => {
+        try {
+          const response = await fetch(`/api/websites/search?q=${encodeURIComponent(searchQuery)}`);
+          if (response.ok) {
+            const data = await response.json();
+            setSuggestions(data);
+          }
+        } catch (error) {
+          console.error('Search error:', error);
+        }
+      }, 300);
+    } else {
+      setSuggestions([]);
+    }
+
+    return () => {
+      if (searchTimeout.current) {
+        clearTimeout(searchTimeout.current);
+      }
+    };
+  }, [searchQuery]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -163,17 +194,17 @@ export default function Home() {
             </div>
 
             {showSuggestions && searchQuery && (
-              <div className="absolute w-full mt-2 bg-secondary/95 backdrop-blur-sm rounded-lg shadow-lg border border-border p-2 space-y-1 z-10 max-h-60 overflow-y-auto">
+              <div className="absolute w-full mt-2 bg-secondary/95 backdrop-blur-sm rounded-lg shadow-lg border border-border p-2 space-y-1 z-10 max-h-90 overflow-y-auto">
                 {suggestions.map((suggestion) => (
                   <Link
-                    key={suggestion.url}
-                    href={`/tool/${encodeURIComponent(suggestion.url)}`}
+                    key={suggestion._id}
+                    href={`/tool/${encodeURIComponent(suggestion.URL)}`}
                     className="flex items-center p-3 rounded-md hover:bg-muted/50 transition-colors"
                   >
                     <div>
                       <div className="font-medium text-foreground">{suggestion.name}</div>
                       <div className="text-sm text-muted-foreground">
-                        {suggestion.url}
+                        {suggestion.URL}
                       </div>
                     </div>
                   </Link>
