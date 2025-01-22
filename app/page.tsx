@@ -24,6 +24,7 @@ import { SearchSection } from "./components/search-section";
 import { MarketingSection } from "./components/marketing-section";
 import { CategoriesSection } from "./components/categories-section";
 import { LatestReviewsCarousel } from "./components/latest-reviews-carousel";
+import { RadarAnimation } from "./components/radar-animation";
 
 const categories = [
   { name: "Text Generation", icon: MessageSquare, count: 156 },
@@ -75,12 +76,20 @@ export default async function Home() {
     <main className="relative min-h-screen">
       {/* Main background gradient */}
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,#3b82f615,transparent_70%),radial-gradient(ellipse_at_bottom,#6366f115,transparent_70%)] pointer-events-none" />
-      
+      {/* Radar Section */}
+      <div className="absolute left-0 right-0 top-0 bottom-0 flex justify-center items-center -z-10">
+          <div className="relative w-[200px] h-[200px] mb-[182vh]">
+            {/* <RadarAnimation /> */}
+          </div>
+        </div>
       {/* Content */}
-      <div className="relative space-y-8">
+      <div className="relative">
         <div className="pt-12">
           <SearchSection />
         </div>
+        
+        
+        
         <CategoriesSection />
         <MarketingSection />
         <LatestReviewsCarousel reviews={latestReviews} />

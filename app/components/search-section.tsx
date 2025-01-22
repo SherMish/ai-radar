@@ -60,7 +60,7 @@ export function SearchSection() {
   }, []);
 
   return (
-    <div className="min-h-[30vh] relative overflow-hidden">
+    <div className="min-h-[30vh] relative overflow-visible">
       <div className="relative container mx-auto px-4 py-8 pb-4">
         <div className="max-w-3xl mx-auto text-center space-y-8">
           <div className="space-y-4">
@@ -94,7 +94,7 @@ export function SearchSection() {
             </div>
 
             {showSuggestions && searchQuery && (
-              <div className="absolute w-full mt-2 bg-secondary/95 backdrop-blur-sm rounded-lg shadow-lg border border-border p-2 space-y-1 z-10 max-h-90 overflow-y-auto">
+              <div className="absolute w-full mt-2 bg-secondary/95 backdrop-blur-sm rounded-lg shadow-lg border border-border p-2 space-y-1 z-50 max-h-90 overflow-y-auto">
                 {suggestions.map((suggestion) => (
                   <Link
                     key={suggestion._id}
