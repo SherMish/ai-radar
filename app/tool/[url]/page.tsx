@@ -13,6 +13,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import categoriesData from '@/lib/data/categories.json';
+import * as Icons from "lucide-react";
+import { LucideIcon } from "lucide-react";
 
 interface WebsiteDoc {
   _id: Types.ObjectId;
@@ -32,6 +35,32 @@ interface ReviewDoc {
   relatedWebsite: Types.ObjectId;
   relatedUser?: { _id: Types.ObjectId; name: string; image?: string };
   helpfulCount?: number;
+}
+
+async function getWebsiteData(url: string) {
+  await connectDB();
+  const website = await Website.findOne({ URL: url })
+    .populate('owner')
+    .lean();
+
+  if (!website) return null;
+
+  // Find the category data
+  const category = categoriesData.categories.find(cat => cat.id === website.relatedCategory);
+  const Icon = category ? Icons[category.icon as keyof typeof Icons] : null;
+
+  return {
+    ...website,
+    _id: website._id.toString(),
+    owner: website.owner ? {
+      ...website.owner,
+      _id: website.owner._id.toString(),
+    } : null,
+    category: category ? {
+      ...category,
+      Icon
+    } : null
+  };
 }
 
 async function getWebsiteAndReviews(url: string) {
@@ -77,10 +106,14 @@ async function getWebsiteAndReviews(url: string) {
 }
 
 export default async function ToolPage({ params }: { params: { url: string } }) {
-  const data = await getWebsiteAndReviews(decodeURIComponent(params.url));
-  if (!data) notFound();
+  const decodedUrl = decodeURIComponent(params.url);
+  const website = await getWebsiteData(decodedUrl);
 
-  const { website, reviews, averageRating } = data;
+  if (!website) {
+    notFound();
+  }
+
+  const { reviews, averageRating } = await getWebsiteAndReviews(decodedUrl);
 
   return (
     <div className="min-h-screen bg-background relative">
@@ -121,10 +154,23 @@ export default async function ToolPage({ params }: { params: { url: string } }) 
                 <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <Globe className="w-4 h-4" />
-                    <a href={website.URL} target="_blank" rel="noopener noreferrer" className="hover:text-foreground">
+                    <a 
+                      href={website.URL} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="hover:text-foreground"
+                    >
                       {website.URL}
                     </a>
                   </div>
+                  {website.category && (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      {website.category.Icon && (
+                        <website.category.Icon className="w-4 h-4" />
+                      )}
+                      <span>{website.category.name}</span>
+                    </div>
+                  )}
                   <div className="flex items-center gap-1">
                     <Users className="w-4 h-4" />
                     <span>Data unavailable</span>

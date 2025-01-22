@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn, useSession } from "next-auth/react";
 import { Star, Upload, Eye, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,9 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import { z } from "zod";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import categoriesData from '@/lib/data/categories.json';
 
 interface ReviewData {
   url?: string;
@@ -26,6 +30,9 @@ interface ReviewData {
   title: string;
   content: string;
   proofFiles: File[];
+  toolName: string;
+  toolURL: string;
+  relatedCategory: string;
 }
 
 interface ReviewFormProps {
@@ -37,6 +44,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_FILE_TYPES = ["image/jpeg", "image/png", "application/pdf"];
 
 export default function ReviewForm({ isNewTool = false, initialUrl = "" }: ReviewFormProps) {
+  const { data: session } = useSession();
   const router = useRouter();
   const [hoveredRating, setHoveredRating] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
@@ -48,6 +56,9 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
     title: "",
     content: "",
     proofFiles: [],
+    toolName: "",
+    toolURL: "",
+    relatedCategory: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -87,11 +98,14 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
     const errors: { [key: string]: string } = {};
 
     if (isNewTool) {
-      if (!reviewData.url?.trim()) {
+      if (!reviewData.toolURL?.trim()) {
         errors.url = "Please enter the tool's URL";
       }
-      if (!reviewData.name?.trim()) {
+      if (!reviewData.toolName?.trim()) {
         errors.name = "Please enter the tool's name";
+      }
+      if (!reviewData.relatedCategory) {
+        errors.category = "Please select a category";
       }
     }
     if (reviewData.rating === 0) {
@@ -111,34 +125,87 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
   const handleSubmit = async () => {
     if (!validateForm()) return;
     
+    // For development - skip auth check
+    // if (!session?.user) {
+    //   signIn(undefined, { 
+    //     callbackUrl: window.location.href 
+    //   });
+    //   return;
+    // }
+    
     try {
       setIsSubmitting(true);
 
-      // First get the website ID
-      const websiteResponse = await fetch(`/api/websites/find?url=${encodeURIComponent(initialUrl)}`);
-      if (!websiteResponse.ok) {
-        throw new Error("Failed to find website");
+      if (isNewTool) {
+        // First create the website
+        const websiteResponse = await fetch("/api/websites/add", {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: reviewData.toolName,
+            URL: reviewData.toolURL,
+            relatedCategory: reviewData.relatedCategory,
+            description: "" // Optional description can be added later
+          }),
+        });
+
+        if (!websiteResponse.ok) {
+          if (websiteResponse.status === 401) {
+            signIn(undefined, { 
+              callbackUrl: window.location.href 
+            });
+            return;
+          }
+          throw new Error("Failed to create website");
+        }
+
+        const website = await websiteResponse.json();
+
+        // Then create the review
+        const reviewResponse = await fetch("/api/reviews/add", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: reviewData.title,
+            body: reviewData.content,
+            rating: reviewData.rating,
+            relatedWebsite: website._id,
+          }),
+        });
+
+        if (!reviewResponse.ok) {
+          throw new Error("Failed to create review");
+        }
+
+        // Redirect to the new tool page
+        router.push(`/tool/${encodeURIComponent(reviewData.toolURL)}`);
+      } else {
+        // Existing tool review flow
+        const websiteResponse = await fetch(`/api/websites/find?url=${encodeURIComponent(initialUrl)}`);
+        if (!websiteResponse.ok) {
+          throw new Error("Failed to find website");
+        }
+        const website = await websiteResponse.json();
+
+        const reviewResponse = await fetch("/api/reviews/add", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: reviewData.title,
+            body: reviewData.content,
+            rating: reviewData.rating,
+            relatedWebsite: website._id,
+          }),
+        });
+
+        if (!reviewResponse.ok) {
+          throw new Error("Failed to create review");
+        }
+
+        router.push(`/tool/${encodeURIComponent(initialUrl)}`);
       }
-      const website = await websiteResponse.json();
-
-      // Create the review with correct field names
-      const reviewResponse = await fetch("/api/reviews/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: reviewData.title,
-          body: reviewData.content, // Map content to body
-          rating: reviewData.rating,
-          relatedWebsite: website._id,
-        }),
-      });
-
-      if (!reviewResponse.ok) {
-        throw new Error("Failed to create review");
-      }
-
-      // Redirect to the tool page
-      router.push(`/tool/${encodeURIComponent(initialUrl)}`);
     } catch (error) {
       console.error("Error submitting:", error);
       setFormErrors(prev => ({
@@ -196,10 +263,14 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
           {isNewTool && (
             <>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Tool URL</label>
+                <Label htmlFor="toolURL">Tool URL</Label>
                 <Input
-                  value={reviewData.url}
-                  onChange={(e) => setReviewData({ ...reviewData, url: e.target.value })}
+                  id="toolURL"
+                  name="toolURL"
+                  type="url"
+                  required
+                  value={reviewData.toolURL}
+                  onChange={(e) => setReviewData({ ...reviewData, toolURL: e.target.value })}
                   placeholder="https://example.com"
                   className="bg-background/50"
                 />
@@ -210,15 +281,41 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
 
               {/* Add Tool Name field */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Tool Name</label>
+                <Label htmlFor="toolName">Tool Name</Label>
                 <Input
-                  value={reviewData.name}
-                  onChange={(e) => setReviewData({ ...reviewData, name: e.target.value })}
+                  id="toolName"
+                  name="toolName"
+                  required
+                  value={reviewData.toolName}
+                  onChange={(e) => setReviewData({ ...reviewData, toolName: e.target.value })}
                   placeholder="Enter the tool's name"
                   className="bg-background/50"
                 />
                 {formErrors.name && (
                   <p className="text-sm text-destructive">{formErrors.name}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="category">Category</Label>
+                <Select 
+                  name="category" 
+                  required
+                  onValueChange={(value) => setReviewData(prev => ({ ...prev, relatedCategory: value }))}
+                >
+                  <SelectTrigger className={formErrors.category ? "border-destructive" : ""}>
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categoriesData.categories.map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {formErrors.category && (
+                  <p className="text-sm text-destructive">{formErrors.category}</p>
                 )}
               </div>
             </>

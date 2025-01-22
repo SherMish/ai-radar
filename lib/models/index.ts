@@ -5,7 +5,7 @@ import './Review';
 import './Category';
 import './PendingVerification';
 
-// Export them for convenience
+// Export all models
 export { default as User } from './User';
 export { default as Website } from './Website';
 export { default as Review } from './Review';

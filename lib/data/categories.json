@@ -1,0 +1,124 @@
+{
+  "categories": [
+    {
+      "id": "text-generation",
+      "name": "Text Generation",
+      "description": "AI writing, content creation, and language models",
+      "icon": "MessageSquare"
+    },
+    {
+      "id": "image-generation",
+      "name": "Image Generation",
+      "description": "Create, edit, and enhance images with AI",
+      "icon": "ImageIcon"
+    },
+    {
+      "id": "code-generation",
+      "name": "Code Generation",
+      "description": "AI-powered coding and development tools",
+      "icon": "Code"
+    },
+    {
+      "id": "audio-processing",
+      "name": "Audio Processing",
+      "description": "Voice synthesis, music generation, and audio editing",
+      "icon": "Music"
+    },
+    {
+      "id": "video-generation",
+      "name": "Video Generation",
+      "description": "Create and edit videos using AI",
+      "icon": "Video"
+    },
+    {
+      "id": "data-analysis",
+      "name": "Data Analysis",
+      "description": "AI-powered data processing and analytics",
+      "icon": "Database"
+    },
+    {
+      "id": "machine-learning",
+      "name": "Machine Learning",
+      "description": "Ready-to-use ML models and platforms",
+      "icon": "Brain"
+    },
+    {
+      "id": "creative-tools",
+      "name": "Creative Tools",
+      "description": "AI tools for artists and designers",
+      "icon": "Palette"
+    },
+    {
+      "id": "automation",
+      "name": "Automation",
+      "description": "Workflow and task automation with AI",
+      "icon": "Bot"
+    },
+    {
+      "id": "business",
+      "name": "Business",
+      "description": "AI solutions for business operations",
+      "icon": "Briefcase"
+    },
+    {
+      "id": "design",
+      "name": "Design",
+      "description": "AI-assisted design and prototyping",
+      "icon": "PenTool"
+    },
+    {
+      "id": "content-analysis",
+      "name": "Content Analysis",
+      "description": "Content optimization and analysis",
+      "icon": "FileText"
+    },
+    {
+      "id": "analytics",
+      "name": "Analytics",
+      "description": "Advanced analytics and insights",
+      "icon": "BarChart"
+    },
+    {
+      "id": "research",
+      "name": "Research",
+      "description": "AI-powered research and analysis tools",
+      "icon": "Microscope"
+    },
+    {
+      "id": "collaboration",
+      "name": "Collaboration",
+      "description": "Team collaboration enhanced by AI",
+      "icon": "Users"
+    },
+    {
+      "id": "translation",
+      "name": "Translation",
+      "description": "Language translation and localization",
+      "icon": "Globe"
+    },
+    {
+      "id": "speech",
+      "name": "Speech",
+      "description": "Speech recognition and processing",
+      "icon": "Headphones"
+    },
+    {
+      "id": "seo",
+      "name": "SEO",
+      "description": "AI-powered SEO optimization tools",
+      "icon": "SearchIcon"
+    },
+    {
+      "id": "productivity",
+      "name": "Productivity",
+      "description": "Personal and team productivity tools",
+      "icon": "Zap"
+    },
+    {
+      "id": "general-ai",
+      "name": "General AI",
+      "description": "Multi-purpose AI platforms",
+      "icon": "Sparkles"
+    }
+  ]
+} 
