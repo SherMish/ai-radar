@@ -17,6 +17,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
+import { z } from "zod";
 
 interface ReviewData {
   url?: string;
@@ -112,49 +113,23 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
     
     try {
       setIsSubmitting(true);
-      let websiteId = initialUrl;
-      let websiteUrl = initialUrl;
 
-      // If it's a new tool, create it first
-      if (isNewTool) {
-        const websiteResponse = await fetch("/api/websites", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: reviewData.name,
-            URL: reviewData.url,
-            description: "",
-            features: [],
-            isVerified: false,
-          }),
-        });
-
-        if (!websiteResponse.ok) {
-          const error = await websiteResponse.json();
-          if (error.code === 11000) {
-            setFormErrors(prev => ({
-              ...prev,
-              url: "This tool has already been added. Please search for it instead.",
-            }));
-            return;
-          }
-          throw new Error("Failed to create website");
-        }
-
-        const website = await websiteResponse.json();
-        websiteId = website._id;
-        websiteUrl = website.URL;
+      // First get the website ID
+      const websiteResponse = await fetch(`/api/websites/find?url=${encodeURIComponent(initialUrl)}`);
+      if (!websiteResponse.ok) {
+        throw new Error("Failed to find website");
       }
+      const website = await websiteResponse.json();
 
-      // Create the review
+      // Create the review with correct field names
       const reviewResponse = await fetch("/api/reviews/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: reviewData.title,
-          body: reviewData.content,
+          body: reviewData.content, // Map content to body
           rating: reviewData.rating,
-          relatedWebsite: websiteId,
+          relatedWebsite: website._id,
         }),
       });
 
@@ -162,8 +137,8 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
         throw new Error("Failed to create review");
       }
 
-      // Redirect to the tool page using the website URL
-      router.push(`/tool/${encodeURIComponent(websiteUrl || initialUrl)}`);
+      // Redirect to the tool page
+      router.push(`/tool/${encodeURIComponent(initialUrl)}`);
     } catch (error) {
       console.error("Error submitting:", error);
       setFormErrors(prev => ({
