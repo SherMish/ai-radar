@@ -51,8 +51,20 @@ export async function POST(request: Request) {
     });
     
     return NextResponse.json(website);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating website:', error);
+    
+    // Handle duplicate URL error
+    if (error.code === 11000) {
+      return NextResponse.json(
+        { 
+          error: 'This tool has already been added',
+          code: 11000 
+        },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
       { error: 'Failed to create website' },
       { status: 500 }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Star, Upload, Eye, AlertCircle } from "lucide-react";
+import { Star, Upload, Eye, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -42,11 +42,13 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   const [reviewData, setReviewData] = useState<ReviewData>({
     url: initialUrl,
+    name: "",
     rating: 0,
     title: "",
     content: "",
     proofFiles: [],
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -83,8 +85,13 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
   const validateForm = () => {
     const errors: { [key: string]: string } = {};
 
-    if (isNewTool && !reviewData.url?.trim()) {
-      errors.url = "Please enter the tool's URL";
+    if (isNewTool) {
+      if (!reviewData.url?.trim()) {
+        errors.url = "Please enter the tool's URL";
+      }
+      if (!reviewData.name?.trim()) {
+        errors.name = "Please enter the tool's name";
+      }
     }
     if (reviewData.rating === 0) {
       errors.rating = "Please select a rating";
@@ -104,6 +111,7 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
     if (!validateForm()) return;
     
     try {
+      setIsSubmitting(true);
       let websiteId = initialUrl;
 
       // If it's a new tool, create it first
@@ -121,6 +129,14 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
         });
 
         if (!websiteResponse.ok) {
+          const error = await websiteResponse.json();
+          if (error.code === 11000) {
+            setFormErrors(prev => ({
+              ...prev,
+              url: "This tool has already been added. Please search for it instead.",
+            }));
+            return;
+          }
           throw new Error("Failed to create website");
         }
 
@@ -153,6 +169,8 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
         ...prev,
         submit: "Failed to submit. Please try again.",
       }));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -200,18 +218,34 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
         <div className="space-y-6">
           {/* URL Input for new tools */}
           {isNewTool && (
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Tool URL</label>
-              <Input
-                value={reviewData.url}
-                onChange={(e) => setReviewData({ ...reviewData, url: e.target.value })}
-                placeholder="https://example.com"
-                className="bg-background/50"
-              />
-              {formErrors.url && (
-                <p className="text-sm text-destructive">{formErrors.url}</p>
-              )}
-            </div>
+            <>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Tool URL</label>
+                <Input
+                  value={reviewData.url}
+                  onChange={(e) => setReviewData({ ...reviewData, url: e.target.value })}
+                  placeholder="https://example.com"
+                  className="bg-background/50"
+                />
+                {formErrors.url && (
+                  <p className="text-sm text-destructive">{formErrors.url}</p>
+                )}
+              </div>
+
+              {/* Add Tool Name field */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Tool Name</label>
+                <Input
+                  value={reviewData.name}
+                  onChange={(e) => setReviewData({ ...reviewData, name: e.target.value })}
+                  placeholder="Enter the tool's name"
+                  className="bg-background/50"
+                />
+                {formErrors.name && (
+                  <p className="text-sm text-destructive">{formErrors.name}</p>
+                )}
+              </div>
+            </>
           )}
 
           {/* Rating */}
@@ -349,6 +383,7 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
               variant="outline"
               onClick={() => setShowPreview(true)}
               className="flex-1"
+              disabled={isSubmitting}
             >
               <Eye className="w-4 h-4 mr-2" />
               Preview
@@ -356,10 +391,24 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
             <Button
               onClick={handleSubmit}
               className="flex-1 gradient-button"
+              disabled={isSubmitting}
             >
-              Submit Review
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                "Submit Review"
+              )}
             </Button>
           </div>
+
+          {formErrors.submit && (
+            <p className="text-sm text-destructive text-center mt-2">
+              {formErrors.submit}
+            </p>
+          )}
         </div>
       </div>
 
@@ -376,8 +425,22 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
             {renderPreview()}
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel>Edit Review</AlertDialogCancel>
-            <AlertDialogAction onClick={handleSubmit}>Submit Review</AlertDialogAction>
+            <AlertDialogCancel disabled={isSubmitting}>
+              Edit Review
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                "Submit Review"
+              )}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
