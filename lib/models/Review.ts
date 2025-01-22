@@ -3,11 +3,15 @@ import mongoose from 'mongoose';
 const ReviewSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true,
+    required: [true, 'Title is required'],
+    maxlength: [30, 'Title cannot be longer than 30 characters'],
+    trim: true,
   },
   body: {
     type: String,
-    required: true,
+    required: [true, 'Review body is required'],
+    minlength: [25, 'Review must be at least 25 characters long'],
+    trim: true,
   },
   relatedUser: {
     type: mongoose.Schema.Types.ObjectId,

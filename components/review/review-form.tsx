@@ -113,9 +113,11 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
     }
     if (!reviewData.title.trim()) {
       errors.title = "Please enter a review title";
+    } else if (reviewData.title.length > 30) {
+      errors.title = "Title cannot be longer than 30 characters";
     }
-    if (reviewData.content.length < 50) {
-      errors.content = "Review must be at least 50 characters long";
+    if (reviewData.content.length < 25) {
+      errors.content = "Review must be at least 25 characters long";
     }
 
     setFormErrors(errors);
