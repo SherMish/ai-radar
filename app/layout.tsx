@@ -7,7 +7,6 @@ import { SessionProvider } from '@/components/providers/session-provider';
 import { LoginModalProvider } from '@/components/providers/login-modal-provider';
 import { LoginModal } from "@/components/auth/login-modal";
 import { Toaster } from "@/components/ui/toaster";
-import { headers } from 'next/headers';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 

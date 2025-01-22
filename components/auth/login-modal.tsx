@@ -26,12 +26,26 @@ import { useLoginModal } from '@/hooks/use-login-modal';
 import { useToast } from '@/components/ui/use-toast';
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  email: z
+    .string()
+    .min(1, 'Email is required')
+    .email('Invalid email address'),
+  password: z
+    .string()
+    .min(6, 'Password must be at least 6 characters'),
 });
 
-const registerSchema = loginSchema.extend({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
+const registerSchema = z.object({
+  name: z
+    .string()
+    .min(2, 'Name must be at least 2 characters'),
+  email: z
+    .string()
+    .min(1, 'Email is required')
+    .email('Invalid email address'),
+  password: z
+    .string()
+    .min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string()
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
@@ -41,6 +55,12 @@ const registerSchema = loginSchema.extend({
 type LoginFormValues = z.infer<typeof loginSchema>;
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
+interface FormErrors {
+  name?: string;
+  email?: string;
+  password?: string;
+}
+
 export function LoginModal() {
   const [isLoading, setIsLoading] = useState(false);
   const loginModal = useLoginModal();
@@ -49,10 +69,21 @@ export function LoginModal() {
 
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
   const registerForm = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+    mode: "onChange",
   });
 
   const handleGoogleLogin = () => {
@@ -61,68 +92,96 @@ export function LoginModal() {
     });
   };
 
-  const onLogin = async (data: LoginFormValues) => {
+  const onLoginSubmit = async (data: LoginFormValues) => {
     try {
       setIsLoading(true);
-      const result = await signIn('credentials', {
-        ...data,
+      const result = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
         redirect: false,
       });
 
       if (result?.error) {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Invalid credentials",
-        });
-      } else {
-        loginModal.onClose();
-        toast({
-          title: "Success",
-          description: "Logged in successfully",
-        });
+        throw new Error(result.error);
       }
+
+      loginModal.onClose();
+      toast({
+        title: "Success",
+        description: "Logged in successfully",
+      });
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Something went wrong",
+        description: error instanceof Error ? error.message : "Something went wrong",
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const onRegister = async (data: RegisterFormValues) => {
+  const onRegisterSubmit = async (data: RegisterFormValues) => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error('Registration failed');
+      
+      // Check if email exists before trying to register
+      const checkEmailRes = await fetch(`/api/auth/check-email?email=${encodeURIComponent(data.email)}`);
+      const checkEmailData = await checkEmailRes.json();
+      
+      if (checkEmailData.exists) {
+        registerForm.setError('email', {
+          type: 'manual',
+          message: 'This email is already registered'
+        });
+        setIsLoading(false);
+        return;
       }
 
-      // Auto login after registration
-      await signIn('credentials', {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          password: data.password,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to register");
+      }
+
+      // After successful registration, sign in
+      const result = await signIn("credentials", {
         email: data.email,
         password: data.password,
         redirect: false,
+        callbackUrl: window.location.href,
       });
+
+      if (result?.error) {
+        loginModal.onClose();
+        toast({
+          title: "Success",
+          description: "Registration successful. Please log in.",
+        });
+        return;
+      }
 
       loginModal.onClose();
       toast({
         title: "Success",
-        description: "Account created successfully",
+        description: "Registration and login successful",
       });
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Something went wrong",
+        description: error instanceof Error ? error.message : "Something went wrong",
       });
     } finally {
       setIsLoading(false);
@@ -146,7 +205,7 @@ export function LoginModal() {
           </TabsList>
 
           <TabsContent value="login" className="space-y-4 mt-4">
-            <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
+            <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
               <div className="space-y-2">
                 <Input
                   {...loginForm.register('email')}
@@ -170,38 +229,78 @@ export function LoginModal() {
           </TabsContent>
 
           <TabsContent value="register" className="space-y-4 mt-4">
-            <form onSubmit={registerForm.handleSubmit(onRegister)} className="space-y-4">
+            <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
               <div className="space-y-2">
-                <Input
-                  {...registerForm.register('name')}
-                  placeholder="Name"
-                  icon={<User className="w-4 h-4" />}
-                  error={registerForm.formState.errors.name?.message}
-                />
-                <Input
-                  {...registerForm.register('email')}
-                  type="email"
-                  placeholder="Email"
-                  icon={<Mail className="w-4 h-4" />}
-                  error={registerForm.formState.errors.email?.message}
-                />
-                <Input
-                  {...registerForm.register('password')}
-                  type="password"
-                  placeholder="Password"
-                  icon={<Lock className="w-4 h-4" />}
-                  error={registerForm.formState.errors.password?.message}
-                />
-                <Input
-                  {...registerForm.register('confirmPassword')}
-                  type="password"
-                  placeholder="Confirm Password"
-                  icon={<Lock className="w-4 h-4" />}
-                  error={registerForm.formState.errors.confirmPassword?.message}
-                />
+                <div className="space-y-1">
+                  <Input
+                    {...registerForm.register('name')}
+                    placeholder="Name"
+                    icon={<User className="w-4 h-4" />}
+                    error={registerForm.formState.errors.name?.message}
+                    disabled={isLoading}
+                  />
+                  {registerForm.formState.errors.name && (
+                    <p className="text-sm text-red-500">
+                      {registerForm.formState.errors.name.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-1">
+                  <Input
+                    {...registerForm.register('email')}
+                    type="email"
+                    placeholder="Email"
+                    icon={<Mail className="w-4 h-4" />}
+                    error={registerForm.formState.errors.email?.message}
+                    disabled={isLoading}
+                  />
+                  {registerForm.formState.errors.email && (
+                    <p className="text-sm text-red-500">
+                      {registerForm.formState.errors.email.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-1">
+                  <Input
+                    {...registerForm.register('password')}
+                    type="password"
+                    placeholder="Password"
+                    icon={<Lock className="w-4 h-4" />}
+                    error={registerForm.formState.errors.password?.message}
+                    disabled={isLoading}
+                  />
+                  {registerForm.formState.errors.password && (
+                    <p className="text-sm text-red-500">
+                      {registerForm.formState.errors.password.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-1">
+                  <Input
+                    {...registerForm.register('confirmPassword')}
+                    type="password"
+                    placeholder="Confirm Password"
+                    icon={<Lock className="w-4 h-4" />}
+                    error={registerForm.formState.errors.confirmPassword?.message}
+                    disabled={isLoading}
+                  />
+                  {registerForm.formState.errors.confirmPassword && (
+                    <p className="text-sm text-red-500">
+                      {registerForm.formState.errors.confirmPassword.message}
+                    </p>
+                  )}
+                </div>
               </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                Register
+
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={isLoading || !registerForm.formState.isValid}
+              >
+                {isLoading ? "Registering..." : "Register"}
               </Button>
             </form>
           </TabsContent>

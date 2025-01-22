@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
 import connectDB from '@/lib/mongodb';
 import User from '@/lib/models/User';
 import * as z from 'zod';
@@ -25,12 +26,16 @@ export async function POST(req: Request) {
       );
     }
 
-    // Create new user
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user with hashedPassword and explicitly set googleId to undefined
     const user = await User.create({
       name,
       email,
-      password,
+      hashedPassword,
       lastLoginAt: new Date(),
+      googleId: undefined, // Explicitly set to undefined
     });
 
     return NextResponse.json(
@@ -46,7 +51,7 @@ export async function POST(req: Request) {
       );
     }
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to register user' },
       { status: 500 }
     );
   }

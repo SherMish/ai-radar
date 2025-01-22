@@ -1,8 +1,9 @@
 import { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import connectDB from './mongodb';
-import User from './models/User';
+import bcrypt from 'bcryptjs';
+import User from '@/lib/models/User';
+import connectDB from '@/lib/mongodb';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -24,87 +25,37 @@ export const authOptions: NextAuthOptions = {
         await connectDB();
         
         const user = await User.findOne({ email: credentials.email });
-        if (!user || !user.password) {
+        if (!user || !user.hashedPassword) {
           throw new Error('Invalid credentials');
         }
 
-        const isValid = await user.comparePassword(credentials.password);
-        if (!isValid) {
+        const isCorrectPassword = await bcrypt.compare(
+          credentials.password,
+          user.hashedPassword
+        );
+
+        if (!isCorrectPassword) {
           throw new Error('Invalid credentials');
         }
 
-        return {
-          id: user._id.toString(),
-          name: user.name,
-          email: user.email,
-          image: user.image,
-          role: user.role,
-          isWebsiteOwner: user.isWebsiteOwner,
-          isVerifiedWebsiteOwner: user.isVerifiedWebsiteOwner,
-        };
+        return user;
       }
     })
   ],
   callbacks: {
-    async signIn({ user, account }) {
-      if (account?.provider === 'google') {
-        try {
-          await connectDB();
-          
-          const existingUser = await User.findOne({ email: user.email });
-          
-          if (!existingUser) {
-            await User.create({
-              name: user.name,
-              email: user.email,
-              image: user.image,
-              googleId: account.providerAccountId,
-              lastLoginAt: new Date(),
-            });
-          } else {
-            await User.findByIdAndUpdate(existingUser._id, {
-              lastLoginAt: new Date(),
-              name: user.name,
-              image: user.image,
-            });
-          }
-          
-          return true;
-        } catch (error) {
-          console.error('Error during sign in:', error);
-          return false;
-        }
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
       }
-      return true;
+      return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        try {
-          await connectDB();
-          const dbUser = await User.findOne({ email: session.user.email });
-          
-          if (dbUser) {
-            session.user.id = dbUser._id.toString();
-            session.user.role = dbUser.role;
-            session.user.isWebsiteOwner = dbUser.isWebsiteOwner;
-            session.user.isVerifiedWebsiteOwner = dbUser.isVerifiedWebsiteOwner;
-          }
-        } catch (error) {
-          console.error('Error fetching user data:', error);
-        }
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
       }
       return session;
-    },
-    async jwt({ token, account, user }) {
-      if (account) {
-        token.googleId = account.providerAccountId;
-      }
-      if (user) {
-        token.role = user.role;
-        token.isWebsiteOwner = user.isWebsiteOwner;
-        token.isVerifiedWebsiteOwner = user.isVerifiedWebsiteOwner;
-      }
-      return token;
     }
   },
   pages: {

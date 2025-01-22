@@ -11,16 +11,17 @@ const UserSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  password: {
+  hashedPassword: {
     type: String,
-    // Only required if not using OAuth
     required: function() {
       return !this.googleId;
     },
   },
   image: String,
   emailVerified: Date,
-  googleId: String,  // Made optional for email/password auth
+  googleId: {
+    type: String,
+  },
   role: {
     type: String,
     enum: ['user', 'admin', 'moderator'],
@@ -43,17 +44,36 @@ const UserSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-// Hash password before saving
-UserSchema.pre('save', async function(next) {
-  if (this.isModified('password')) {
-    this.password = await bcrypt.hash(this.password, 10);
-  }
-  next();
-});
-
 // Method to compare passwords
 UserSchema.methods.comparePassword = async function(candidatePassword: string) {
-  return bcrypt.compare(candidatePassword, this.password);
+  return bcrypt.compare(candidatePassword, this.hashedPassword);
 };
 
-export default mongoose.models.User || mongoose.model('User', UserSchema); 
+// Delete the model if it exists
+if (mongoose.models.User) {
+  delete mongoose.models.User;
+}
+
+const User = mongoose.model('User', UserSchema);
+
+// Drop the existing index and create a new one
+async function setupIndexes() {
+  try {
+    const collection = User.collection;
+    // Drop the existing index if it exists
+    await collection.dropIndex('googleId_1').catch(() => {});
+    // Create a new sparse index
+    await collection.createIndex({ googleId: 1 }, { 
+      sparse: true,
+      unique: true,
+      background: true 
+    });
+  } catch (error) {
+    console.error('Error setting up indexes:', error);
+  }
+}
+
+// Run the index setup
+setupIndexes();
+
+export default User; 
