@@ -22,6 +22,7 @@ import { z } from "zod";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import categoriesData from '@/lib/data/categories.json';
+import { useLoginModal } from "@/hooks/use-login-modal";
 
 interface ReviewData {
   url?: string;
@@ -44,8 +45,9 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_FILE_TYPES = ["image/jpeg", "image/png", "application/pdf"];
 
 export default function ReviewForm({ isNewTool = false, initialUrl = "" }: ReviewFormProps) {
-  const { data: session } = useSession();
   const router = useRouter();
+  const { data: session } = useSession();
+  const loginModal = useLoginModal();
   const [hoveredRating, setHoveredRating] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
@@ -124,16 +126,24 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = async () => {
+  const handlePreviewSubmit = () => {
     if (!validateForm()) return;
-    
-    // For development - skip auth check
-    // if (!session?.user) {
-    //   signIn(undefined, { 
-    //     callbackUrl: window.location.href 
-    //   });
-    //   return;
-    // }
+
+    // Check for authentication first
+    if (!session?.user) {
+      loginModal.onOpen();
+      return;
+    }
+
+    // If authenticated, show preview
+    setShowPreview(true);
+  };
+
+  const handleSubmit = async () => {
+    if (!session?.user) {
+      loginModal.onOpen();
+      return;
+    }
     
     try {
       setIsSubmitting(true);
@@ -455,7 +465,7 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
           <div className="flex gap-4">
             <Button
               variant="outline"
-              onClick={() => setShowPreview(true)}
+              onClick={handlePreviewSubmit}
               className="flex-1"
               disabled={isSubmitting}
             >

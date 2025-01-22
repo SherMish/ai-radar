@@ -5,6 +5,7 @@ import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { SessionProvider } from '@/components/providers/session-provider';
 import { LoginModalProvider } from '@/components/providers/login-modal-provider';
+import { LoginModal } from "@/components/auth/login-modal";
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -28,6 +29,7 @@ export default function RootLayout({
               <main className="flex-1">{children}</main>
               <Footer />
             </div>
+            <LoginModal />
           </LoginModalProvider>
         </SessionProvider>
       </body>

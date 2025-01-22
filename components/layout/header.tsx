@@ -5,7 +5,9 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useLoginModal } from "@/components/providers/login-modal-provider";
+import { useLoginModal } from "@/hooks/use-login-modal";
+import { useSession, signOut } from "next-auth/react";
+import { UserNav } from "@/components/user-nav";
 
 const navigation = [
   // { name: "For Businesses", href: "/business" },
@@ -15,7 +17,8 @@ const navigation = [
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
-  const { showLoginModal } = useLoginModal();
+  const { data: session } = useSession();
+  const loginModal = useLoginModal();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -39,13 +42,22 @@ export function Header() {
                 {item.name}
               </Link>
             ))}
-            <Button
-              variant="ghost"
-              onClick={showLoginModal}
-              className="text-base font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Login
-            </Button>
+            <div className="flex items-center gap-2">
+              {session?.user ? (
+                <>
+                  {/* User menu when logged in */}
+                  <UserNav user={session.user} onSignOut={() => signOut()} />
+                </>
+              ) : (
+                <Button
+                  variant="outline"
+                  onClick={() => loginModal.onOpen()}
+                  className="font-medium"
+                >
+                  Login
+                </Button>
+              )}
+            </div>
           </div>
 
           {/* Mobile menu button */}
@@ -84,16 +96,25 @@ export function Header() {
                 {item.name}
               </Link>
             ))}
-            <Button
-              variant="ghost"
-              onClick={() => {
-                setIsOpen(false);
-                showLoginModal();
-              }}
-              className="w-full justify-start rounded-md px-3 py-4 text-base font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
-            >
-              Login
-            </Button>
+            <div className="flex items-center gap-2">
+              {session?.user ? (
+                <>
+                  {/* User menu when logged in */}
+                  <UserNav user={session.user} onSignOut={() => signOut()} />
+                </>
+              ) : (
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setIsOpen(false);
+                    loginModal.onOpen();
+                  }}
+                  className="w-full justify-start rounded-md px-3 py-4 text-base font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
+                >
+                  Login
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </nav>
