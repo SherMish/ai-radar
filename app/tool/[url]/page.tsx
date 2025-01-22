@@ -6,6 +6,7 @@ import Image from "next/image";
 import connectDB from "@/lib/mongodb";
 import { Website, Review } from "@/lib/models";
 import { Types } from 'mongoose';
+import { ReviewCard } from "@/components/review-card";
 
 interface WebsiteDoc {
   _id: Types.ObjectId;
@@ -23,6 +24,7 @@ interface ReviewDoc {
   createdAt: Date;
   relatedWebsite: Types.ObjectId;
   relatedUser?: { _id: Types.ObjectId; name: string; image?: string };
+  helpfulCount?: number;
 }
 
 async function getWebsiteAndReviews(url: string) {
@@ -184,48 +186,7 @@ export default async function ToolPage({ params }: { params: { url: string } }) 
             <h2 className="text-2xl font-semibold mb-6">Reviews</h2>
             <div className="space-y-6">
               {reviews.length > 0 ? reviews.map((review) => (
-                <Card key={review._id} className="bg-secondary/50 backdrop-blur-sm">
-                  <div className="p-6">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full flex items-center justify-center">
-                          <span className="text-lg font-bold gradient-text">
-                            {(review.relatedUser?.name || 'A')[0]}
-                          </span>
-                        </div>
-                        <div>
-                          <div className="font-medium">{review.relatedUser?.name || "Anonymous"}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {new Date(review.createdAt).toLocaleDateString()}
-                          </div>
-                          <div className="flex items-center gap-1 mt-1">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`w-4 h-4 ${
-                                  i < review.rating
-                                    ? "text-yellow-400 fill-yellow-400"
-                                    : "text-gray-600"
-                                }`}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <p className="mt-4 text-muted-foreground">{review.body}</p>
-                    <div className="flex items-center gap-4 mt-4 pt-4 border-t border-border">
-                      <Button variant="outline" size="sm">
-                        <ThumbsUp className="w-4 h-4 mr-2" />
-                        Helpful (0)
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Flag className="w-4 h-4 mr-2" />
-                        Report
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
+                <ReviewCard key={review._id} review={review} />
               )) : (
                 <div className="text-center py-8 text-muted-foreground">
                   No reviews yet. Be the first to review this tool!

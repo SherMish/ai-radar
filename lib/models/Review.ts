@@ -31,6 +31,10 @@ const ReviewSchema = new mongoose.Schema({
     default: false,
   },
   relatedPlan: String,
+  helpfulCount: {
+    type: Number,
+    default: 0
+  }
 }, {
   timestamps: true,
 });
