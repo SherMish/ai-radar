@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 
 export function MarketingSection() {
   return (
-    <div className="py-16 relative overflow-hidden">
+    <div className="py-16 pb-8 relative overflow-hidden">
       <div className="container max-w-6xl mx-auto relative">
         <div className="text-center mb-16 space-y-4">
           <h2 className="text-4xl font-bold gradient-text">

@@ -20,10 +20,14 @@ import {
   Globe,
   Headphones,
   Search as SearchIcon,
-  Zap
+  Zap,
+  ChevronUp,
+  ChevronDown
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 const categories = [
   { name: "Text Generation", icon: MessageSquare, count: 156, description: "AI writing, content creation, and language models" },
@@ -49,8 +53,11 @@ const categories = [
 ];
 
 export function CategoriesSection() {
+  const [showAll, setShowAll] = useState(false);
+  const visibleCategories = showAll ? categories : categories.slice(0, 8);
+
   return (
-    <div className="py-16 relative">
+    <div className="py-16 pb-8 relative">
       <div className="container max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-4">Explore AI Tools by Category</h2>
@@ -60,7 +67,7 @@ export function CategoriesSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {categories.map((category) => {
+          {visibleCategories.map((category) => {
             const Icon = category.icon;
             return (
               <Link 
@@ -90,6 +97,30 @@ export function CategoriesSection() {
             );
           })}
         </div>
+
+        {/* Show More/Less Button */}
+        {categories.length > 8 && (
+          <div className="text-center mt-8">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setShowAll(!showAll)}
+              className="group"
+            >
+              {showAll ? (
+                <>
+                  Show Less
+                  <ChevronUp className="ml-2 h-4 w-4 transition-transform group-hover:-translate-y-0.5" />
+                </>
+              ) : (
+                <>
+                  Show More Categories
+                  <ChevronDown className="ml-2 h-4 w-4 transition-transform group-hover:translate-y-0.5" />
+                </>
+              )}
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
