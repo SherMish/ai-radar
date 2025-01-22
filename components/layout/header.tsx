@@ -44,10 +44,7 @@ export function Header() {
             ))}
             <div className="flex items-center gap-2">
               {session?.user ? (
-                <>
-                  {/* User menu when logged in */}
-                  <UserNav user={session.user} onSignOut={() => signOut()} />
-                </>
+                <UserNav user={session.user} onSignOut={() => signOut()} />
               ) : (
                 <Button
                   variant="outline"
@@ -96,12 +93,9 @@ export function Header() {
                 {item.name}
               </Link>
             ))}
-            <div className="flex items-center gap-2">
+            <div className="px-3 py-4">
               {session?.user ? (
-                <>
-                  {/* User menu when logged in */}
-                  <UserNav user={session.user} onSignOut={() => signOut()} />
-                </>
+                <UserNav user={session.user} onSignOut={() => signOut()} />
               ) : (
                 <Button
                   variant="ghost"
@@ -109,7 +103,7 @@ export function Header() {
                     setIsOpen(false);
                     loginModal.onOpen();
                   }}
-                  className="w-full justify-start rounded-md px-3 py-4 text-base font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
+                  className="w-full justify-start text-base font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
                 >
                   Login
                 </Button>

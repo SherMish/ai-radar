@@ -6,6 +6,10 @@ import { Footer } from '@/components/layout/footer';
 import { SessionProvider } from '@/components/providers/session-provider';
 import { LoginModalProvider } from '@/components/providers/login-modal-provider';
 import { LoginModal } from "@/components/auth/login-modal";
+import { Toaster } from "@/components/ui/toaster";
+import { headers } from 'next/headers';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -14,15 +18,17 @@ export const metadata: Metadata = {
   description: 'Find, review, and compare the best AI tools and services.',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SessionProvider>
+        <SessionProvider session={session}>
           <LoginModalProvider>
             <div className="flex min-h-screen flex-col">
               <Header />
@@ -30,6 +36,7 @@ export default function RootLayout({
               <Footer />
             </div>
             <LoginModal />
+            <Toaster />
           </LoginModalProvider>
         </SessionProvider>
       </body>

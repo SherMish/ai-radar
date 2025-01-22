@@ -5,12 +5,14 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { User } from "next-auth";
+import { LogOut, Settings, User as UserIcon } from "lucide-react";
 
 interface UserNavProps {
   user: User;
@@ -24,7 +26,9 @@ export function UserNav({ user, onSignOut }: UserNavProps) {
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
             <AvatarImage src={user.image || ""} alt={user.name || ""} />
-            <AvatarFallback>{user.name?.[0]}</AvatarFallback>
+            <AvatarFallback>
+              {user.name?.charAt(0).toUpperCase()}
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
@@ -38,8 +42,20 @@ export function UserNav({ user, onSignOut }: UserNavProps) {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem>
+            <UserIcon className="mr-2 h-4 w-4" />
+            <span>My Reviews</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Settings className="mr-2 h-4 w-4" />
+            <span>Settings</span>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
         <DropdownMenuItem onClick={onSignOut}>
-          Log out
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Log out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
