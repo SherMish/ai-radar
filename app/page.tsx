@@ -72,11 +72,19 @@ export default async function Home() {
   const latestReviews = await getLatestReviews();
   
   return (
-    <main>
-      <SearchSection />
-      <MarketingSection />
-      <CategoriesSection />
-      <LatestReviewsCarousel reviews={latestReviews} />
+    <main className="relative min-h-screen">
+      {/* Main background gradient */}
+      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,#3b82f615,transparent_70%),radial-gradient(ellipse_at_bottom,#6366f115,transparent_70%)] pointer-events-none" />
+      
+      {/* Content */}
+      <div className="relative space-y-8">
+        <div className="pt-12">
+          <SearchSection />
+        </div>
+        <CategoriesSection />
+        <MarketingSection />
+        <LatestReviewsCarousel reviews={latestReviews} />
+      </div>
     </main>
   );
 }

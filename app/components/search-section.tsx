@@ -60,11 +60,8 @@ export function SearchSection() {
   }, []);
 
   return (
-    <div className="min-h-[50vh] bg-background relative overflow-hidden">
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:44px_44px]" />
-      <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 via-purple-500/5 to-pink-500/5" />
-      
-      <div className="relative container mx-auto px-4 py-12">
+    <div className="min-h-[30vh] relative overflow-hidden">
+      <div className="relative container mx-auto px-4 py-8 pb-4">
         <div className="max-w-3xl mx-auto text-center space-y-8">
           <div className="space-y-4">
             <h1 className="text-4xl md:text-6xl font-bold gradient-text">

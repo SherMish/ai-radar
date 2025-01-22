@@ -50,7 +50,7 @@ const categories = [
 
 export function CategoriesSection() {
   return (
-    <div className="py-24 relative">
+    <div className="py-16 relative">
       <div className="container max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-4">Explore AI Tools by Category</h2>
@@ -66,13 +66,14 @@ export function CategoriesSection() {
               <Link 
                 key={category.name} 
                 href={`/category/${category.name.toLowerCase().replace(/\s+/g, '-')}`}
+                className="block h-full"
               >
-                <Card className="p-4 hover:bg-secondary/50 transition-colors group">
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                <Card className="p-4 hover:bg-secondary/50 transition-colors group h-full flex flex-col">
+                  <div className="flex items-start gap-3 h-full">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex-shrink-0 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                       <Icon className="w-5 h-5 text-primary" />
                     </div>
-                    <div>
+                    <div className="flex-1 min-h-0">
                       <div className="font-medium mb-1 flex items-center gap-2">
                         {category.name}
                         <span className="text-sm text-muted-foreground">
