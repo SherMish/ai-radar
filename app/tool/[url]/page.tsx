@@ -45,6 +45,8 @@ interface PageProps {
 
 async function getWebsiteData(url: string) {
   await connectDB();
+  
+  // Get website data
   const website = await Website.findOne({ url: url })
     .populate('owner')
     .populate('createdBy')
@@ -54,6 +56,19 @@ async function getWebsiteData(url: string) {
     notFound();
   }
 
+  // Calculate average rating and review count from reviews
+  const reviews = await Review.find({ relatedWebsite: website._id });
+  const averageRating = reviews.length > 0
+    ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length
+    : 0;
+  const reviewCount = reviews.length;
+
+  // Update website with calculated stats
+  await Website.findByIdAndUpdate(website._id, {
+    averageRating: Math.round(averageRating * 10) / 10, // Round to 1 decimal
+    reviewCount
+  });
+
   // Find the category data
   const category = categoriesData.categories.find(cat => cat.id === website.relatedCategory);
   const Icon = category ? Icons[category.icon as keyof typeof Icons] : null;
@@ -61,6 +76,8 @@ async function getWebsiteData(url: string) {
   return {
     ...website,
     _id: website._id.toString(),
+    averageRating: Math.round(averageRating * 10) / 10,
+    reviewCount,
     owner: website.owner ? {
       ...website.owner,
       _id: website.owner._id.toString(),
