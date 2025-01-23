@@ -73,7 +73,7 @@ export function SearchSection() {
           </div>
 
           <div className="relative" ref={suggestionsRef}>
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row">
               <div className="relative flex-1">
                 <Input
                   type="text"
@@ -88,7 +88,7 @@ export function SearchSection() {
                 />
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5" />
               </div>
-              <Button size="lg" className="gradient-button">
+              <Button size="lg" className="gradient-button w-full sm:w-auto h-12">
                 Search
               </Button>
             </div>

@@ -76,23 +76,35 @@ export default async function Home() {
     <main className="relative min-h-screen">
       {/* Main background gradient */}
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,#3b82f615,transparent_70%),radial-gradient(ellipse_at_bottom,#6366f115,transparent_70%)] pointer-events-none" />
+      
       {/* Radar Section */}
       <div className="absolute left-0 right-0 top-0 bottom-0 flex justify-center items-center -z-10">
-          <div className="relative w-[200px] h-[200px] mb-[182vh]">
-            {/* <RadarAnimation /> */}
-          </div>
+        <div className="relative w-[200px] h-[200px] mb-[182vh]">
+          {/* <RadarAnimation /> */}
         </div>
+      </div>
+      
       {/* Content */}
       <div className="relative">
-        <div className="pt-12">
+        {/* Search Section - Added px-4 for mobile padding */}
+        <div className="pt-12 px-4 sm:px-6 lg:px-8">
           <SearchSection />
         </div>
         
+        {/* Categories Section - Added px-4 for mobile padding */}
+        <div className="px-4 sm:px-6 lg:px-8">
+          <CategoriesSection />
+        </div>
         
+        {/* Marketing Section - Added px-4 for mobile padding */}
+        <div className="px-4 sm:px-6 lg:px-8">
+          <MarketingSection />
+        </div>
         
-        <CategoriesSection />
-        <MarketingSection />
-        <LatestReviewsCarousel reviews={latestReviews} />
+        {/* Latest Reviews Section - Added px-4 for mobile padding */}
+        <div className="px-4 sm:px-6 lg:px-8">
+          <LatestReviewsCarousel reviews={latestReviews} />
+        </div>
       </div>
     </main>
   );

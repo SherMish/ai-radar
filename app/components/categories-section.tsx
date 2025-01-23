@@ -61,7 +61,7 @@ export function CategoriesSection() {
 
   return (
     <div className="py-16 pb-8 relative">
-      <div className="container max-w-7xl mx-auto relative">
+      <div className="container max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-4">Explore AI Tools by Category</h2>
           <p className="text-muted-foreground text-lg">
