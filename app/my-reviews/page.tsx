@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import connectDB from "@/lib/mongodb";
 import { Review } from "@/lib/models";
 import { ReviewCard } from "@/components/review-card";
+import Link from "next/link";
 
 export default async function MyReviewsPage() {
   const session = await getServerSession(authOptions);
@@ -55,9 +56,13 @@ export default async function MyReviewsPage() {
     console.log('Formatted reviews:', formattedReviews);
 
     return (
-      <div className="min-h-screen bg-background">
-        <div className="container max-w-4xl mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold mb-8">My Reviews</h1>
+      <div className="relative min-h-screen bg-background">
+        {/* Background effects */}
+        <div className="fixed inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:44px_44px] pointer-events-none" />
+        <div className="fixed inset-0 bg-gradient-to-tr from-blue-500/5 via-purple-500/5 to-pink-500/5 pointer-events-none" />
+        
+        <div className="relative container max-w-4xl mx-auto px-4 py-8">
+          <h1 className="text-3xl font-bold mb-8 gradient-text">My Reviews</h1>
           
           {formattedReviews.length === 0 ? (
             <div className="text-center py-12">
@@ -71,10 +76,7 @@ export default async function MyReviewsPage() {
           ) : (
             <div className="space-y-6">
               {formattedReviews.map((review) => (
-                <ReviewCard 
-                  key={review._id} 
-                  review={review}
-                />
+                <ReviewCard key={review._id} review={review} />
               ))}
             </div>
           )}
@@ -84,9 +86,13 @@ export default async function MyReviewsPage() {
   } catch (error) {
     console.error('Error fetching reviews:', error);
     return (
-      <div className="min-h-screen bg-background">
-        <div className="container max-w-4xl mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold mb-8">My Reviews</h1>
+      <div className="relative min-h-screen bg-background">
+        {/* Background effects */}
+        <div className="fixed inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:44px_44px] pointer-events-none" />
+        <div className="fixed inset-0 bg-gradient-to-tr from-blue-500/5 via-purple-500/5 to-pink-500/5 pointer-events-none" />
+        
+        <div className="relative container max-w-4xl mx-auto px-4 py-8">
+          <h1 className="text-3xl font-bold mb-8 gradient-text">My Reviews</h1>
           <div className="text-center py-12">
             <p className="text-muted-foreground text-lg">
               Unable to load reviews. Please try again later.

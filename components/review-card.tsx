@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Star, ThumbsUp, Flag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import Link from "next/link";
 
 interface ReviewCardProps {
   review: {
@@ -15,6 +16,10 @@ interface ReviewCardProps {
     helpfulCount: number;
     relatedUser?: {
       name: string;
+    };
+    relatedWebsite: {
+      name: string;
+      url: string;
     };
   };
 }
@@ -62,6 +67,15 @@ export function ReviewCard({ review }: ReviewCardProps) {
   return (
     <Card className="bg-secondary/50 backdrop-blur-sm">
       <div className="p-6">
+        {/* Website Name and Link */}
+        <Link 
+          href={`/tool/${encodeURIComponent(review.relatedWebsite.url)}`}
+          className="inline-block text-lg font-semibold hover:text-primary transition-colors mb-4"
+        >
+          {review.relatedWebsite.name}
+        </Link>
+
+        {/* User Info and Rating */}
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-4">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full flex items-center justify-center">
