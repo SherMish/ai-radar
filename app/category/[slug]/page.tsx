@@ -11,7 +11,7 @@ interface WebsiteDoc {
   name: string;
   url: string;
   description?: string;
-  relatedCategory: string;
+  category: string;
 }
 
 interface PageProps {
@@ -34,13 +34,15 @@ const CategoryPage = async ({ params }: PageProps) => {
     await connectDB();
     
     const results = await Website.find({ 
-      relatedCategory: category.id 
+      category: category.id 
     }).lean();
 
     websites = results.map(website => ({
       ...website,
       _id: website._id.toString(),
     }));
+
+    console.log('Found websites:', websites); // Debug log
   } catch (error) {
     console.error('Error fetching websites:', error);
   }
