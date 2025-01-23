@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { User } from "next-auth";
 import { LogOut, Settings, User as UserIcon } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface UserNavProps {
   user: User;
@@ -20,6 +22,8 @@ interface UserNavProps {
 }
 
 export function UserNav({ user, onSignOut }: UserNavProps) {
+  const router = useRouter();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -43,7 +47,7 @@ export function UserNav({ user, onSignOut }: UserNavProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push('/my-reviews')}>
             <UserIcon className="mr-2 h-4 w-4" />
             <span>My Reviews</span>
           </DropdownMenuItem>

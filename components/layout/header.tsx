@@ -42,6 +42,16 @@ export function Header() {
                 {item.name}
               </Link>
             ))}
+
+            {session?.user && (
+              <Link
+                href="/my-reviews"
+                className="text-base font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                My Reviews
+              </Link>
+            )}
+
             <div className="flex items-center gap-2">
               {session?.user ? (
                 <UserNav user={session.user} onSignOut={() => signOut()} />
@@ -93,6 +103,17 @@ export function Header() {
                 {item.name}
               </Link>
             ))}
+
+            {session?.user && (
+              <Link
+                href="/my-reviews"
+                className="block rounded-md px-3 py-4 text-base font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                My Reviews
+              </Link>
+            )}
+
             <div className="px-3 py-4">
               {session?.user ? (
                 <UserNav user={session.user} onSignOut={() => signOut()} />

@@ -49,12 +49,8 @@ UserSchema.methods.comparePassword = async function(candidatePassword: string) {
   return bcrypt.compare(candidatePassword, this.hashedPassword);
 };
 
-// Delete the model if it exists
-if (mongoose.models.User) {
-  delete mongoose.models.User;
-}
-
-const User = mongoose.model('User', UserSchema);
+// Use mongoose.models.User if it exists, otherwise create a new model
+const User = mongoose.models.User || mongoose.model('User', UserSchema);
 
 // Drop the existing index and create a new one
 async function setupIndexes() {

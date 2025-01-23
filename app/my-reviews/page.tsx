@@ -1,75 +1,99 @@
-"use client";
-
-import { useSession } from "next-auth/react";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { Card } from "@/components/ui/card";
-import { Star } from "lucide-react";
+import connectDB from "@/lib/mongodb";
+import { Review } from "@/lib/models";
+import { ReviewCard } from "@/components/review-card";
 
-// This would be replaced with actual data fetching
-const mockReviews = [
-  {
-    id: 1,
-    toolName: "ChatGPT",
-    rating: 5,
-    content: "Amazing tool for creative writing and problem-solving!",
-    date: "2024-03-20",
-  },
-  {
-    id: 2,
-    toolName: "Midjourney",
-    rating: 4,
-    content: "Great for generating images, but can be inconsistent.",
-    date: "2024-03-15",
-  },
-];
-
-export default function MyReviewsPage() {
-  const { data: session, status } = useSession();
-
-  if (status === "loading") {
-    return null;
+export default async function MyReviewsPage() {
+  const session = await getServerSession(authOptions);
+  
+  if (!session?.user) {
+    redirect('/auth/signin');
   }
 
-  if (!session) {
-    redirect("/auth/signin");
-  }
+  try {
+    await connectDB();
+    
+    // Log the user ID we're searching for
+    console.log('Searching for reviews with user ID:', session.user.id);
+    
+    const reviews = await Review.find({ 
+      relatedUser: session.user.id 
+    })
+    .populate({
+      path: 'relatedWebsite',
+      select: 'name url'
+    })
+    .populate({
+      path: 'relatedUser',
+      select: 'name'
+    })
+    .sort({ createdAt: -1 })
+    .lean();
 
-  return (
-    <div className="min-h-screen bg-background relative">
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:44px_44px]" />
-      <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 via-purple-500/5 to-pink-500/5" />
-      
-      <div className="relative container mx-auto px-4 py-16">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold gradient-text mb-8">My Reviews</h1>
+    // Log the found reviews
+    console.log('Found reviews:', reviews);
+
+    const formattedReviews = reviews.map(review => ({
+      _id: review._id.toString(),
+      title: review.title,
+      body: review.body,
+      rating: review.rating,
+      createdAt: review.createdAt,
+      helpfulCount: review.helpfulCount || 0,
+      relatedUser: review.relatedUser ? {
+        name: review.relatedUser.name
+      } : undefined,
+      relatedWebsite: {
+        name: review.relatedWebsite?.name || 'Unknown Tool',
+        url: review.relatedWebsite?.url || '#'
+      }
+    }));
+
+    // Log the formatted reviews
+    console.log('Formatted reviews:', formattedReviews);
+
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container max-w-4xl mx-auto px-4 py-8">
+          <h1 className="text-3xl font-bold mb-8">My Reviews</h1>
           
-          <div className="space-y-6">
-            {mockReviews.map((review) => (
-              <Card key={review.id} className="p-6 bg-secondary/50 backdrop-blur-sm">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-xl font-semibold mb-2">{review.toolName}</h3>
-                    <div className="flex items-center gap-1 mb-2">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-5 h-5 ${
-                            i < review.rating
-                              ? "text-yellow-400 fill-yellow-400"
-                              : "text-gray-600"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  <span className="text-sm text-muted-foreground">{review.date}</span>
-                </div>
-                <p className="text-muted-foreground">{review.content}</p>
-              </Card>
-            ))}
+          {formattedReviews.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground text-lg mb-4">
+                You haven&apos;t written any reviews yet.
+              </p>
+              <p className="text-muted-foreground">
+                Share your experience with AI tools and help others make informed decisions.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {formattedReviews.map((review) => (
+                <ReviewCard 
+                  key={review._id} 
+                  review={review}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container max-w-4xl mx-auto px-4 py-8">
+          <h1 className="text-3xl font-bold mb-8">My Reviews</h1>
+          <div className="text-center py-12">
+            <p className="text-muted-foreground text-lg">
+              Unable to load reviews. Please try again later.
+            </p>
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
