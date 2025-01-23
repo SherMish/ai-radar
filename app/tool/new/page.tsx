@@ -84,7 +84,18 @@ export default function NewTool() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const submitForm = async (submissionData: typeof formData) => {
+  const submitForm = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!session?.user) {
+      loginModal.onOpen();
+      return;
+    }
+
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       setIsLoading(true);
 
@@ -93,51 +104,57 @@ export default function NewTool() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(submissionData),
+        body: JSON.stringify({
+          url: formData.url.trim(),
+          name: formData.name.trim(),
+          category: formData.category,
+        }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error("Failed to create tool");
+        // Handle specific error cases
+        if (data.error === "A tool with this URL already exists") {
+          setErrors(prev => ({
+            ...prev,
+            url: "This tool has already been added. Please use a different URL."
+          }));
+          throw new Error(data.error);
+        }
+        throw new Error(data.error || "Failed to create tool");
       }
 
-      const data = await response.json();
-      router.push(`/tool/${data.slug}`);
-      
+      if (!data.slug) {
+        throw new Error("No slug returned from server");
+      }
+
       toast({
         title: "Success",
         description: "Tool created successfully",
       });
+
+      router.push(`/tool/${data.slug}`);
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to create tool. Please try again.",
-      });
+      console.error("Tool creation error:", error);
+      
+      // Only show toast for non-validation errors
+      if (!errors.name) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: error instanceof Error ? error.message : "Failed to create tool",
+        });
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
-    if (!session) {
-      setPendingSubmission(formData);
-      loginModal.onOpen();
-      return;
-    }
-
-    submitForm(formData);
-  };
-
   return (
     <ReviewLayout title="Add a New AI Tool">
       <Card className="p-6 bg-muted/50 border-border">
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={submitForm} className="space-y-6">
           <div className="space-y-4">
             <div className="grid gap-2">
               <label htmlFor="url" className="text-sm font-medium">
