@@ -66,7 +66,7 @@ async function getLatestReviews() {
 interface Suggestion {
   _id: string;
   name: string;
-  URL: string;
+  url: string;
 }
 
 export default async function Home() {

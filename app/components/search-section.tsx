@@ -10,7 +10,7 @@ import useEmblaCarousel from "embla-carousel-react";
 interface Suggestion {
   _id: string;
   name: string;
-  URL: string;
+  url: string;
 }
 
 export function SearchSection() {
@@ -98,13 +98,13 @@ export function SearchSection() {
                 {suggestions.map((suggestion) => (
                   <Link
                     key={suggestion._id}
-                    href={`/tool/${encodeURIComponent(suggestion.URL)}`}
+                    href={`/tool/${encodeURIComponent(suggestion.url)}`}
                     className="flex items-center p-3 rounded-md hover:bg-muted/50 transition-colors"
                   >
                     <div>
                       <div className="font-medium text-foreground">{suggestion.name}</div>
                       <div className="text-sm text-muted-foreground">
-                        {suggestion.URL}
+                        {suggestion.url}
                       </div>
                     </div>
                   </Link>

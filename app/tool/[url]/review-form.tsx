@@ -60,7 +60,7 @@ export default function ReviewForm({ isNewTool, existingUrl, websiteData }: Revi
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             name: data.websiteName,
-            URL: data.websiteUrl,
+            url: data.websiteUrl,
             // Add other website fields as needed
           }),
         });

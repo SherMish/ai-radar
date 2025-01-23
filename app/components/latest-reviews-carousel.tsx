@@ -14,7 +14,7 @@ interface Review {
   createdAt: Date;
   relatedWebsite: {
     name: string;
-    URL: string;
+    url: string;
   };
   relatedUser?: {
     name: string;

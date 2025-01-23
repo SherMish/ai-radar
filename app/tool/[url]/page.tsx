@@ -20,7 +20,7 @@ import { LucideIcon } from "lucide-react";
 interface WebsiteDoc {
   _id: Types.ObjectId;
   name: string;
-  URL: string;
+  url: string;
   isVerified: boolean;
   relatedCategory: { name: string };
   owner: { name: string };
@@ -37,13 +37,22 @@ interface ReviewDoc {
   helpfulCount?: number;
 }
 
+interface PageProps {
+  params: {
+    url: string;
+  };
+}
+
 async function getWebsiteData(url: string) {
   await connectDB();
-  const website = await Website.findOne({ URL: url })
+  const website = await Website.findOne({ url: url })
     .populate('owner')
+    .populate('createdBy')
     .lean();
 
-  if (!website) return null;
+  if (!website) {
+    notFound();
+  }
 
   // Find the category data
   const category = categoriesData.categories.find(cat => cat.id === website.relatedCategory);
@@ -56,6 +65,10 @@ async function getWebsiteData(url: string) {
       ...website.owner,
       _id: website.owner._id.toString(),
     } : null,
+    createdBy: website.createdBy ? {
+      ...website.createdBy,
+      _id: website.createdBy._id.toString(),
+    } : null,
     category: category ? {
       ...category,
       Icon
@@ -63,57 +76,40 @@ async function getWebsiteData(url: string) {
   };
 }
 
-async function getWebsiteAndReviews(url: string) {
+async function getReviews(url: string) {
   await connectDB();
   
-  const website = await Website.findOne({ URL: url })
-    .populate('relatedCategory', 'name')
+  const website = await Website.findOne({ url: url })
+    .populate('category', 'name')
     .populate('owner', 'name')
-    .lean<WebsiteDoc>();
+    .populate('createdBy', 'name')
+    .lean();
 
   if (!website) {
-    return null;
+    return [];
   }
 
   const reviews = await Review.find({ relatedWebsite: website._id })
     .populate('relatedUser', 'name image')
     .sort({ createdAt: -1 })
-    .lean<ReviewDoc[]>();
+    .lean();
 
-  // Calculate average rating
-  const averageRating = reviews.length > 0
-    ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length
-    : 0;
-
-  return {
-    website: {
-      ...website,
-      _id: website._id.toString(),
-    },
-    reviews: reviews.map(review => ({
-      ...review,
-      _id: review._id.toString(),
-      relatedWebsite: review.relatedWebsite.toString(),
-      relatedUser: review.relatedUser 
-        ? {
-            ...review.relatedUser,
-            _id: review.relatedUser._id.toString(),
-          }
-        : null,
-    })),
-    averageRating,
-  };
+  return reviews.map(review => ({
+    ...review,
+    _id: review._id.toString(),
+    relatedWebsite: review.relatedWebsite.toString(),
+    relatedUser: review.relatedUser ? {
+      ...review.relatedUser,
+      _id: review.relatedUser._id.toString(),
+    } : null,
+  }));
 }
 
-export default async function ToolPage({ params }: { params: { url: string } }) {
+export default async function ToolPage({ params }: PageProps) {
   const decodedUrl = decodeURIComponent(params.url);
   const website = await getWebsiteData(decodedUrl);
 
-  if (!website) {
-    notFound();
-  }
-
-  const { reviews, averageRating } = await getWebsiteAndReviews(decodedUrl);
+  const reviews = await getReviews(decodedUrl);
 
   return (
     <div className="min-h-screen bg-background relative">
@@ -155,12 +151,12 @@ export default async function ToolPage({ params }: { params: { url: string } }) 
                   <div className="flex items-center gap-1">
                     <Globe className="w-4 h-4" />
                     <a 
-                      href={website.URL} 
+                      href={website.url} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="hover:text-foreground"
                     >
-                      {website.URL}
+                      {website.url}
                     </a>
                   </div>
                   {website.category && (
@@ -197,13 +193,13 @@ export default async function ToolPage({ params }: { params: { url: string } }) 
             <div className="p-6">
               <div className="flex items-center gap-8">
                 <div className="text-center">
-                  <div className="text-4xl font-bold mb-2">{averageRating.toFixed(1)}</div>
+                  <div className="text-4xl font-bold mb-2">{website.averageRating.toFixed(1)}</div>
                   <div className="flex items-center gap-1 mb-1">
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
                         className={`w-5 h-5 ${
-                          i < Math.floor(averageRating)
+                          i < Math.floor(website.averageRating)
                             ? "text-yellow-400 fill-yellow-400"
                             : "text-gray-600"
                         }`}

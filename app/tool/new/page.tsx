@@ -114,36 +114,36 @@ export default function NewTool() {
       const data = await response.json();
 
       if (!response.ok) {
-        // Handle specific error cases
-        if (data.error === "A tool with this URL already exists") {
+        // Handle duplicate URL error
+        if (data.error === "This website has already been added") {
           setErrors(prev => ({
             ...prev,
-            url: "This tool has already been added. Please use a different URL."
+            url: "This website has already been added. Please use a different URL."
           }));
-          throw new Error(data.error);
+          return;
         }
-        throw new Error(data.error || "Failed to create tool");
+        throw new Error(data.error || "Failed to create website");
       }
 
-      if (!data.slug) {
-        throw new Error("No slug returned from server");
+      if (!data.url) {
+        throw new Error("No URL returned from server");
       }
 
       toast({
         title: "Success",
-        description: "Tool created successfully",
+        description: "Website added successfully",
       });
 
-      router.push(`/tool/${data.slug}`);
+      router.push(`/tool/${encodeURIComponent(data.url)}`);
     } catch (error) {
-      console.error("Tool creation error:", error);
+      console.error("Website creation error:", error);
       
       // Only show toast for non-validation errors
-      if (!errors.name) {
+      if (!errors.url) {
         toast({
           variant: "destructive",
           title: "Error",
-          description: error instanceof Error ? error.message : "Failed to create tool",
+          description: error instanceof Error ? error.message : "Failed to add website",
         });
       }
     } finally {

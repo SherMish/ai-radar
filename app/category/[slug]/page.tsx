@@ -9,7 +9,7 @@ import * as Icons from "lucide-react";
 interface WebsiteDoc {
   _id: string;
   name: string;
-  URL: string;
+  url: string;
   description?: string;
   relatedCategory: string;
 }
@@ -67,7 +67,7 @@ const CategoryPage = async ({ params }: PageProps) => {
           {websites.map((website) => (
             <Link 
               key={website._id} 
-              href={`/tool/${encodeURIComponent(website.URL)}`}
+              href={`/tool/${encodeURIComponent(website.url)}`}
             >
               <Card className="p-6 hover:bg-secondary/50 transition-colors">
                 <div className="flex items-start gap-4">

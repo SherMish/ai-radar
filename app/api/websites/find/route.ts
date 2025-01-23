@@ -16,8 +16,8 @@ export async function GET(request: Request) {
 
     await connectDB();
     
-    const website = await Website.findOne({ URL: url })
-      .select('_id URL')
+    const website = await Website.findOne({ url: url })
+      .select('_id url')
       .lean();
     
     if (!website) {

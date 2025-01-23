@@ -157,7 +157,7 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
           },
           body: JSON.stringify({
             name: reviewData.toolName,
-            URL: reviewData.toolURL,
+            url: reviewData.toolURL,
             relatedCategory: reviewData.relatedCategory,
             description: "" // Optional description can be added later
           }),

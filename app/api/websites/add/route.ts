@@ -13,16 +13,16 @@ export async function POST(request: Request) {
     // }
 
     const body = await request.json();
-    const { name, URL, relatedCategory, description } = body;
+    const { name, url, relatedCategory, description } = body;
 
-    if (!name || !URL || !relatedCategory) {
+    if (!name || !url || !relatedCategory) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
 
     await connectDB();
 
     // Check if website already exists
-    const existingWebsite = await Website.findOne({ URL });
+    const existingWebsite = await Website.findOne({ url });
     if (existingWebsite) {
       return new NextResponse("Website already exists", { status: 409 });
     }
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     // Create new website without owner field
     const website = await Website.create({
       name,
-      URL,
+      url,
       relatedCategory,
       description
       // owner field omitted for development
