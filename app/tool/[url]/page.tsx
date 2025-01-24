@@ -50,6 +50,7 @@ interface PageProps {
 async function getWebsiteData(url: string) {
   await connectDB();
   
+  // Get website data
   const website = await Website.findOne({ url: url })
     .select('name url description category averageRating reviewCount isVerified')
     .lean();
@@ -58,6 +59,19 @@ async function getWebsiteData(url: string) {
     notFound();
   }
 
+  // Calculate average rating and review count from reviews
+  const reviews = await Review.find({ relatedWebsite: website._id });
+  const reviewCount = reviews.length;
+  const averageRating = reviewCount > 0
+    ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviewCount
+    : 0;
+
+  // Update website with calculated stats
+  await Website.findByIdAndUpdate(website._id, {
+    averageRating: Math.round(averageRating * 10) / 10, // Round to 1 decimal
+    reviewCount
+  });
+
   // Find the category data from categories.json
   const categoryData = categoriesData.categories.find(cat => cat.id === website.category);
   const Icon = categoryData ? Icons[categoryData.icon as keyof typeof Icons] : null;
@@ -65,6 +79,8 @@ async function getWebsiteData(url: string) {
   return {
     ...website,
     _id: website._id.toString(),
+    averageRating: Math.round(averageRating * 10) / 10,
+    reviewCount,
     category: categoryData ? {
       ...categoryData,
       Icon
