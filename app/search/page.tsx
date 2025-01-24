@@ -4,6 +4,7 @@ import { Website } from "@/lib/models";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
 import { Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface SearchPageProps {
   searchParams: {
@@ -49,13 +50,25 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             </div>
 
             {websites.length === 0 ? (
-              <div className="text-center py-12">
+              <div className="text-center p-12">
                 <p className="text-muted-foreground text-lg mb-4">
                   No AI tools found matching your search.
                 </p>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground mb-8">
                   Try searching with different keywords or browse our categories.
                 </p>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <Link href="/tool/new">
+                    <Button className="gradient-button w-full sm:w-auto">
+                      Add New Tool in Seconds
+                    </Button>
+                  </Link>
+                  <Link href="/">
+                    <Button variant="outline" className="w-full sm:w-auto">
+                      Browse Categories
+                    </Button>
+                  </Link>
+                </div>
               </div>
             ) : (
               <div className="p-6 space-y-6">

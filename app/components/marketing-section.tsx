@@ -5,6 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 export function MarketingSection() {
+  const handleExploreClick = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="py-16 pb-8 relative overflow-hidden">
       <div className="container max-w-6xl mx-auto">
@@ -57,7 +61,11 @@ export function MarketingSection() {
         </div>
 
         <div className="text-center">
-          <Button size="lg" className="gradient-button">
+          <Button 
+            size="lg" 
+            className="gradient-button"
+            onClick={handleExploreClick}
+          >
             Start Exploring AI Tools
           </Button>
         </div>
