@@ -231,9 +231,17 @@ export default async function ToolPage({ params }: PageProps) {
                 {/* Description Column */}
                 <div className="flex-1 space-y-4">
                   <h3 className="text-lg font-semibold">About {website.name}</h3>
-                  <p className="text-zinc-300 leading-relaxed">
-                    {website.description || "Description unavailable"}
-                  </p>
+                  <div className="space-y-4 text-muted-foreground">
+                    {website.description ? (
+                      <p>{website.description}</p>
+                    ) : (
+                      <>
+                        <p>
+                          Description unavailable
+                        </p>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

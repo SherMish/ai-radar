@@ -18,6 +18,10 @@ const WebsiteSchema = new mongoose.Schema({
         .split(':')[0];
     }
   },
+  description: {
+    type: String,
+    required: false,
+  },
   category: {
     type: String,
     required: true,

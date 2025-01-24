@@ -116,11 +116,6 @@ const CategoryPage = async ({ params }: PageProps) => {
                             </span>
                           </div>
                         </div>
-                        {website.description && (
-                          <p className="text-sm text-zinc-300 line-clamp-2 mt-2">
-                            {website.description}
-                          </p>
-                        )}
                       </div>
                     </Card>
                   </Link>
