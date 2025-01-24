@@ -12,7 +12,7 @@ interface Review {
   rating: number;
   createdAt: string;
   helpfulCount: number;
-  isVerified?: boolean;
+  isVerified: boolean;
   relatedUser?: {
     _id: string;
     name: string;

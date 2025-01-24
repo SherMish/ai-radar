@@ -15,7 +15,7 @@ interface ReviewCardProps {
     rating: number;
     createdAt: string;
     helpfulCount: number;
-    isVerified?: boolean;
+    isVerified: boolean;
     relatedUser?: {
       _id: string;
       name: string;
@@ -67,7 +67,7 @@ export function ReviewCard({ review }: ReviewCardProps) {
     <Card className="p-6 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors border-zinc-700/50">
       <div>
         <div className="flex items-start justify-between gap-4">
-          <div>
+          <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
               <div className="flex items-center">
                 {[...Array(5)].map((_, i) => (
@@ -107,18 +107,18 @@ export function ReviewCard({ review }: ReviewCardProps) {
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-              <span className="text-xs text-zinc-500">
-                {new Date(review.createdAt).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric'
-                })}
-              </span>
             </div>
             <h3 className="text-lg font-semibold text-zinc-50 mb-2">
               {review.title}
             </h3>
           </div>
+          <span className="text-xs text-zinc-500 whitespace-nowrap">
+            {new Date(review.createdAt).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            })}
+          </span>
         </div>
         <p className="mt-4 text-zinc-300">{review.body}</p>
         <div className="flex items-center gap-4 mt-4 pt-4 border-t border-zinc-700/50">

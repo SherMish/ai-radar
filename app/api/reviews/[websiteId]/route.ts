@@ -10,6 +10,7 @@ export async function GET(
     await connectDB();
     
     const reviews = await Review.find({ relatedWebsite: params.websiteId })
+      .select('title body rating createdAt helpfulCount relatedUser isVerified')
       .populate('relatedUser', 'name profilePicture')
       .sort({ createdAt: -1 });
     

@@ -97,7 +97,7 @@ async function getWebsiteData(url: string) {
 
 const getReviews = async (websiteId: string) => {
   const reviews = await Review.find({ relatedWebsite: websiteId })
-    .select('title body rating createdAt helpfulCount relatedUser')
+    .select('title body rating createdAt helpfulCount relatedUser isVerified')
     .populate('relatedUser', 'name')
     .lean();
 
@@ -109,7 +109,6 @@ const getReviews = async (websiteId: string) => {
       ...review.relatedUser,
       _id: review.relatedUser._id.toString()
     } : undefined,
-    // Remove relatedWebsite from the transformation since it's not needed in the review card
   }));
 };
 
