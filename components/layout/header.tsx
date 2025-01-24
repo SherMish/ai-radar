@@ -26,8 +26,16 @@ export function Header() {
         <div className="relative flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="text-xl font-bold gradient-text">
-              AI-Radar
+            <Link
+              href="/"
+              className="text-lg font-semibold hover:text-primary transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <span>AI-Radar</span>
+                <span className="text-xs px-1.5 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">
+                  BETA
+                </span>
+              </div>
             </Link>
           </div>
 
