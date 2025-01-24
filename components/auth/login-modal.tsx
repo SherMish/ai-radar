@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/tabs';
 import { useLoginModal } from '@/hooks/use-login-modal';
 import { useToast } from '@/components/ui/use-toast';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 const loginSchema = z.object({
   email: z
@@ -66,6 +67,7 @@ export function LoginModal() {
   const loginModal = useLoginModal();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
+  const [authError, setAuthError] = useState<string | null>(null);
 
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -93,8 +95,10 @@ export function LoginModal() {
   };
 
   const onLoginSubmit = async (data: LoginFormValues) => {
+    setIsLoading(true);
+    setAuthError(null);
+
     try {
-      setIsLoading(true);
       const result = await signIn("credentials", {
         email: data.email,
         password: data.password,
@@ -102,14 +106,14 @@ export function LoginModal() {
       });
 
       if (result?.error) {
-        throw new Error(result.error);
+        setAuthError("Invalid email or password");
+      } else if (result?.ok) {
+        loginModal.onClose();
+        toast({
+          title: "Success",
+          description: "Logged in successfully",
+        });
       }
-
-      loginModal.onClose();
-      toast({
-        title: "Success",
-        description: "Logged in successfully",
-      });
     } catch (error) {
       toast({
         variant: "destructive",
@@ -205,104 +209,117 @@ export function LoginModal() {
           </TabsList>
 
           <TabsContent value="login" className="space-y-4 mt-4">
-            <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
-              <div className="space-y-2">
-                <Input
-                  {...loginForm.register('email')}
-                  type="email"
-                  placeholder="Email"
-                  icon={<Mail className="w-4 h-4" />}
-                  error={loginForm.formState.errors.email?.message}
-                />
-                <Input
-                  {...loginForm.register('password')}
-                  type="password"
-                  placeholder="Password"
-                  icon={<Lock className="w-4 h-4" />}
-                  error={loginForm.formState.errors.password?.message}
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                Login
-              </Button>
-            </form>
-          </TabsContent>
-
-          <TabsContent value="register" className="space-y-4 mt-4">
-            <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
-              <div className="space-y-2">
-                <div className="space-y-1">
+            <Form {...loginForm}>
+              <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
+                <div className="space-y-2">
                   <Input
-                    {...registerForm.register('name')}
-                    placeholder="Name"
-                    icon={<User className="w-4 h-4" />}
-                    error={registerForm.formState.errors.name?.message}
-                    disabled={isLoading}
-                  />
-                  {registerForm.formState.errors.name && (
-                    <p className="text-sm text-red-500">
-                      {registerForm.formState.errors.name.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-1">
-                  <Input
-                    {...registerForm.register('email')}
+                    {...loginForm.register('email')}
                     type="email"
                     placeholder="Email"
                     icon={<Mail className="w-4 h-4" />}
-                    error={registerForm.formState.errors.email?.message}
-                    disabled={isLoading}
+                    error={loginForm.formState.errors.email?.message}
                   />
-                  {registerForm.formState.errors.email && (
-                    <p className="text-sm text-red-500">
-                      {registerForm.formState.errors.email.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-1">
                   <Input
-                    {...registerForm.register('password')}
+                    {...loginForm.register('password')}
                     type="password"
                     placeholder="Password"
                     icon={<Lock className="w-4 h-4" />}
-                    error={registerForm.formState.errors.password?.message}
-                    disabled={isLoading}
+                    error={loginForm.formState.errors.password?.message}
                   />
-                  {registerForm.formState.errors.password && (
-                    <p className="text-sm text-red-500">
-                      {registerForm.formState.errors.password.message}
-                    </p>
-                  )}
+                </div>
+                {authError && (
+                  <div className="rounded-md bg-red-500/10 border border-red-500/20 p-3">
+                    <div className="flex items-center justify-center">
+                      <p className="text-sm font-medium text-red-600">
+                        {authError}
+                      </p>
+                    </div>
+                  </div>
+                )}
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  Login
+                </Button>
+              </form>
+            </Form>
+          </TabsContent>
+
+          <TabsContent value="register" className="space-y-4 mt-4">
+            <Form {...registerForm}>
+              <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
+                <div className="space-y-2">
+                  <div className="space-y-1">
+                    <Input
+                      {...registerForm.register('name')}
+                      placeholder="Name"
+                      icon={<User className="w-4 h-4" />}
+                      error={registerForm.formState.errors.name?.message}
+                      disabled={isLoading}
+                    />
+                    {registerForm.formState.errors.name && (
+                      <p className="text-sm text-red-500">
+                        {registerForm.formState.errors.name.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-1">
+                    <Input
+                      {...registerForm.register('email')}
+                      type="email"
+                      placeholder="Email"
+                      icon={<Mail className="w-4 h-4" />}
+                      error={registerForm.formState.errors.email?.message}
+                      disabled={isLoading}
+                    />
+                    {registerForm.formState.errors.email && (
+                      <p className="text-sm text-red-500">
+                        {registerForm.formState.errors.email.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-1">
+                    <Input
+                      {...registerForm.register('password')}
+                      type="password"
+                      placeholder="Password"
+                      icon={<Lock className="w-4 h-4" />}
+                      error={registerForm.formState.errors.password?.message}
+                      disabled={isLoading}
+                    />
+                    {registerForm.formState.errors.password && (
+                      <p className="text-sm text-red-500">
+                        {registerForm.formState.errors.password.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-1">
+                    <Input
+                      {...registerForm.register('confirmPassword')}
+                      type="password"
+                      placeholder="Confirm Password"
+                      icon={<Lock className="w-4 h-4" />}
+                      error={registerForm.formState.errors.confirmPassword?.message}
+                      disabled={isLoading}
+                    />
+                    {registerForm.formState.errors.confirmPassword && (
+                      <p className="text-sm text-red-500">
+                        {registerForm.formState.errors.confirmPassword.message}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
-                <div className="space-y-1">
-                  <Input
-                    {...registerForm.register('confirmPassword')}
-                    type="password"
-                    placeholder="Confirm Password"
-                    icon={<Lock className="w-4 h-4" />}
-                    error={registerForm.formState.errors.confirmPassword?.message}
-                    disabled={isLoading}
-                  />
-                  {registerForm.formState.errors.confirmPassword && (
-                    <p className="text-sm text-red-500">
-                      {registerForm.formState.errors.confirmPassword.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <Button 
-                type="submit" 
-                className="w-full" 
-                disabled={isLoading || !registerForm.formState.isValid}
-              >
-                {isLoading ? "Registering..." : "Register"}
-              </Button>
-            </form>
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={isLoading || !registerForm.formState.isValid}
+                >
+                  {isLoading ? "Registering..." : "Register"}
+                </Button>
+              </form>
+            </Form>
           </TabsContent>
         </Tabs>
 
