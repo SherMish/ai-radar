@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Star, ThumbsUp, Flag } from "lucide-react";
+import { Star, ThumbsUp, Flag, ShieldCheck, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 interface ReviewCardProps {
   review: {
@@ -14,6 +15,7 @@ interface ReviewCardProps {
     rating: number;
     createdAt: string;
     helpfulCount: number;
+    isVerified?: boolean;
     relatedUser?: {
       _id: string;
       name: string;
@@ -66,7 +68,7 @@ export function ReviewCard({ review }: ReviewCardProps) {
       <div>
         <div className="flex items-start justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-3 mb-2">
               <div className="flex items-center">
                 {[...Array(5)].map((_, i) => (
                   <Star
@@ -81,6 +83,36 @@ export function ReviewCard({ review }: ReviewCardProps) {
               </div>
               <span className="text-sm text-zinc-400">
                 by {review.relatedUser?.name || "Anonymous"}
+              </span>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    {review.isVerified ? (
+                      <div className="flex items-center gap-1 text-emerald-500">
+                        <ShieldCheck className="w-4 h-4 fill-emerald-500/10" />
+                        <span className="text-xs font-medium">Verified</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1 text-zinc-400">
+                        <ShieldAlert className="w-4 h-4" />
+                        <span className="text-xs font-medium">Unverified</span>
+                      </div>
+                    )}
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {review.isVerified 
+                      ? "This review is verified with proof of using the service" 
+                      : "This review was submitted without proof of using the service"
+                    }
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <span className="text-xs text-zinc-500">
+                {new Date(review.createdAt).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                })}
               </span>
             </div>
             <h3 className="text-lg font-semibold text-zinc-50 mb-2">
