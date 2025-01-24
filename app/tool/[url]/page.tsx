@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { Star, ThumbsUp, Flag, Globe, Users, Calendar, Check, ShieldCheck, ShieldAlert } from "lucide-react";
+import { Star, ThumbsUp, Flag, Globe, Users, Calendar, Check, ShieldCheck, ShieldAlert, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
@@ -18,6 +18,7 @@ import * as Icons from "lucide-react";
 import { LucideIcon } from "lucide-react";
 import { ReviewsToolbar } from "@/components/reviews-toolbar";
 import { ReviewsSection } from "@/components/reviews-section";
+import Link from "next/link";
 
 interface WebsiteDoc {
   _id: Types.ObjectId;
@@ -112,10 +113,21 @@ const getReviews = async (websiteId: string) => {
   }));
 };
 
+function getRatingStatus(rating: number): { label: string; color: string } {
+  if (rating >= 4.5) return { label: 'Excellent', color: 'text-emerald-500' };
+  if (rating >= 4.0) return { label: 'Very Good', color: 'text-green-500' };
+  if (rating >= 3.5) return { label: 'Good', color: 'text-blue-500' };
+  if (rating >= 3.0) return { label: 'Average', color: 'text-yellow-500' };
+  if (rating >= 2.0) return { label: 'Below Average', color: 'text-orange-500' };
+  return { label: 'Poor', color: 'text-red-500' };
+}
+
 export default async function ToolPage({ params }: PageProps) {
   const decodedUrl = decodeURIComponent(params.url);
   const website = await getWebsiteData(decodedUrl);
   const reviews = await getReviews(website._id.toString());
+
+  const ratingStatus = getRatingStatus(website.averageRating || 0);
 
   return (
     <div className="min-h-screen bg-background relative">
@@ -134,7 +146,7 @@ export default async function ToolPage({ params }: PageProps) {
                   </span>
                 </div>
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2 mb-1">
                     <h1 className="text-3xl font-bold">{website.name}</h1>
                     <TooltipProvider>
                       <Tooltip>
@@ -154,62 +166,75 @@ export default async function ToolPage({ params }: PageProps) {
                       </Tooltip>
                     </TooltipProvider>
                   </div>
-                  <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Globe className="w-4 h-4" />
-                      <a 
-                        href={website.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="hover:text-foreground"
-                      >
-                        {website.url}
-                      </a>
-                    </div>
+                  <div className="flex items-center gap-2 text-muted-foreground text-sm">
                     {website.category && (
-                      <div className="flex items-center gap-2">
+                      <>
                         {website.category.Icon && (
                           <website.category.Icon className="w-4 h-4" />
                         )}
                         <span>{website.category.name}</span>
-                      </div>
+                      </>
                     )}
                   </div>
                 </div>
-                <Button 
-                  className="gradient-button"
-                  asChild
-                >
-                  <a href={`/tool/${encodeURIComponent(params.url)}/review`}>
-                    Write Review
+                <div className="flex items-center gap-3">
+                  <a 
+                    href={website.url.startsWith('http') ? website.url : `https://${website.url}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md transition-colors"
+                  >
+                    <ExternalLink className="w-5 h-5" />
+                    <span className="font-medium">Visit</span>
+                    <span className="text-zinc-400 hidden sm:inline">{website.url}</span>
                   </a>
-                </Button>
+                  <Button 
+                    className="gradient-button px-6 py-3 h-auto"
+                    asChild
+                  >
+                    <Link href={`/tool/${encodeURIComponent(params.url)}/review`}>
+                      Write Review
+                    </Link>
+                  </Button>
+                </div>
               </div>
             </div>
 
             {/* Rating Overview */}
             <div className="mb-8 p-6 rounded-lg border border-border/50 bg-background/50">
-              <div className="flex items-center gap-8">
-                <div className="text-center">
-                  <div className="text-4xl font-bold mb-2">{website.averageRating.toFixed(1)}</div>
-                  <div className="flex items-center gap-1 mb-1">
+              <div className="flex flex-col md:flex-row gap-8">
+                {/* Rating Column */}
+                <div className="flex flex-col items-center text-center md:w-48">
+                  <div className="text-5xl font-bold mb-2">
+                    {website.averageRating ? website.averageRating.toFixed(1) : '0'}
+                  </div>
+                  <div className="flex items-center gap-1 mb-2">
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
-                        className={`w-5 h-5 ${
-                          i < Math.floor(website.averageRating)
+                        className={`w-6 h-6 ${
+                          i < (website.averageRating || 0)
                             ? "text-yellow-400 fill-yellow-400"
-                            : "text-gray-600"
+                            : "text-zinc-600"
                         }`}
                       />
                     ))}
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    {reviews.length} reviews
+                  <div className={`text-sm font-medium ${ratingStatus.color} mb-1`}>
+                    {ratingStatus.label}
+                  </div>
+                  <div className="text-sm text-zinc-400">
+                    Based on {website.reviewCount || 0} reviews
                   </div>
                 </div>
-                <div className="flex-1">
-                  <p className="text-lg text-muted-foreground">
+
+                {/* Vertical Divider */}
+                <div className="hidden md:block w-px bg-border/50 self-stretch" />
+
+                {/* Description Column */}
+                <div className="flex-1 space-y-4">
+                  <h3 className="text-lg font-semibold">About {website.name}</h3>
+                  <p className="text-zinc-300 leading-relaxed">
                     {website.description || "Description unavailable"}
                   </p>
                 </div>
