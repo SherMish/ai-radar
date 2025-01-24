@@ -12,14 +12,11 @@ interface ReviewCardProps {
     title: string;
     body: string;
     rating: number;
-    createdAt: Date;
+    createdAt: string;
     helpfulCount: number;
     relatedUser?: {
+      _id: string;
       name: string;
-    };
-    relatedWebsite: {
-      name: string;
-      url: string;
     };
   };
 }
@@ -65,46 +62,34 @@ export function ReviewCard({ review }: ReviewCardProps) {
   };
 
   return (
-    <Card className="bg-secondary/50 backdrop-blur-sm">
-      <div className="p-6">
-        {/* Website Name and Link */}
-        <Link 
-          href={`/tool/${encodeURIComponent(review.relatedWebsite.url)}`}
-          className="inline-block text-lg font-semibold hover:text-primary transition-colors mb-4"
-        >
-          {review.relatedWebsite.name}
-        </Link>
-
-        {/* User Info and Rating */}
-        <div className="flex items-start justify-between">
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full flex items-center justify-center">
-              <span className="text-lg font-bold gradient-text">
-                {(review.relatedUser?.name || 'A')[0]}
-              </span>
-            </div>
-            <div>
-              <div className="font-medium">{review.relatedUser?.name || "Anonymous"}</div>
-              <div className="text-sm text-muted-foreground">
-                {new Date(review.createdAt).toLocaleDateString()}
-              </div>
-              <div className="flex items-center gap-1 mt-1">
+    <Card className="p-6 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors border-zinc-700/50">
+      <div>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center">
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
                     className={`w-4 h-4 ${
                       i < review.rating
                         ? "text-yellow-400 fill-yellow-400"
-                        : "text-gray-600"
+                        : "text-zinc-600"
                     }`}
                   />
                 ))}
               </div>
+              <span className="text-sm text-zinc-400">
+                by {review.relatedUser?.name || "Anonymous"}
+              </span>
             </div>
+            <h3 className="text-lg font-semibold text-zinc-50 mb-2">
+              {review.title}
+            </h3>
           </div>
         </div>
-        <p className="mt-4 text-muted-foreground">{review.body}</p>
-        <div className="flex items-center gap-4 mt-4 pt-4 border-t border-border">
+        <p className="mt-4 text-zinc-300">{review.body}</p>
+        <div className="flex items-center gap-4 mt-4 pt-4 border-t border-zinc-700/50">
           <Button 
             variant="outline" 
             size="sm"

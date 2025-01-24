@@ -93,40 +93,29 @@ async function getWebsiteData(url: string) {
   };
 }
 
-async function getReviews(url: string) {
-  await connectDB();
-  
-  const website = await Website.findOne({ url: url })
-    .populate('category', 'name')
-    .populate('owner', 'name')
-    .populate('createdBy', 'name')
-    .lean();
-
-  if (!website) {
-    return [];
-  }
-
-  const reviews = await Review.find({ relatedWebsite: website._id })
-    .populate('relatedUser', 'name image')
-    .sort({ createdAt: -1 })
+const getReviews = async (websiteId: string) => {
+  const reviews = await Review.find({ relatedWebsite: websiteId })
+    .select('title body rating createdAt helpfulCount relatedUser')
+    .populate('relatedUser', 'name')
     .lean();
 
   return reviews.map(review => ({
     ...review,
     _id: review._id.toString(),
-    relatedWebsite: review.relatedWebsite.toString(),
+    createdAt: review.createdAt.toISOString(),
     relatedUser: review.relatedUser ? {
       ...review.relatedUser,
-      _id: review.relatedUser._id.toString(),
-    } : null,
+      _id: review.relatedUser._id.toString()
+    } : undefined,
+    // Remove relatedWebsite from the transformation since it's not needed in the review card
   }));
-}
+};
 
 export default async function ToolPage({ params }: PageProps) {
   const decodedUrl = decodeURIComponent(params.url);
   const website = await getWebsiteData(decodedUrl);
 
-  const reviews = await getReviews(decodedUrl);
+  const reviews = await getReviews(website._id.toString());
 
   return (
     <div className="min-h-screen bg-background relative">
