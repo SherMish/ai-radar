@@ -16,7 +16,7 @@ export function SearchSection() {
         <div className="max-w-3xl mx-auto text-center space-y-8">
           <div className="space-y-4">
             <h1 className="text-4xl md:text-6xl font-bold gradient-text">
-              AI-Radar
+              Find AI You Can Trust
             </h1>
             <p className="text-xl text-muted-foreground">
               Discover and share insights on the best AI tools
