@@ -106,6 +106,7 @@ const getReviews = async (websiteId: string) => {
 };
 
 function getRatingStatus(rating: number): { label: string; color: string } {
+  if (rating === 0) return { label: 'Neutral', color: 'text-zinc-500' };
   if (rating >= 4.5) return { label: 'Excellent', color: 'text-emerald-500' };
   if (rating >= 4.0) return { label: 'Very Good', color: 'text-green-500' };
   if (rating >= 3.5) return { label: 'Good', color: 'text-blue-500' };
