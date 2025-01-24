@@ -146,12 +146,15 @@ export default async function ToolPage({ params }: PageProps) {
                     </TooltipProvider>
                   </div>
                   {website.category ? (
-                    <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                    <Link 
+                      href={`/category/${website.category.id}`}
+                      className="inline-flex items-center gap-2 text-muted-foreground text-sm hover:text-foreground transition-colors"
+                    >
                       {website.category.Icon && (
                         <website.category.Icon className="w-4 h-4" />
                       )}
                       <span>{website.category.name}</span>
-                    </div>
+                    </Link>
                   ) : null}
                 </div>
                 <div className="flex items-center gap-3">
