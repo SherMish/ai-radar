@@ -10,10 +10,16 @@ const registerSchema = z.object({
   password: z.string().min(6),
 });
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
-    const body = await req.json();
-    const { name, email, password } = registerSchema.parse(body);
+    const { email, password, name } = await request.json();
+
+    if (!email || !password || !name) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
 
     await connectDB();
 
@@ -27,31 +33,32 @@ export async function POST(req: Request) {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create user with hashedPassword and explicitly set googleId to undefined
-    const user = await User.create({
-      name,
+    // Create user with hashedPassword field
+    await User.create({
       email,
-      hashedPassword,
-      lastLoginAt: new Date(),
-      googleId: undefined, // Explicitly set to undefined
+      name,
+      hashedPassword, // Note: using hashedPassword field, not password
     });
 
     return NextResponse.json(
-      { message: 'User registered successfully' },
+      { message: 'User created successfully' },
       { status: 201 }
     );
   } catch (error) {
     console.error('Registration error:', error);
-    if (error instanceof z.ZodError) {
+    
+    // More specific error handling
+    if (error instanceof Error) {
       return NextResponse.json(
-        { error: 'Invalid input data' },
+        { error: error.message || 'Registration failed' },
         { status: 400 }
       );
     }
+    
     return NextResponse.json(
-      { error: 'Failed to register user' },
+      { error: 'Something went wrong during registration' },
       { status: 500 }
     );
   }

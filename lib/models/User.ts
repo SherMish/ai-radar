@@ -13,18 +13,14 @@ const UserSchema = new mongoose.Schema({
   },
   hashedPassword: {
     type: String,
-    required: function() {
-      return !this.googleId;
-    },
+    required: true,
   },
   image: String,
   emailVerified: Date,
-  googleId: {
-    type: String,
-  },
+  googleId: String,
   role: {
     type: String,
-    enum: ['user', 'admin', 'moderator'],
+    enum: ['user', 'admin'],
     default: 'user',
   },
   isWebsiteOwner: {
