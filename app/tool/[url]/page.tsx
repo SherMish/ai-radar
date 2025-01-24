@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import connectDB from "@/lib/mongodb";
-import { Website, Review } from "@/lib/models";
+import Website from "@/lib/models/Website";
+import Review from "@/lib/models/Review";
 import { Types } from 'mongoose';
 import { ReviewCard } from "@/components/review-card";
 import {
@@ -49,48 +50,23 @@ interface PageProps {
 async function getWebsiteData(url: string) {
   await connectDB();
   
-  // Get website data
   const website = await Website.findOne({ url: url })
-    .populate('owner')
-    .populate('createdBy')
+    .select('name url description category averageRating reviewCount isVerified')
     .lean();
 
   if (!website) {
     notFound();
   }
 
-  // Calculate average rating and review count from reviews
-  const reviews = await Review.find({ relatedWebsite: website._id });
-  const averageRating = reviews.length > 0
-    ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length
-    : 0;
-  const reviewCount = reviews.length;
-
-  // Update website with calculated stats
-  await Website.findByIdAndUpdate(website._id, {
-    averageRating: Math.round(averageRating * 10) / 10, // Round to 1 decimal
-    reviewCount
-  });
-
-  // Find the category data
-  const category = categoriesData.categories.find(cat => cat.id === website.relatedCategory);
-  const Icon = category ? Icons[category.icon as keyof typeof Icons] : null;
+  // Find the category data from categories.json
+  const categoryData = categoriesData.categories.find(cat => cat.id === website.category);
+  const Icon = categoryData ? Icons[categoryData.icon as keyof typeof Icons] : null;
 
   return {
     ...website,
     _id: website._id.toString(),
-    averageRating: Math.round(averageRating * 10) / 10,
-    reviewCount,
-    owner: website.owner ? {
-      ...website.owner,
-      _id: website.owner._id.toString(),
-    } : null,
-    createdBy: website.createdBy ? {
-      ...website.createdBy,
-      _id: website.createdBy._id.toString(),
-    } : null,
-    category: category ? {
-      ...category,
+    category: categoryData ? {
+      ...categoryData,
       Icon
     } : null
   };
@@ -126,6 +102,9 @@ export default async function ToolPage({ params }: PageProps) {
   const decodedUrl = decodeURIComponent(params.url);
   const website = await getWebsiteData(decodedUrl);
   const reviews = await getReviews(website._id.toString());
+  
+  // For debugging
+  console.log('Processed website data:', website);
 
   const ratingStatus = getRatingStatus(website.averageRating || 0);
 
@@ -166,16 +145,14 @@ export default async function ToolPage({ params }: PageProps) {
                       </Tooltip>
                     </TooltipProvider>
                   </div>
-                  <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                    {website.category && (
-                      <>
-                        {website.category.Icon && (
-                          <website.category.Icon className="w-4 h-4" />
-                        )}
-                        <span>{website.category.name}</span>
-                      </>
-                    )}
-                  </div>
+                  {website.category ? (
+                    <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                      {website.category.Icon && (
+                        <website.category.Icon className="w-4 h-4" />
+                      )}
+                      <span>{website.category.name}</span>
+                    </div>
+                  ) : null}
                 </div>
                 <div className="flex items-center gap-3">
                   <a 
