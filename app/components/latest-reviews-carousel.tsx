@@ -22,14 +22,14 @@ interface Review {
 }
 
 export function LatestReviewsCarousel({ reviews }: { reviews: Review[] }) {
-  const [emblaRef] = useEmblaCarousel(
+  const [emblaRef, emblaApi] = useEmblaCarousel(
     { 
       loop: true, 
       align: "center",
       containScroll: "trimSnaps",
       dragFree: true
     }, 
-    [Autoplay({ delay: 3000, stopOnInteraction: false })]
+    [(Autoplay as any)({ delay: 3000, stopOnInteraction: false })]
   );
 
   return (
@@ -58,10 +58,10 @@ export function LatestReviewsCarousel({ reviews }: { reviews: Review[] }) {
                         </div>
                       </div>
                     </div>
-                    <Link href={`/tool/${encodeURIComponent(review.relatedWebsite.URL)}`}>
+                    <Link href={`/tool/${encodeURIComponent(review.relatedWebsite.url)}`}>
                       <div className="mb-4">
                         <div className="font-medium text-foreground">{review.relatedWebsite.name}</div>
-                        <div className="text-sm text-muted-foreground">{review.relatedWebsite.URL}</div>
+                        <div className="text-sm text-muted-foreground">{review.relatedWebsite.url}</div>
                       </div>
                       <div className="flex items-center gap-1 mb-2">
                         {[...Array(5)].map((_, i) => (
