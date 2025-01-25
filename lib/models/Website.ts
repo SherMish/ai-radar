@@ -20,7 +20,7 @@ const WebsiteSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: false,
+    default: "",
   },
   category: {
     type: String,
