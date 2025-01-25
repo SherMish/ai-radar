@@ -36,7 +36,7 @@ export default async function MyReviewsPage() {
     // Log the found reviews
     console.log('Found reviews:', reviews);
 
-    const formattedReviews = reviews.map(review => ({
+    const formattedReviews = reviews.map((review: any) => ({
       _id: review._id.toString(),
       title: review.title,
       body: review.body,
