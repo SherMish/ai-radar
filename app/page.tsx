@@ -76,9 +76,8 @@ async function getLatestReviews() {
       _id: review.relatedWebsite._id.toString(),
     },
     relatedUser: review.relatedUser ? {
-      ...review.relatedUser,
-      _id: review.relatedUser._id.toString(),
-    } : null,
+      name: review.relatedUser.name,
+    } : undefined,
   }));
 }
 
