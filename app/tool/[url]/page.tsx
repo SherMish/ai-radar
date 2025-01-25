@@ -2,13 +2,10 @@ import { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from "next/navigation";
 import { Star, ThumbsUp, Flag, Globe, Users, Calendar, Check, ShieldCheck, ShieldAlert, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import Image from "next/image";
 import connectDB from "@/lib/mongodb";
 import Website from "@/lib/models/Website";
 import Review from "@/lib/models/Review";
 import { Types } from 'mongoose';
-import { ReviewCard } from "@/components/review-card";
 import {
   Tooltip,
   TooltipContent,
@@ -18,9 +15,9 @@ import {
 import categoriesData from '@/lib/data/categories.json';
 import * as Icons from "lucide-react";
 import { LucideIcon } from "lucide-react";
-import { ReviewsToolbar } from "@/components/reviews-toolbar";
 import { ReviewsSection } from "@/components/reviews-section";
 import Link from "next/link";
+import { Document } from 'mongoose';
 
 interface WebsiteDoc {
   _id: Types.ObjectId;
@@ -31,15 +28,29 @@ interface WebsiteDoc {
   owner: { name: string };
 }
 
-interface ReviewDoc {
+interface ReviewDoc extends Document {
   _id: Types.ObjectId;
   title: string;
   body: string;
   rating: number;
   createdAt: Date;
+  isVerified: boolean;
   relatedWebsite: Types.ObjectId;
   relatedUser?: { _id: Types.ObjectId; name: string; image?: string };
   helpfulCount?: number;
+}
+
+interface Review {
+  _id: string;
+  title: string;
+  body: string;
+  rating: number;
+  createdAt: string;
+  helpfulCount?: number;
+  relatedUser?: {
+    name: string;
+  };
+  isVerified?: boolean;
 }
 
 interface PageProps {
@@ -75,7 +86,7 @@ async function getWebsiteData(url: string) {
 
   // Find the category data from categories.json
   const categoryData = categoriesData.categories.find(cat => cat.id === website.category);
-  const Icon = categoryData ? Icons[categoryData.icon as keyof typeof Icons] : null;
+  const Icon = categoryData?.icon ? (Icons[categoryData.icon as keyof typeof Icons] as LucideIcon) : null;
 
   return {
     ...website,
@@ -84,7 +95,7 @@ async function getWebsiteData(url: string) {
     reviewCount,
     category: categoryData ? {
       ...categoryData,
-      Icon
+      Icon: Icon as LucideIcon
     } : null
   };
 }
@@ -93,17 +104,20 @@ const getReviews = async (websiteId: string) => {
   const reviews = await Review.find({ relatedWebsite: websiteId })
     .select('title body rating createdAt helpfulCount relatedUser isVerified')
     .populate('relatedUser', 'name')
-    .lean();
+    .lean<ReviewDoc[]>();
 
-  return reviews.map(review => ({
-    ...review,
+  return reviews.map((review) => ({
     _id: review._id.toString(),
+    title: review.title,
+    body: review.body,
+    rating: review.rating,
+    helpfulCount: review.helpfulCount,
     createdAt: review.createdAt.toISOString(),
     relatedUser: review.relatedUser ? {
-      ...review.relatedUser,
-      _id: review.relatedUser._id.toString()
+      name: review.relatedUser.name,
     } : undefined,
-  }));
+    isVerified: review.isVerified || false
+  })) as Review[];
 };
 
 function getRatingStatus(rating: number): { label: string; color: string } {
@@ -346,7 +360,7 @@ export default async function ToolPage({ params }: PageProps) {
               {/* Features */}
               <div className="mb-12">
                 <h2 className="text-2xl font-semibold mb-6">Features</h2>
-                {website.features && website.features.length > 0 ? (
+                {/* {website.features && website.features.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {website.features.map((feature, index) => (
                       <div
@@ -362,9 +376,9 @@ export default async function ToolPage({ params }: PageProps) {
                       </div>
                     ))}
                   </div>
-                ) : (
+                ) : ( */}
                   <p className="text-muted-foreground">Features data unavailable</p>
-                )}
+                {/* )} */}
               </div>
 
               {/* Pricing */}
