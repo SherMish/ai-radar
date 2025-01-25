@@ -3,12 +3,12 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
-import { SessionProvider } from '@/components/providers/session-provider';
-import { LoginModalProvider } from '@/components/providers/login-modal-provider';
 import { LoginModal } from "@/components/auth/login-modal";
 import { Toaster } from "@/components/ui/toaster";
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import type { Session } from "next-auth";
+import { Providers } from '@/components/providers/providers';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,22 +22,18 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession(authOptions);
-
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SessionProvider session={session}>
-          <LoginModalProvider>
-            <div className="flex min-h-screen flex-col">
-              <Header />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </div>
-            <LoginModal />
-            <Toaster />
-          </LoginModalProvider>
-        </SessionProvider>
+        <Providers>
+          <div className="flex min-h-screen flex-col">
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </div>
+          <LoginModal />
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );
