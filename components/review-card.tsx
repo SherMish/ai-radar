@@ -6,21 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import { Review } from "./reviews-section";
 
 interface ReviewCardProps {
-  review: {
-    _id: string;
-    title: string;
-    body: string;
-    rating: number;
-    createdAt: string;
-    helpfulCount: number;
-    isVerified: boolean;
-    relatedUser?: {
-      _id: string;
-      name: string;
-    };
-  };
+  review: Review;
 }
 
 export function ReviewCard({ review }: ReviewCardProps) {

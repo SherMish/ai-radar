@@ -5,19 +5,19 @@ import { ReviewCard } from "@/components/review-card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Filter } from "lucide-react";
 
-interface Review {
-  _id: string;
-  title: string;
-  body: string;
-  rating: number;
-  createdAt: string;
-  helpfulCount: number;
-  isVerified: boolean;
-  relatedUser?: {
+
+export interface Review {
     _id: string;
-    name: string;
-  };
-}
+    title: string;
+    body: string;
+    rating: number;
+    createdAt: string;
+    helpfulCount?: number;
+    isVerified?: boolean;
+    relatedUser?: {
+      name: string;
+    };
+  } 
 
 interface ReviewsSectionProps {
   reviews: Review[];
