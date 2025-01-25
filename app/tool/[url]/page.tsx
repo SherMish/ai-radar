@@ -277,7 +277,7 @@ export default async function ToolPage({ params }: PageProps) {
             </div>
 
             {/* Reviews Section */}
-            <div className="border-t border-border/50">
+            <div className="border-t border-border/50 pt-6">
               <ReviewsSection reviews={reviews} />            
             </div>
           </div>
