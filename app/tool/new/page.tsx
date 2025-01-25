@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useLoginModal } from "@/hooks/use-login-modal";
@@ -45,46 +45,7 @@ export default function NewTool() {
   const [pendingSubmission, setPendingSubmission] = useState<null | typeof formData>(null);
 
   // Effect to handle post-authentication submission
-  useEffect(() => {
-    if (session?.user && pendingSubmission) {
-      submitForm(pendingSubmission);
-      setPendingSubmission(null);
-    }
-  }, [session]);
-
-  const validateForm = () => {
-    const newErrors: FormErrors = {};
-
-    // URL validation
-    if (!formData.url) {
-      newErrors.url = "URL is required";
-    } else {
-      // URL pattern that matches most URLs without being too strict
-      const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/;
-      if (!urlPattern.test(formData.url)) {
-        newErrors.url = "Please enter a valid URL";
-      }
-    }
-
-    // Name validation
-    if (!formData.name) {
-      newErrors.name = "Name is required";
-    } else if (formData.name.length < 3) {
-      newErrors.name = "Name must be at least 3 characters";
-    } else if (formData.name.length > 50) {
-      newErrors.name = "Name must be less than 50 characters";
-    }
-
-    // Category validation
-    if (!formData.category) {
-      newErrors.category = "Please select a category";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const submitForm = async (e: React.FormEvent) => {
+  const submitForm = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!session?.user) {
@@ -149,6 +110,45 @@ export default function NewTool() {
     } finally {
       setIsLoading(false);
     }
+  }, [session, formData, errors, loginModal, toast, router]);
+
+  useEffect(() => {
+    if (session && pendingSubmission) {
+      submitForm(new Event('submit'));
+      setPendingSubmission(null);
+    }
+  }, [session, pendingSubmission, submitForm]);
+
+  const validateForm = () => {
+    const newErrors: FormErrors = {};
+
+    // URL validation
+    if (!formData.url) {
+      newErrors.url = "URL is required";
+    } else {
+      // URL pattern that matches most URLs without being too strict
+      const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/;
+      if (!urlPattern.test(formData.url)) {
+        newErrors.url = "Please enter a valid URL";
+      }
+    }
+
+    // Name validation
+    if (!formData.name) {
+      newErrors.name = "Name is required";
+    } else if (formData.name.length < 3) {
+      newErrors.name = "Name must be at least 3 characters";
+    } else if (formData.name.length > 50) {
+      newErrors.name = "Name must be less than 50 characters";
+    }
+
+    // Category validation
+    if (!formData.category) {
+      newErrors.category = "Please select a category";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   return (

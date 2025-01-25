@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Image from 'next/image';
 
 type LoadingState = {
   logo: boolean;
@@ -199,9 +200,11 @@ export default function BusinessRegistrationPage() {
               <div className="animate-pulse bg-secondary/50 w-full h-full" />
             ) : businessData.logoPreview ? (
               <>
-                <img
+                <Image
                   src={businessData.logoPreview}
                   alt="Logo preview"
+                  width={160}
+                  height={160}
                   className="w-full h-full object-contain"
                 />
                 <Button

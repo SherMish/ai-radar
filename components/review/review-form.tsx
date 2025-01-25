@@ -101,10 +101,10 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
 
     if (isNewTool) {
       if (!reviewData.toolURL?.trim()) {
-        errors.url = "Please enter the tool's URL";
+        errors.url = "Please enter the tool&apos;s URL";
       }
       if (!reviewData.toolName?.trim()) {
-        errors.name = "Please enter the tool's name";
+        errors.name = "Please enter the tool&apos;s name";
       }
       if (!reviewData.relatedCategory) {
         errors.category = "Please select a category";
@@ -300,7 +300,7 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
                   required
                   value={reviewData.toolName}
                   onChange={(e) => setReviewData({ ...reviewData, toolName: e.target.value })}
-                  placeholder="Enter the tool's name"
+                  placeholder="Enter the tool&apos;s name"
                   className="bg-background/50"
                 />
                 {formErrors.name && (
@@ -502,7 +502,7 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
           <AlertDialogHeader>
             <AlertDialogTitle>Review Preview</AlertDialogTitle>
             <AlertDialogDescription>
-              Here's how your review will appear to others.
+              Here&apos;s how your review will appear to others.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="my-4">

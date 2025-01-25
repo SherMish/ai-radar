@@ -33,7 +33,7 @@ export default function AboutPage() {
                 <Users2 className="h-8 w-8 text-primary" />
                 <h3 className="text-xl font-semibold">Community First</h3>
                 <p className="text-muted-foreground">
-                  We're built on the collective wisdom of our users, fostering a community of AI enthusiasts and professionals.
+                  We&apos;re built on the collective wisdom of our users, fostering a community of AI enthusiasts and professionals.
                 </p>
               </div>
               
@@ -56,7 +56,7 @@ export default function AboutPage() {
 
             <h2 className="text-2xl font-bold mb-4">Join Our Mission</h2>
             <p className="text-muted-foreground">
-              Whether you're an AI enthusiast, professional, or just getting started, your experience matters. Join our community and help shape the future of AI tool discovery.
+              Whether you&apos;re an AI enthusiast, professional, or just getting started, your experience matters. Join our community and help shape the future of AI tool discovery.
             </p>
           </div>
         </div>

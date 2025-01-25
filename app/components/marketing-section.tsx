@@ -42,7 +42,7 @@ export function MarketingSection() {
               </div>
               <h3 className="text-lg font-semibold">Unbiased Platform</h3>
               <p className="text-muted-foreground">
-                AI-Radar doesn't filter or manipulate reviews—your decision is based on real-world experiences.
+                AI-Radar doesn&apos;t filter or manipulate reviews—your decision is based on real-world experiences.
               </p>
             </div>
           </Card>

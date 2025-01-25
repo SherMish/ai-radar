@@ -18,13 +18,13 @@ const trustedCompanies = [
 
 const testimonials = [
   {
-    quote: "AI-Radar has been instrumental in helping us understand our users' needs and improve our product. The insights we've gained are invaluable.",
+    quote: "AI-Radar has been instrumental in helping us understand our users&apos; needs and improve our product. The insights we&apos;ve gained are invaluable.",
     author: "Sarah Chen",
     role: "Product Lead at TechAI",
     image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
   },
   {
-    quote: "The quality of feedback and the engagement from the AI-Radar community has exceeded our expectations. It's become an essential part of our growth strategy.",
+    quote: "The quality of feedback and the engagement from the AI-Radar community has exceeded our expectations. It&apos;s become an essential part of our growth strategy.",
     author: "Michael Rodriguez",
     role: "CEO of AITools Pro",
     image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e",
@@ -103,7 +103,7 @@ export default function BusinessPage() {
               <Building2 className="w-12 h-12 text-primary mb-4" />
               <h3 className="text-xl font-semibold mb-2">Build Credibility and Trust</h3>
               <p className="text-muted-foreground">
-                Showcase authentic customer reviews that highlight the impact of your AI tool. With AI-Radar's transparent review system, establish confidence and trust among your audience.
+                Showcase authentic customer reviews that highlight the impact of your AI tool. With AI-Radar&apos;s transparent review system, establish confidence and trust among your audience.
               </p>
             </div>
 
@@ -135,7 +135,7 @@ export default function BusinessPage() {
               <Settings className="w-12 h-12 text-primary mb-4" />
               <h3 className="text-xl font-semibold mb-2">Drive Continuous Improvement</h3>
               <p className="text-muted-foreground">
-                Harness the power of customer insights to refine and enhance your AI tool. AI-Radar's platform allows you to identify trends, address gaps, and innovate with confidence.
+                Harness the power of customer insights to refine and enhance your AI tool. AI-Radar&apos;s platform allows you to identify trends, address gaps, and innovate with confidence.
               </p>
             </div>
 
@@ -143,7 +143,7 @@ export default function BusinessPage() {
               <Shield className="w-12 h-12 text-primary mb-4" />
               <h3 className="text-xl font-semibold mb-2">Brand Protection</h3>
               <p className="text-muted-foreground">
-                Safeguard your brand's reputation with proactive review management and detailed analytics. Monitor sentiment trends and address feedback promptly to maintain brand excellence.
+                Safeguard your brand&apos;s reputation with proactive review management and detailed analytics. Monitor sentiment trends and address feedback promptly to maintain brand excellence.
               </p>
             </div>
           </div>

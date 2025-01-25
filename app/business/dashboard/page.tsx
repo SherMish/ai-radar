@@ -34,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Image from 'next/image'
 
 type Feature = {
   id: string;
@@ -417,9 +418,11 @@ export default function DashboardPage() {
                       <div className="flex items-center gap-4">
                         {logoPreview ? (
                           <div className="relative w-24 h-24">
-                            <img
+                            <Image 
                               src={logoPreview}
                               alt="Logo preview"
+                              width={96}
+                              height={96}
                               className="w-full h-full object-contain rounded-lg"
                             />
                             <Button

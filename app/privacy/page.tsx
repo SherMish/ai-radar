@@ -72,7 +72,7 @@ export default function PrivacyPolicyPage() {
             <section>
               <h2 className="text-2xl font-semibold mb-4">Updates to This Policy</h2>
               <p className="text-muted-foreground">
-                We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date.
+                We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the &quot;Last Updated&quot; date.
               </p>
               <p className="text-sm text-muted-foreground mt-4">
                 Last Updated: March 21, 2024
