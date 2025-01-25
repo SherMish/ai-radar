@@ -26,9 +26,7 @@ import { CategoriesSection } from "./components/categories-section";
 import { LatestReviewsCarousel } from "./components/latest-reviews-carousel";
 import { RadarAnimation } from "./components/radar-animation";
 import { Metadata } from 'next';
-import { Hero } from '@/components/hero';
-import { FeaturedTools } from '@/components/featured-tools';
-import { Categories } from '@/components/categories';
+import { Types, Document } from 'mongoose';
 
 const categories = [
   { name: "Text Generation", icon: MessageSquare, count: 156 },
@@ -43,17 +41,34 @@ const categories = [
   { name: "General AI", icon: Sparkles, count: 145 },
 ];
 
+interface ReviewDoc extends Document {
+  _id: Types.ObjectId;
+  body: string;
+  rating: number;
+  createdAt: Date;
+  relatedWebsite: {
+    _id: Types.ObjectId;
+    name: string;
+    url: string;
+  };
+  relatedUser?: {
+    _id: Types.ObjectId;
+    name: string;
+  };
+  __v: number;
+}
+
 async function getLatestReviews() {
   await connectDB();
   
   const reviews = await Review.find()
-    .populate('relatedWebsite', 'name URL')
+    .populate('relatedWebsite', 'name url')
     .populate('relatedUser', 'name')
     .sort({ createdAt: -1 })
     .limit(10)
-    .lean();
+    .lean<ReviewDoc[]>();
 
-  return reviews.map(review => ({
+  return reviews.map((review) => ({
     ...review,
     _id: review._id.toString(),
     relatedWebsite: {
