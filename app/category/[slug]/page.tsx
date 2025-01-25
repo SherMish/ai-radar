@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Star } from "lucide-react";
 import * as Icons from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LucideIcon } from "lucide-react";
 
 interface WebsiteDoc {
   _id: string;
@@ -36,7 +37,7 @@ const CategoryPage = async ({ params }: PageProps) => {
     .lean();
 
   // Get the icon component
-  const IconComponent = Icons[category.icon as keyof typeof Icons] || Icons.Laptop;
+  const IconComponent = (category.icon ? Icons[category.icon as keyof typeof Icons] : Star) as LucideIcon;
 
   return (
     <div className="relative min-h-screen bg-background">
