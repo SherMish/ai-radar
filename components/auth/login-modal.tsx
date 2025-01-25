@@ -216,15 +216,11 @@ export function LoginModal() {
                     {...loginForm.register('email')}
                     type="email"
                     placeholder="Email"
-                    icon={<Mail className="w-4 h-4" />}
-                    error={loginForm.formState.errors.email?.message}
                   />
                   <Input
                     {...loginForm.register('password')}
                     type="password"
                     placeholder="Password"
-                    icon={<Lock className="w-4 h-4" />}
-                    error={loginForm.formState.errors.password?.message}
                   />
                 </div>
                 {authError && (
@@ -251,8 +247,6 @@ export function LoginModal() {
                     <Input
                       {...registerForm.register('name')}
                       placeholder="Name"
-                      icon={<User className="w-4 h-4" />}
-                      error={registerForm.formState.errors.name?.message}
                       disabled={isLoading}
                     />
                     {registerForm.formState.errors.name && (
@@ -267,8 +261,6 @@ export function LoginModal() {
                       {...registerForm.register('email')}
                       type="email"
                       placeholder="Email"
-                      icon={<Mail className="w-4 h-4" />}
-                      error={registerForm.formState.errors.email?.message}
                       disabled={isLoading}
                     />
                     {registerForm.formState.errors.email && (
@@ -283,8 +275,6 @@ export function LoginModal() {
                       {...registerForm.register('password')}
                       type="password"
                       placeholder="Password"
-                      icon={<Lock className="w-4 h-4" />}
-                      error={registerForm.formState.errors.password?.message}
                       disabled={isLoading}
                     />
                     {registerForm.formState.errors.password && (
@@ -299,8 +289,6 @@ export function LoginModal() {
                       {...registerForm.register('confirmPassword')}
                       type="password"
                       placeholder="Confirm Password"
-                      icon={<Lock className="w-4 h-4" />}
-                      error={registerForm.formState.errors.confirmPassword?.message}
                       disabled={isLoading}
                     />
                     {registerForm.formState.errors.confirmPassword && (
