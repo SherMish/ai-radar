@@ -114,10 +114,13 @@ export default function NewTool() {
 
   useEffect(() => {
     if (session && pendingSubmission) {
-      submitForm(new Event('submit'));
+      const form = document.querySelector('form');
+      if (form) {
+        form.requestSubmit();
+      }
       setPendingSubmission(null);
     }
-  }, [session, pendingSubmission, submitForm]);
+  }, [session, pendingSubmission]);
 
   const validateForm = () => {
     const newErrors: FormErrors = {};
