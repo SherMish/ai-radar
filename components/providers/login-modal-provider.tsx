@@ -24,11 +24,7 @@ export function LoginModalProvider({ children }: { children: React.ReactNode }) 
   return (
     <LoginModalContext.Provider value={{ showLoginModal }}>
       {children}
-      <LoginModal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        onLogin={handleLogin}
-      />
+      <LoginModal/>
     </LoginModalContext.Provider>
   );
 }
