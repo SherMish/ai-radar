@@ -55,8 +55,8 @@ export function ReviewCard({ review }: ReviewCardProps) {
   return (
     <Card className="p-6 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors border-zinc-700/50">
       <div>
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1">
+        <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+          <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-2">
               <div className="flex items-center">
                 {[...Array(5)].map((_, i) => (
@@ -101,7 +101,7 @@ export function ReviewCard({ review }: ReviewCardProps) {
               {review.title}
             </h3>
           </div>
-          <span className="text-xs text-zinc-500 whitespace-nowrap">
+          <span className="text-xs text-zinc-500 whitespace-nowrap order-first sm:order-last">
             {new Date(review.createdAt).toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'short',

@@ -248,7 +248,7 @@ export default async function ToolPage({ params }: PageProps) {
               {/* Header */}
               <div className="mb-8">
                 <div className="flex items-start gap-6">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg flex items-center justify-center border border-blue-500/20">
+                  <div className="hidden md:flex w-16 h-16 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg items-center justify-center border border-blue-500/20">
                     <span className="text-2xl font-bold gradient-text">
                       {website.name[0]}
                     </span>
@@ -293,14 +293,14 @@ export default async function ToolPage({ params }: PageProps) {
                           href={website.url.startsWith('http') ? website.url : `https://${website.url}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md transition-colors"
+                          className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md transition-colors h-[40px]"
                         >
                           <ExternalLink className="w-5 h-5" />
                           <span className="font-medium">Visit</span>
                           <span className="text-zinc-400 hidden sm:inline">{website.url}</span>
                         </a>
                         <Button 
-                          className="gradient-button px-4 py-3 h-auto"
+                          className="gradient-button px-4 h-[40px]"
                           asChild
                         >
                           <Link href={`/tool/${encodeURIComponent(params.url)}/review`}>
