@@ -13,8 +13,19 @@ import { Providers } from '@/components/providers/providers';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'AI-Radar - Discover and Review AI Tools',
-  description: 'Find, review, and compare the best AI tools and services.',
+  title: {
+    default: 'AI-Radar',
+    template: '%s | AI-Radar',
+  },
+  description: 'Find and review AI tools',
+  icons: {
+    icon: [
+      {
+        url: '/favicon.png',
+        sizes: 'any',
+      },
+    ],
+  },
 };
 
 export default async function RootLayout({
@@ -24,6 +35,7 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head />
       <body className={inter.className}>
         <Providers>
           <div className="flex min-h-screen flex-col">

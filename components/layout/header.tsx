@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -28,10 +29,16 @@ export function Header() {
           <div className="flex items-center">
             <Link
               href="/"
-              className="text-lg font-semibold hover:text-primary transition-colors"
+              className="flex items-center hover:opacity-90 transition-opacity"
             >
               <div className="flex items-center gap-2">
-                <span>AI-Radar</span>
+                <Image
+                  src="logo.svg"
+                  alt="AI-Radar"
+                  width={150}
+                  height={28}
+                  
+                />
                 <span className="text-xs px-1.5 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">
                   BETA
                 </span>
