@@ -19,6 +19,7 @@ import { ReviewsSection } from "@/components/reviews-section";
 import Link from "next/link";
 import { Document } from 'mongoose';
 import { Card } from "@/components/ui/card";
+import WriteReviewButton from "@/app/components/WriteReviewButton";
 
 interface WebsiteDoc {
   _id: Types.ObjectId;
@@ -299,14 +300,7 @@ export default async function ToolPage({ params }: PageProps) {
                           <span className="font-medium">Visit</span>
                           <span className="text-zinc-400 hidden sm:inline">{website.url}</span>
                         </a>
-                        <Button 
-                          className="gradient-button px-4 h-[40px]"
-                          asChild
-                        >
-                          <Link href={`/tool/${encodeURIComponent(params.url)}/review`}>
-                            Write Review
-                          </Link>
-                        </Button>
+                        <WriteReviewButton url={params.url} />
                       </div>
                     </div>
                   </div>
