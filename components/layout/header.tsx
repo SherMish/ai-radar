@@ -11,7 +11,7 @@ import { UserNav } from "@/components/user-nav";
 
 const navigation = [
   // { name: "For Businesses", href: "/business" },
-  { name: "Blog", href: "/blog" },
+  // { name: "Blog", href: "/blog" },
   { name: "About", href: "/about" },
 ];
 

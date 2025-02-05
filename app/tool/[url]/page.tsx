@@ -18,6 +18,7 @@ import { LucideIcon } from "lucide-react";
 import { ReviewsSection } from "@/components/reviews-section";
 import Link from "next/link";
 import { Document } from 'mongoose';
+import { Card } from "@/components/ui/card";
 
 interface WebsiteDoc {
   _id: Types.ObjectId;
@@ -253,57 +254,61 @@ export default async function ToolPage({ params }: PageProps) {
                     </span>
                   </div>
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h1 className="text-3xl font-bold">{website.name}</h1>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            {website.isVerified ? (
-                              <ShieldCheck className="w-5 h-5 text-emerald-500 fill-emerald-500/10" />
-                            ) : (
-                              <ShieldAlert className="w-5 h-5 text-muted-foreground" />
+                    <div className="flex items-start justify-between flex-col lg:flex-row gap-4">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <h1 className="text-3xl font-bold">{website.name}</h1>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                {website.isVerified ? (
+                                  <ShieldCheck className="w-5 h-5 text-emerald-500 fill-emerald-500/10" />
+                                ) : (
+                                  <ShieldAlert className="w-5 h-5 text-muted-foreground" />
+                                )}
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                {website.isVerified 
+                                  ? "This tool has been verified by its owner" 
+                                  : "This tool hasn't been verified by its owner yet"
+                                }
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        {website.category && (
+                          <Link 
+                            href={`/category/${website.category.id}`}
+                            className="inline-flex items-center gap-2 text-muted-foreground text-sm hover:text-foreground transition-colors"
+                          >
+                            {website.category.Icon && (
+                              <website.category.Icon className="w-4 h-4" />
                             )}
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            {website.isVerified 
-                              ? "This tool has been verified by its owner" 
-                              : "This tool hasn't been verified by its owner yet"
-                            }
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                    {website.category ? (
-                      <Link 
-                        href={`/category/${website.category.id}`}
-                        className="inline-flex items-center gap-2 text-muted-foreground text-sm hover:text-foreground transition-colors"
-                      >
-                        {website.category.Icon && (
-                          <website.category.Icon className="w-4 h-4" />
+                            <span>{website.category.name}</span>
+                          </Link>
                         )}
-                        <span>{website.category.name}</span>
-                      </Link>
-                    ) : null}
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <a 
-                      href={website.url.startsWith('http') ? website.url : `https://${website.url}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md transition-colors"
-                    >
-                      <ExternalLink className="w-5 h-5" />
-                      <span className="font-medium">Visit</span>
-                      <span className="text-zinc-400 hidden sm:inline">{website.url}</span>
-                    </a>
-                    <Button 
-                      className="gradient-button px-6 py-3 h-auto"
-                      asChild
-                    >
-                      <Link href={`/tool/${encodeURIComponent(params.url)}/review`}>
-                        Write Review
-                      </Link>
-                    </Button>
+                      </div>
+                      <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+                        <a 
+                          href={website.url.startsWith('http') ? website.url : `https://${website.url}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md transition-colors"
+                        >
+                          <ExternalLink className="w-5 h-5" />
+                          <span className="font-medium">Visit</span>
+                          <span className="text-zinc-400 hidden sm:inline">{website.url}</span>
+                        </a>
+                        <Button 
+                          className="gradient-button px-4 py-3 h-auto"
+                          asChild
+                        >
+                          <Link href={`/tool/${encodeURIComponent(params.url)}/review`}>
+                            Write Review
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

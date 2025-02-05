@@ -4,9 +4,9 @@ import { Github, Twitter, Linkedin } from "lucide-react";
 const navigation = {
   main: [
     { name: "About", href: "/about" },
-    { name: "Blog", href: "/blog" },
+    // { name: "Blog", href: "/blog" },
     { name: "For Businesses", href: "/business" },
-    { name: "Contact", href: "/contact" },
+    // { name: "Contact", href: "/contact" },
   ],
   social: [
     {
@@ -63,8 +63,8 @@ export function Footer() {
           <div>
             <h3 className="text-sm font-semibold mb-4">Contact</h3>
             <ul className="space-y-3 text-muted-foreground">
-              <li>Email: contact@ai-radar.com</li>
-              <li>Support: support@ai-radar.com</li>
+              <li>Email: info.airadar@gmail.com</li>
+              {/* <li>Support: support@ai-radar.com</li> */}
             </ul>
           </div>
 
