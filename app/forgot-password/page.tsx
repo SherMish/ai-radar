@@ -43,10 +43,12 @@ export default function ForgotPasswordPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
+        signal: AbortSignal.timeout(8000)
       });
 
       if (!response.ok) {
-        throw new Error("Failed to send reset email");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.details || "Failed to send reset email");
       }
 
       setEmailSent(true);
@@ -55,10 +57,13 @@ export default function ForgotPasswordPage() {
         description: "Check your inbox for password reset instructions",
       });
     } catch (error) {
+      console.error("Password reset error:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to send reset email. Please try again.",
+        description: error instanceof Error 
+          ? error.message 
+          : "Failed to send reset email. Please try again.",
       });
     } finally {
       setIsLoading(false);
