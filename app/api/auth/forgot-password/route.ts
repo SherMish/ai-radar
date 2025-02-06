@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { randomBytes } from "crypto";
 import User from "@/lib/models/User";
+import mongoose from "mongoose";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -12,13 +13,12 @@ export async function POST(req: Request) {
   try {
     const { email } = await req.json();
 
-    // Add timeout to the database query
-    const user = await Promise.race([
-      User.findOne({ email }),
-      new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Database timeout')), 5000)
-      )
-    ]);
+    // Ensure database connection
+    if (mongoose.connection.readyState !== 1) {
+      await mongoose.connect(process.env.MONGODB_URI!);
+    }
+
+    const user = await User.findOne({ email }).maxTimeMS(8000); // MongoDB operation timeout
 
     if (!user) {
       // Return success even if user doesn't exist for security
@@ -30,18 +30,13 @@ export async function POST(req: Request) {
     const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
 
     // Add timeout to the database update
-    await Promise.race([
-      User.updateOne(
-        { email },
-        { 
-          resetToken,
-          resetTokenExpiry,
-        }
-      ),
-      new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Database update timeout')), 5000)
-      )
-    ]);
+    await User.updateOne(
+      { email },
+      { 
+        resetToken,
+        resetTokenExpiry,
+      }
+    ).maxTimeMS(8000);
 
     // Add timeout to email sending
     await Promise.race([
@@ -65,8 +60,15 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Password reset error:", error);
     
-    // Return more specific error messages
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    let errorMessage = "Unknown error";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+      // Add connection state to error message if it's a database timeout
+      if (errorMessage.includes('Database timeout')) {
+        errorMessage += ` (Connection state: ${mongoose.connection.readyState})`;
+      }
+    }
+
     return NextResponse.json(
       { 
         error: "Failed to process password reset",
