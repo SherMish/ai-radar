@@ -232,6 +232,19 @@ export function LoginModal() {
                     </div>
                   </div>
                 )}
+                <div className="flex justify-start">
+                  <Button
+                    variant="link"
+                    className="px-0 text-sm"
+                    type="button"
+                    onClick={() => {
+                      loginModal.onClose();
+                      window.location.href = '/forgot-password';
+                    }}
+                  >
+                    Forgot your password?
+                  </Button>
+                </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   Login
                 </Button>
