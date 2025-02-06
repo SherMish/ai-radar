@@ -71,7 +71,7 @@ export default function ForgotPasswordPage() {
         <CardHeader>
           <CardTitle>Reset Password</CardTitle>
           <CardDescription>
-            Enter your email address and we'll send you instructions to reset your
+            Enter your email address and we&apos;ll send you instructions to reset your
             password.
           </CardDescription>
         </CardHeader>
@@ -79,7 +79,7 @@ export default function ForgotPasswordPage() {
           {emailSent ? (
             <div className="text-center space-y-4">
               <p className="text-sm text-muted-foreground">
-                We've sent you an email with instructions to reset your password.
+                We&apos;ve sent you an email with instructions to reset your password.
                 Please check your inbox.
               </p>
               <Button
