@@ -63,7 +63,7 @@ export function Footer() {
           <div>
             <h3 className="text-sm font-semibold mb-4">Contact</h3>
             <ul className="space-y-3 text-muted-foreground">
-              <li>Email: info.airadar@gmail.com</li>
+              <li>Email: info@ai-radar.co</li>
               {/* <li>Support: support@ai-radar.com</li> */}
             </ul>
           </div>

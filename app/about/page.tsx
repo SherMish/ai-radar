@@ -7,7 +7,7 @@ export default function AboutPage() {
       <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 via-purple-500/5 to-pink-500/5" />
       
       <div className="relative container mx-auto px-4 py-16">
-        <div className="max-w-3xl mx-auto space-y-12">
+        <div className="max-w-3xl mx-auto rounded-lg border bg-card/50 backdrop-blur-xl p-8">
           <div className="text-center space-y-4">
             <h1 className="text-4xl md:text-5xl font-bold gradient-text">About AI-Radar</h1>
             <p className="text-xl text-muted-foreground">

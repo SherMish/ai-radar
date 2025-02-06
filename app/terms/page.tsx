@@ -5,7 +5,7 @@ export default function TermsPage() {
       <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 via-purple-500/5 to-pink-500/5" />
       
       <div className="relative container mx-auto px-4 py-16">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-3xl mx-auto rounded-lg border bg-card/50 backdrop-blur-xl p-8">
           <h1 className="text-4xl font-bold mb-8 gradient-text">Terms of Service</h1>
           
           <div className="prose prose-invert max-w-none space-y-8">
