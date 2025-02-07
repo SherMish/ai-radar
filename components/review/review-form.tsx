@@ -43,8 +43,8 @@ interface ReviewFormProps {
   initialUrl?: string;
 }
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-const ALLOWED_FILE_TYPES = ["image/jpeg", "image/png", "application/pdf"];
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_FILE_TYPES = ["jpg", "png", "pdf"];
 
 export default function ReviewForm({ isNewTool = false, initialUrl = "" }: ReviewFormProps) {
   const router = useRouter();
@@ -77,7 +77,7 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
         return false;
       }
       if (file.size > MAX_FILE_SIZE) {
-        errors.files = "File size exceeds 10MB limit.";
+        errors.files = "File size exceeds 5MB limit.";
         return false;
       }
       return true;
@@ -412,22 +412,25 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
             <div className="flex items-start gap-2">
               <AlertCircle className="w-4 h-4 mt-1 text-muted-foreground" />
               <div className="flex-1">
-                <h3 className="text-sm font-medium">Verify Your Experience</h3>
+                <h3 className="text-sm font-medium">Verify Your Experience (Optional)</h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Adding proof of your experience helps build trust in your review. The proof will not be visible to other users but may be shared with the business owner as part of the verification process. Please note that reviews without proof may be subject to removal if requested by the business owner.
+                  Adding proof helps verify your review. This could be: <br/>
+                  • A screenshot of your usage/dashboard <br/>
+                  • Purchase receipt/invoice <br/>
+                  The proof will not be visible to other users but may be shared with the business owner for verification. Note that reviews without proof may be subject to removal if requested by the business owner.
                 </p>
               </div>
             </div>
 
-            <div className="text-center">
+            <div className="text-center space-y-4">
               <CldUploadButton 
                 uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
                 onSuccess={handleUpload}
                 options={{
                   maxFiles: 1,
-                  maxFileSize: 5242880, // 5MB
+                  maxFileSize: MAX_FILE_SIZE,
                   resourceType: "auto",
-                  clientAllowedFormats: ["jpg", "png", "pdf"],
+                  clientAllowedFormats: ALLOWED_FILE_TYPES,
                 }}
               >
                 <Button variant="outline">
@@ -435,8 +438,18 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
                   Upload Proof
                 </Button>
               </CldUploadButton>
+              
+              <div className="text-xs text-muted-foreground/75">
+                <p className="mb-1">File requirements:</p>
+                <ul className="space-y-0.5">
+                  <li>Maximum file size: 5MB</li>
+                  <li>Allowed formats: JPG, PNG, PDF</li>
+                  <li>One file per review</li>
+                </ul>
+              </div>
+
               {reviewData.proof && (
-                <p className="mt-2 text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   File uploaded successfully
                 </p>
               )}
