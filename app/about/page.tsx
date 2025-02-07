@@ -129,7 +129,7 @@ export default function AboutPage() {
               Whether you&apos;re an AI enthusiast, professional, or just getting started, your experience matters. Join our growing community and help shape the future of AI tool discovery and evaluation.
             </p>
             <p className="text-muted-foreground">
-              Have questions or want to collaborate? Reach out to us at <span className="text-primary">info@ai-radar.com</span>
+              Have questions or want to collaborate? Reach out to us at <span className="text-primary">info@ai-radar.co</span>
             </p>
           </section>
         </div>
