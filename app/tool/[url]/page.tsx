@@ -311,7 +311,7 @@ export default async function ToolPage({ params }: PageProps) {
               <div className="mb-8 p-6 rounded-lg border border-border/50 bg-background/50">
                 <div className="flex flex-col md:flex-row gap-8">
                   {/* Rating Column */}
-                  <div className="flex flex-col items-center text-center md:w-48">
+                  <div className="flex flex-col items-center justify-center text-center md:w-48">
                     <div className="text-5xl font-bold mb-2">
                       {website.averageRating ? website.averageRating.toFixed(1) : '0'}
                     </div>
