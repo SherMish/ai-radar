@@ -23,6 +23,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import categoriesData from '@/lib/data/categories.json';
 import { useLoginModal } from "@/hooks/use-login-modal";
+import { CldUploadButton } from 'next-cloudinary';
+import { useToast } from "@/components/ui/use-toast";
 
 interface ReviewData {
   url?: string;
@@ -30,7 +32,7 @@ interface ReviewData {
   rating: number;
   title: string;
   content: string;
-  proofFiles: File[];
+  proof?: string;
   toolName: string;
   toolURL: string;
   relatedCategory: string;
@@ -48,6 +50,7 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
   const router = useRouter();
   const { data: session } = useSession();
   const loginModal = useLoginModal();
+  const { toast } = useToast();
   const [hoveredRating, setHoveredRating] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
@@ -57,7 +60,7 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
     rating: 0,
     title: "",
     content: "",
-    proofFiles: [],
+    proof: undefined,
     toolName: "",
     toolURL: "",
     relatedCategory: "",
@@ -84,7 +87,7 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
     if (Object.keys(errors).length === 0) {
       setReviewData(prev => ({
         ...prev,
-        proofFiles: [...prev.proofFiles, ...validFiles],
+        proof: validFiles[0]?.name,
       }));
     }
   };
@@ -92,7 +95,7 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
   const removeFile = (index: number) => {
     setReviewData(prev => ({
       ...prev,
-      proofFiles: prev.proofFiles.filter((_, i) => i !== index),
+      proof: undefined,
     }));
   };
 
@@ -184,6 +187,7 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
             body: reviewData.content,
             rating: reviewData.rating,
             relatedWebsite: website._id,
+            proof: reviewData.proof,
           }),
         });
 
@@ -209,6 +213,7 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
             body: reviewData.content,
             rating: reviewData.rating,
             relatedWebsite: website._id,
+            proof: reviewData.proof,
           }),
         });
 
@@ -226,6 +231,19 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
       }));
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleUpload = async (result: any) => {
+    if (result.info) {
+      setReviewData(prev => ({
+        ...prev,
+        proof: result.info.secure_url
+      }));
+      toast({
+        title: "File uploaded successfully",
+        description: "Your proof has been attached to the review",
+      });
     }
   };
 
@@ -249,18 +267,15 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
         <p className="text-muted-foreground whitespace-pre-wrap">{reviewData.content}</p>
       </div>
 
-      {reviewData.proofFiles.length > 0 && (
+      {reviewData.proof && (
         <div>
           <h4 className="font-medium mb-2">Attached Proof</h4>
           <div className="flex flex-wrap gap-2">
-            {reviewData.proofFiles.map((file, index) => (
-              <div
-                key={index}
-                className="px-3 py-1 bg-secondary rounded-full text-sm text-muted-foreground"
-              >
-                {file.name}
-              </div>
-            ))}
+            <div
+              className="px-3 py-1 bg-secondary rounded-full text-sm text-muted-foreground"
+            >
+              {reviewData.proof}
+            </div>
           </div>
         </div>
       )}
@@ -404,61 +419,28 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
               </div>
             </div>
 
-            <div className="border-2 border-dashed border-border rounded-lg p-6">
-              <div className="text-center">
-                <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                <p className="text-sm font-medium mb-1">
-                  Upload proof of your visit/purchase (optional)
-                </p>
-                <p className="text-sm text-muted-foreground mb-4">
-                  • Receipt/invoice<br />
-                  • Order confirmation<br />
-                  • Photo of your visit<br />
-                  • Screenshot of transaction
-                </p>
-                <input
-                  type="file"
-                  id="proof"
-                  className="hidden"
-                  multiple
-                  accept=".jpg,.jpeg,.png,.pdf"
-                  onChange={handleFileChange}
-                />
-                <Button
-                  variant="outline"
-                  onClick={() => document.getElementById("proof")?.click()}
-                >
-                  Choose Files
+            <div className="text-center">
+              <CldUploadButton 
+                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+                onSuccess={handleUpload}
+                options={{
+                  maxFiles: 1,
+                  maxFileSize: 5242880, // 5MB
+                  resourceType: "auto",
+                  clientAllowedFormats: ["jpg", "png", "pdf"],
+                }}
+              >
+                <Button variant="outline">
+                  <Upload className="w-4 h-4 mr-2" />
+                  Upload Proof
                 </Button>
-              </div>
+              </CldUploadButton>
+              {reviewData.proof && (
+                <p className="mt-2 text-sm text-muted-foreground">
+                  File uploaded successfully
+                </p>
+              )}
             </div>
-
-            {formErrors.files && (
-              <p className="text-sm text-destructive">{formErrors.files}</p>
-            )}
-
-            {reviewData.proofFiles.length > 0 && (
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium">Uploaded Files</h4>
-                <div className="space-y-2">
-                  {reviewData.proofFiles.map((file, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-2 bg-background/50 rounded-lg"
-                    >
-                      <span className="text-sm truncate">{file.name}</span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeFile(index)}
-                      >
-                        ×
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Action Buttons */}
