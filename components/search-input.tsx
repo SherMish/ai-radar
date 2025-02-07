@@ -1,6 +1,6 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -22,28 +22,35 @@ export function SearchInput({ className, onSearch }: SearchInputProps) {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
   const searchTimeout = useRef<NodeJS.Timeout>();
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (query.trim()) {
+    const trimmedQuery = query.trim();
+    if (trimmedQuery.length >= 2) {
       if (searchTimeout.current) {
         clearTimeout(searchTimeout.current);
       }
 
+      setIsLoading(true);
       searchTimeout.current = setTimeout(async () => {
         try {
-          const response = await fetch(`/api/websites/search?q=${encodeURIComponent(query)}`);
+          const response = await fetch(`/api/websites/search?q=${encodeURIComponent(trimmedQuery)}`);
           if (response.ok) {
             const data = await response.json();
             setSuggestions(data);
           }
         } catch (error) {
           console.error('Search error:', error);
+        } finally {
+          setIsLoading(false);
         }
       }, 300);
     } else {
       setSuggestions([]);
+      setIsLoading(false);
     }
 
     return () => {
@@ -86,6 +93,7 @@ export function SearchInput({ className, onSearch }: SearchInputProps) {
               onChange={(e) => {
                 setQuery(e.target.value);
                 setShowSuggestions(true);
+                setSelectedIndex(-1);
               }}
               onFocus={() => setShowSuggestions(true)}
             />
@@ -103,30 +111,45 @@ export function SearchInput({ className, onSearch }: SearchInputProps) {
 
       {showSuggestions && query && (
         <div className="absolute w-full mt-2 bg-secondary/95 backdrop-blur-sm rounded-lg shadow-lg border border-border p-2 space-y-1 z-50 max-h-90 overflow-y-auto">
-          {suggestions.map((suggestion) => (
-            <Link
-              key={suggestion._id}
-              href={`/tool/${encodeURIComponent(suggestion.url)}`}
-              className="flex items-center p-3 rounded-md hover:bg-muted/50 transition-colors"
-            >
-              <div className="flex flex-col items-start">
-                <div className="font-medium text-foreground">{suggestion.name}</div>
-                <div className="text-sm text-muted-foreground">
-                  {suggestion.url}
-                </div>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            </div>
+          ) : (
+            <>
+              {suggestions.length > 0 && suggestions.map((suggestion, index) => (
+                <Link
+                  key={suggestion._id}
+                  href={`/tool/${encodeURIComponent(suggestion.url)}`}
+                  className={`flex items-center p-3 rounded-md transition-colors
+                    ${index === selectedIndex 
+                      ? 'bg-primary/10 text-primary' 
+                      : 'hover:bg-muted/50 hover:text-primary'
+                    }
+                  `}
+                  onMouseEnter={() => setSelectedIndex(index)}
+                  onMouseLeave={() => setSelectedIndex(-1)}
+                >
+                  <div className="flex flex-col items-start">
+                    <div className="font-medium">{suggestion.name}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {suggestion.url}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+              <div className={suggestions.length > 0 ? "border-t border-border mt-2 pt-2" : ""}>
+                <Link
+                  href="/tool/new"
+                  className="flex items-center p-3 rounded-md hover:bg-muted/50 hover:text-primary transition-colors text-primary"
+                >
+                  <div className="font-medium">
+                    Can&apos;t find the tool? Add it now in seconds!
+                  </div>
+                </Link>
               </div>
-            </Link>
-          ))}
-          <div className="border-t border-border mt-2 pt-2">
-            <Link
-              href="/tool/new"
-              className="flex items-center p-3 rounded-md hover:bg-muted/50 transition-colors text-primary"
-            >
-              <div className="font-medium">
-                Can&apos;t find the tool? Add it now in seconds!
-              </div>
-            </Link>
-          </div>
+            </>
+          )}
         </div>
       )}
     </div>
