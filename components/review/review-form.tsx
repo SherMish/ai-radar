@@ -66,6 +66,7 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
     relatedCategory: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -195,8 +196,13 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
           throw new Error("Failed to create review");
         }
 
-        // Redirect to the new tool page
-        router.push(`/tool/${encodeURIComponent(reviewData.toolURL)}`);
+        // Show success message
+        setShowSuccessDialog(true);
+        
+        // Redirect after 3 seconds
+        setTimeout(() => {
+          router.push(`/tool/${encodeURIComponent(reviewData.toolURL)}`);
+        }, 5000);
       } else {
         // Existing tool review flow
         const websiteResponse = await fetch(`/api/websites/find?url=${encodeURIComponent(initialUrl)}`);
@@ -221,7 +227,13 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
           throw new Error("Failed to create review");
         }
 
-        router.push(`/tool/${encodeURIComponent(initialUrl)}`);
+        // Show success message
+        setShowSuccessDialog(true);
+        
+        // Redirect after 3 seconds
+        setTimeout(() => {
+          router.push(`/tool/${encodeURIComponent(initialUrl)}`);
+        }, 5000);
       }
     } catch (error) {
       console.error("Error submitting:", error);
@@ -521,6 +533,19 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
               )}
             </AlertDialogAction>
           </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={showSuccessDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Thank You for Your Review! 🎉</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2">
+              <p>Your review has been submitted successfully ✅</p>
+              <p>It may take a few moments to appear on the site while we process it ⏳</p>
+              <p className="text-muted-foreground">Redirecting you to the tool page...</p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
         </AlertDialogContent>
       </AlertDialog>
     </Card>
