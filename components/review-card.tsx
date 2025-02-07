@@ -8,6 +8,7 @@ import Link from "next/link";
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { Review } from "./reviews-section";
 import { ReportReviewModal } from "./report-review-modal";
+import { useSession } from "next-auth/react";
 
 interface ReviewCardProps {
   review: Review;
@@ -16,6 +17,7 @@ interface ReviewCardProps {
 export function ReviewCard({ review }: ReviewCardProps) {
   const [hasVoted, setHasVoted] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const { data: session } = useSession();
 
   // Check if user has already voted on mount
   useEffect(() => {
@@ -140,6 +142,7 @@ export function ReviewCard({ review }: ReviewCardProps) {
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
         review={review}
+        userEmail={session?.user?.email || ""}
       />
     </>
   );
