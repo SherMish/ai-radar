@@ -23,7 +23,10 @@ const ReviewSchema = new mongoose.Schema({
     ref: 'Website',
     required: true,
   },
-  proof: String,
+  proof: {
+    type: String,
+    required: false,
+  },
   rating: {
     type: Number,
     required: true,
