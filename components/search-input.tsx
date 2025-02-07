@@ -109,7 +109,7 @@ export function SearchInput({ className, onSearch }: SearchInputProps) {
               href={`/tool/${encodeURIComponent(suggestion.url)}`}
               className="flex items-center p-3 rounded-md hover:bg-muted/50 transition-colors"
             >
-              <div>
+              <div className="flex flex-col items-start">
                 <div className="font-medium text-foreground">{suggestion.name}</div>
                 <div className="text-sm text-muted-foreground">
                   {suggestion.url}
