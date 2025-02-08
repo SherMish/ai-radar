@@ -3,12 +3,13 @@
 import mixpanel from 'mixpanel-browser';
 import { event as gtagEvent } from './gtag';
 
-// Initialize Mixpanel
+const IS_PRODUCTION = process.env.NEXT_PUBLIC_IS_PRODUCTION === 'true';
 const MIXPANEL_TOKEN = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN || '';
 
-if (MIXPANEL_TOKEN) {
+// Only initialize Mixpanel in production
+if (IS_PRODUCTION && MIXPANEL_TOKEN) {
   mixpanel.init(MIXPANEL_TOKEN, {
-    debug: process.env.NODE_ENV === 'development',
+    debug: false,
     track_pageview: true,
     persistence: 'localStorage'
   });
@@ -25,6 +26,12 @@ export function trackEvent(
   eventName: string,
   properties: TrackingEventProperties = {}
 ) {
+  // Only track in production
+  if (!IS_PRODUCTION) {
+    console.log('📊 [DEV] Track Event:', eventName, properties);
+    return;
+  }
+
   // Track in Mixpanel
   if (MIXPANEL_TOKEN) {
     mixpanel.track(eventName, {
@@ -40,17 +47,17 @@ export function trackEvent(
     label: properties.label || eventName,
     value: properties.value,
   });
-
-  // Log in development
-  if (process.env.NODE_ENV === 'development') {
-    console.log('📊 Track Event:', eventName, properties);
-  }
 }
 
 /**
  * Set user properties in analytics tools
  */
 export function identifyUser(userId: string, userProperties: TrackingEventProperties = {}) {
+  if (!IS_PRODUCTION) {
+    console.log('📊 [DEV] Identify User:', userId, userProperties);
+    return;
+  }
+
   if (MIXPANEL_TOKEN) {
     mixpanel.identify(userId);
     mixpanel.people.set({
@@ -64,6 +71,11 @@ export function identifyUser(userId: string, userProperties: TrackingEventProper
  * Reset user identification (for logout)
  */
 export function resetAnalytics() {
+  if (!IS_PRODUCTION) {
+    console.log('📊 [DEV] Reset Analytics');
+    return;
+  }
+
   if (MIXPANEL_TOKEN) {
     mixpanel.reset();
   }

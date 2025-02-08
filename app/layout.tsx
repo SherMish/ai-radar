@@ -36,10 +36,12 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const isProduction = process.env.NEXT_PUBLIC_IS_PRODUCTION === 'true';
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {GA_TRACKING_ID && (
+        {isProduction && GA_TRACKING_ID && (
           <>
             <Script
               src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
