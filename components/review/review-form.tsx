@@ -25,6 +25,7 @@ import categoriesData from '@/lib/data/categories.json';
 import { useLoginModal } from "@/hooks/use-login-modal";
 import { CldUploadButton } from 'next-cloudinary';
 import { useToast } from "@/components/ui/use-toast";
+import { trackEvent, AnalyticsEvents } from '@/lib/analytics';
 
 interface ReviewData {
   url?: string;
@@ -196,6 +197,15 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
           throw new Error("Failed to create review");
         }
 
+        // Track successful review creation
+        trackEvent(AnalyticsEvents.REVIEW_CREATED, {
+          toolId: website._id,
+          toolName: reviewData.toolName,
+          rating: reviewData.rating,
+          hasScreenshot: !!reviewData.proof,
+          reviewLength: reviewData.content.length,
+        });
+
         // Show success message
         setShowSuccessDialog(true);
         
@@ -226,6 +236,15 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
         if (!reviewResponse.ok) {
           throw new Error("Failed to create review");
         }
+
+        // Track successful review creation
+        trackEvent(AnalyticsEvents.REVIEW_CREATED, {
+          toolId: website._id,
+          toolName: reviewData.toolName,
+          rating: reviewData.rating,
+          hasScreenshot: !!reviewData.proof,
+          reviewLength: reviewData.content.length,
+        });
 
         // Show success message
         setShowSuccessDialog(true);
