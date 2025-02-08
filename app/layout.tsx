@@ -9,6 +9,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import type { Session } from "next-auth";
 import { Providers } from '@/components/providers/providers';
+import Script from 'next/script'
+import { GA_TRACKING_ID } from '@/lib/gtag'
+import { AnalyticsProvider } from '@/components/providers/analytics-provider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -34,10 +37,28 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <head />
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {GA_TRACKING_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GA_TRACKING_ID}');
+              `}
+            </Script>
+          </>
+        )}
+      </head>
       <body className={inter.className}>
         <Providers>
+          <AnalyticsProvider />
           <div className="flex min-h-screen flex-col">
             <Header />
             <main className="flex-1">{children}</main>
