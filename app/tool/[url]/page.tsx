@@ -1,5 +1,6 @@
 import { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import { Star, ThumbsUp, Flag, Globe, Users, Calendar, Check, ShieldCheck, ShieldAlert, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import connectDB from "@/lib/mongodb";
@@ -66,7 +67,7 @@ async function getWebsiteData(url: string) {
   
   // Get website data
   const website = await Website.findOne({ url: url })
-    .select('name url description category averageRating reviewCount isVerified')
+    .select('name url description shortDescription logo category averageRating reviewCount isVerified')
     .lean();
 
   if (!website) {
@@ -249,10 +250,20 @@ export default async function ToolPage({ params }: PageProps) {
               {/* Header */}
               <div className="mb-8">
                 <div className="flex items-start gap-6">
-                  <div className="hidden md:flex w-16 h-16 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg items-center justify-center border border-blue-500/20">
-                    <span className="text-2xl font-bold gradient-text">
-                      {website.name[0]}
-                    </span>
+                  <div className="flex-shrink-0 w-[64px] h-[64px] rounded-xl bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center overflow-hidden">
+                    {website.logo ? (
+                      <Image 
+                      src={website.logo} 
+                      alt={website.name} 
+                      width={64} 
+                      height={64} 
+                      className="rounded-xl object-cover"
+                      />
+                    ) : (
+                      <div className="w-6 h-6 bg-zinc-700 rounded-full flex items-center justify-center">
+                        <span className="text-xs text-zinc-400">{website.name.charAt(0)}</span>
+                      </div>
+                    )}
                   </div>
                   <div className="flex-1">
                     <div className="flex items-start justify-between flex-col lg:flex-row gap-4">
