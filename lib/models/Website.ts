@@ -40,6 +40,10 @@ const WebsiteSchema = new mongoose.Schema({
     ref: 'User',
     required: false,
   },
+  logo: {
+    type: String,
+    default: "",
+  },
   reviewCount: {
     type: Number,
     default: 0,

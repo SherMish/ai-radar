@@ -8,6 +8,7 @@ import { Star } from "lucide-react";
 import * as Icons from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LucideIcon } from "lucide-react";
+import { WebsiteCard } from "@/components/website-card";
 
 interface WebsiteDoc {
   _id: string;
@@ -33,7 +34,7 @@ const CategoryPage = async ({ params }: PageProps) => {
 
   await connectDB();
   const websites = await Website.find({ category: category.id })
-    .select('name url description category averageRating reviewCount')
+    .select('name url description logo shortDescription category averageRating reviewCount')
     .lean();
 
   // Get the icon component
@@ -86,40 +87,10 @@ const CategoryPage = async ({ params }: PageProps) => {
             ) : (
               <div className="grid gap-6">
                 {websites.map((website) => (
-                  <Link 
-                    key={website._id.toString()} 
-                    href={`/tool/${encodeURIComponent(website.url)}`}
-                  >
-                    <Card className="p-6 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors border-zinc-700/50">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1 min-w-0">
-                          <h2 className="text-lg font-semibold mb-1 text-zinc-50">
-                            {website.name}
-                          </h2>
-                          <p className="text-sm text-zinc-300 mb-3 truncate">
-                            {website.url}
-                          </p>
-                          <div className="flex items-center gap-4">
-                            <div className="flex items-center">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`w-4 h-4 ${
-                                    i < (website.averageRating || 0)
-                                      ? "text-yellow-400 fill-yellow-400"
-                                      : "text-zinc-600"
-                                  }`}
-                                />
-                              ))}
-                            </div>
-                            <span className="text-sm text-zinc-400">
-                              {website.reviewCount || 0} reviews
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </Card>
-                  </Link>
+                  <WebsiteCard
+                    key={website._id.toString()}
+                    website={website}
+                  />
                 ))}
               </div>
             )}
