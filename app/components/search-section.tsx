@@ -47,7 +47,7 @@ export function SearchSection() {
           <div className="space-y-4">
             <motion.h1 
               variants={itemVariants}
-              className="text-4xl md:text-6xl font-bold gradient-text"
+              className="text-4xl md:text-6xl font-bold text-white"
             >
               Find AI You Can Trust
             </motion.h1>
