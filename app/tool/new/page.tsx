@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import categoriesJson from "@/lib/data/categories.json";
+import { UploadImage } from "@/components/upload-image";
 
 // Get the categories array from the JSON structure
 const categories = categoriesJson.categories;
@@ -41,7 +42,7 @@ export default function NewTool() {
     category: "",
     description: "",
     shortDescription: "",
-    logo: "",
+    logo: undefined as string | undefined,
   });
   const [errors, setErrors] = useState<FormErrors>({});
 
@@ -75,7 +76,7 @@ export default function NewTool() {
           category: formData.category,
           description: formData.description.trim(),
           shortDescription: formData.shortDescription.trim(),
-          logo: formData.logo.trim(),
+          logo: formData.logo,
         }),
       });
 
@@ -285,15 +286,13 @@ export default function NewTool() {
 
             {process.env.NEXT_PUBLIC_IS_PRODUCTION === 'false' && (
               <div className="grid gap-2">
-                <label htmlFor="logo" className="text-sm font-medium">
-                  Logo URL (Optional)
+                <label className="text-sm font-medium">
+                  Logo (Optional)
                 </label>
-                <Input
-                  id="logo"
-                  type="text"
-                  placeholder="https://example.com/logo.png"
-                  value={formData.logo}
-                  onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
+                <UploadImage
+                  onUpload={(url) => setFormData({ ...formData, logo: url })}
+                  onClear={() => setFormData({ ...formData, logo: undefined })}
+                  uploadedUrl={formData.logo}
                 />
               </div>
             )}

@@ -11,6 +11,7 @@ const nextConfig = {
         hostname: "img.logo.dev", // Add more if needed
       },
     ],
+    domains: ['res.cloudinary.com'],
   },
   experimental: {
     serverActions: true,
