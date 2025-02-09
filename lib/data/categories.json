@@ -7,28 +7,46 @@
       "icon": "MessageSquare"
     },
     {
-      "id": "image-generation",
-      "name": "Image Generation",
+      "id": "image-tools",
+      "name": "Image Tools",
       "description": "Create, edit, and enhance images with AI",
       "icon": "ImageIcon"
     },
     {
-      "id": "code-generation",
-      "name": "Code Generation",
+      "id": "code-tools",
+      "name": "Code Tools",
       "description": "AI-powered coding and development tools",
       "icon": "Code"
     },
     {
-      "id": "audio-processing",
-      "name": "Audio Processing",
+      "id": "creative-tools",
+      "name": "Creative Tools",
+      "description": "AI tools for artists and designers",
+      "icon": "Palette"
+    },
+    {
+      "id": "general-ai",
+      "name": "General AI",
+      "description": "Multi-purpose AI platforms",
+      "icon": "Sparkles"
+    },
+    {
+      "id": "audio-tools",
+      "name": "Audio Tools",
       "description": "Voice synthesis, music generation, and audio editing",
       "icon": "Music"
     },
     {
-      "id": "video-generation",
-      "name": "Video Generation",
+      "id": "video-tools",
+      "name": "Video Tools",
       "description": "Create and edit videos using AI",
       "icon": "Video"
+    },
+    {
+      "id": "automation",
+      "name": "Automation",
+      "description": "Workflow and task automation with AI",
+      "icon": "Bot"
     },
     {
       "id": "data-analysis",
@@ -43,28 +61,10 @@
       "icon": "Brain"
     },
     {
-      "id": "creative-tools",
-      "name": "Creative Tools",
-      "description": "AI tools for artists and designers",
-      "icon": "Palette"
-    },
-    {
-      "id": "automation",
-      "name": "Automation",
-      "description": "Workflow and task automation with AI",
-      "icon": "Bot"
-    },
-    {
       "id": "business",
       "name": "Business",
       "description": "AI solutions for business operations",
       "icon": "Briefcase"
-    },
-    {
-      "id": "design",
-      "name": "Design",
-      "description": "AI-assisted design and prototyping",
-      "icon": "PenTool"
     },
     {
       "id": "content-analysis",
@@ -113,12 +113,6 @@
       "name": "Productivity",
       "description": "Personal and team productivity tools",
       "icon": "Zap"
-    },
-    {
-      "id": "general-ai",
-      "name": "General AI",
-      "description": "Multi-purpose AI platforms",
-      "icon": "Sparkles"
     }
   ]
 } 

@@ -22,6 +22,10 @@ const WebsiteSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
+  shortDescription: {
+    type: String,
+    default: "",
+  },
   category: {
     type: String,
     required: true,
