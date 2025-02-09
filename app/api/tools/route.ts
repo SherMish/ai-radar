@@ -15,7 +15,14 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { url, name, category } = body;
+    const { 
+      url, 
+      name, 
+      category,
+      description,
+      shortDescription,
+      logo
+    } = body;
 
     // Validate required fields
     if (!url || !name || !category) {
@@ -45,9 +52,13 @@ export async function POST(req: Request) {
     // Create website
     const website = await Website.create({
       name,
-      url,  // Will be normalized by the schema
+      url: url.toLowerCase(),
       category,
+      description: description || undefined,
+      shortDescription: shortDescription || undefined,
+      logo: process.env.NEXT_PUBLIC_IS_PRODUCTION === 'false' ? (logo || undefined) : undefined,
       createdBy: session.user.id,
+      isActive: true,
     });
 
     return NextResponse.json({

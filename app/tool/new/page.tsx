@@ -25,6 +25,7 @@ interface FormErrors {
   url?: string;
   name?: string;
   category?: string;
+  shortDescription?: string;
 }
 
 export default function NewTool() {
@@ -38,6 +39,9 @@ export default function NewTool() {
     url: "",
     name: "",
     category: "",
+    description: "",
+    shortDescription: "",
+    logo: "",
   });
   const [errors, setErrors] = useState<FormErrors>({});
 
@@ -69,6 +73,9 @@ export default function NewTool() {
           url: formData.url.trim(),
           name: formData.name.trim(),
           category: formData.category,
+          description: formData.description.trim(),
+          shortDescription: formData.shortDescription.trim(),
+          logo: formData.logo.trim(),
         }),
       });
 
@@ -148,6 +155,14 @@ export default function NewTool() {
     // Category validation
     if (!formData.category) {
       newErrors.category = "Please select a category";
+    }
+
+    // Short description validation
+    if (formData.shortDescription) {
+      const wordCount = formData.shortDescription.trim().split(/\s+/).length;
+      if (wordCount > 10) {
+        newErrors.shortDescription = "Short description must be 10 words or less";
+      }
     }
 
     setErrors(newErrors);
@@ -231,6 +246,57 @@ export default function NewTool() {
                 <p className="text-sm text-red-500">{errors.category}</p>
               )}
             </div>
+
+            <div className="grid gap-2">
+              <label htmlFor="description" className="text-sm font-medium">
+                Description (Optional)
+              </label>
+              <textarea
+                id="description"
+                rows={4}
+                placeholder="Enter a detailed description of the tool"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <label htmlFor="shortDescription" className="text-sm font-medium">
+                Short Description (Optional, max 10 words)
+              </label>
+              <Input
+                id="shortDescription"
+                type="text"
+                placeholder="Brief description of the tool"
+                value={formData.shortDescription}
+                onChange={(e) => {
+                  setFormData({ ...formData, shortDescription: e.target.value });
+                  if (errors.shortDescription) {
+                    setErrors({ ...errors, shortDescription: undefined });
+                  }
+                }}
+                className={errors.shortDescription ? "border-red-500" : ""}
+              />
+              {errors.shortDescription && (
+                <p className="text-sm text-red-500">{errors.shortDescription}</p>
+              )}
+            </div>
+
+            {process.env.NEXT_PUBLIC_IS_PRODUCTION === 'false' && (
+              <div className="grid gap-2">
+                <label htmlFor="logo" className="text-sm font-medium">
+                  Logo URL (Optional)
+                </label>
+                <Input
+                  id="logo"
+                  type="text"
+                  placeholder="https://example.com/logo.png"
+                  value={formData.logo}
+                  onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
+                />
+              </div>
+            )}
           </div>
 
           <div className="flex justify-end space-x-4">
