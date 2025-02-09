@@ -462,6 +462,8 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
                   maxFileSize: MAX_FILE_SIZE,
                   resourceType: "auto",
                   clientAllowedFormats: ALLOWED_FILE_TYPES,
+                  sources: ['local', 'url', 'camera']
+
                 }}
               >
                 <Button variant="outline">

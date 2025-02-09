@@ -302,7 +302,7 @@ export default async function ToolPage({ params }: PageProps) {
                       </div>
                       <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
                         <a 
-                          href={website.url.startsWith('http') ? website.url : `https://${website.url}`}
+                          href={website.url.startsWith('http') ? website.url : `https://${website.url}?utm_source=ai-radar&utm_medium=marketplace&utm_campaign=ai-radar`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md transition-colors h-[40px]"

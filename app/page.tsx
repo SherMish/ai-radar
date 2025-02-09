@@ -88,7 +88,7 @@ interface Suggestion {
 }
 
 export const metadata: Metadata = {
-  title: 'AI Tools Directory & Reviews | Find the Best AI Tools',
+  title: 'AI Tools Directory & Reviews | Find the Best AI Tools, AI Radar',
   description: 'Discover and compare the best AI tools with authentic user reviews. Find AI software for content creation, image generation, coding, productivity, and more. Real ratings and user experiences.',
   keywords: [
     'best AI tools',
