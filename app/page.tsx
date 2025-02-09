@@ -190,11 +190,6 @@ export default async function Home() {
           {/* Add Tool Section - Subtle Version */}
           <div className="px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl mx-auto flex items-center justify-center">
-              <Link href="/tool/new" className="group">
-                <div className="text-muted-foreground hover:text-primary transition-colors">
-                  <span className="text-sm">Missing an AI tool? Add it in seconds!</span>
-                </div>
-              </Link>
             </div>
           </div>
           
