@@ -46,7 +46,7 @@ const CategoryPage = async ({ params }: PageProps) => {
       <div className="fixed inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:44px_44px] pointer-events-none" />
       <div className="fixed inset-0 bg-gradient-to-tr from-blue-500/5 via-purple-500/5 to-pink-500/5 pointer-events-none" />
       
-      <div className="relative container max-w-4xl mx-auto px-4 py-8">
+      <div className="relative container max-w-4xl mx-auto sm:px-4 py-8">
         <div className="rounded-lg border border-border/50 bg-secondary/50 backdrop-blur-sm">
           <div className="p-6 border-b border-border/50">
             <div className="flex items-center gap-3 mb-2">

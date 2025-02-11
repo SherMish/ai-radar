@@ -51,9 +51,23 @@ export function WebsiteCard({ website }: WebsiteCardProps) {
                 <h2 className="text-lg font-semibold text-zinc-50">
                   {website.name}
                 </h2>
-                <p className="text-sm text-zinc-300 truncate">
-                  {website.url}
-                </p>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-4 h-4 ${
+                          i < (website.averageRating || 0)
+                            ? "text-yellow-400 fill-yellow-400"
+                            : "text-zinc-600"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-sm text-zinc-400">
+                    {website.reviewCount || 0} reviews
+                  </span>
+                </div>
               </div>
               
               {website.shortDescription && (
@@ -62,22 +76,7 @@ export function WebsiteCard({ website }: WebsiteCardProps) {
                 </p>
               )}
               
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`w-4 h-4 ${
-                        i < (website.averageRating || 0)
-                          ? "text-yellow-400 fill-yellow-400"
-                          : "text-zinc-600"
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span className="text-sm text-zinc-400">
-                  {website.reviewCount || 0} reviews
-                </span>
+              <div className="flex items-center">
                 <div className="sm:ml-auto">
                   <button
                     onClick={handleVisitWebsite}
