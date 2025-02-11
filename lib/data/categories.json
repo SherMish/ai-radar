@@ -67,6 +67,12 @@
       "icon": "Briefcase"
     },
     {
+      "id": "ai-agents",
+      "name": "AI Agents",
+      "description": "Custom AI assistants and chatbot builders",
+      "icon": "Briefcase"
+    },
+    {
       "id": "content-analysis",
       "name": "Content Analysis",
       "description": "Content optimization and analysis",
