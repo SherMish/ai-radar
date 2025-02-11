@@ -244,76 +244,90 @@ export default async function ToolPage({ params }: PageProps) {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:44px_44px]" />
         <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 via-purple-500/5 to-pink-500/5" />
         
-        <div className="relative container max-w-4xl mx-auto px-4 py-8">
+        <div className="relative container max-w-4xl mx-auto sm:px-4 py-8">
           <div className="rounded-lg border border-border/50 bg-secondary/50 backdrop-blur-sm">
             <div className="p-6">
               {/* Header */}
               <div className="mb-8">
-                <div className="flex items-start gap-6">
-                  <div className="flex-shrink-0 w-[64px] h-[64px] rounded-xl bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center overflow-hidden">
-                    {website.logo ? (
-                      <Image 
-                      src={website.logo} 
-                      alt={website.name} 
-                      width={64} 
-                      height={64} 
-                      className="rounded-xl object-cover"
-                      />
-                    ) : (
-                      <div className="w-6 h-6 bg-zinc-700 rounded-full flex items-center justify-center">
-                        <span className="text-xs text-zinc-400">{website.name.charAt(0)}</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between flex-col lg:flex-row gap-4">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <h1 className="text-3xl font-bold">{website.name}</h1>
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger>
-                                {website.isVerified ? (
-                                  <ShieldCheck className="w-5 h-5 text-emerald-500 fill-emerald-500/10" />
-                                ) : (
-                                  <ShieldAlert className="w-5 h-5 text-muted-foreground" />
-                                )}
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                {website.isVerified 
-                                  ? "This tool has been verified by its owner" 
-                                  : "This tool hasn't been verified by its owner yet"
-                                }
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
+                <div className="flex flex-col gap-6 lg:gap-0">
+                  <div className="flex items-start gap-6">
+                    <div className="flex-shrink-0 w-[64px] h-[64px] rounded-xl bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center overflow-hidden">
+                      {website.logo ? (
+                        <Image 
+                          src={website.logo} 
+                          alt={website.name} 
+                          width={64} 
+                          height={64} 
+                          className="rounded-xl object-cover"
+                        />
+                      ) : (
+                        <div className="w-6 h-6 bg-zinc-700 rounded-full flex items-center justify-center">
+                          <span className="text-xs text-zinc-400">{website.name.charAt(0)}</span>
                         </div>
-                        {website.category && (
-                          <Link 
-                            href={`/category/${website.category.id}`}
-                            className="inline-flex items-center gap-2 text-muted-foreground text-sm hover:text-foreground transition-colors"
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between flex-col lg:flex-row gap-4">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h1 className="text-3xl font-bold">{website.name}</h1>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger>
+                                  {website.isVerified ? (
+                                    <ShieldCheck className="w-5 h-5 text-emerald-500 fill-emerald-500/10" />
+                                  ) : (
+                                    <ShieldAlert className="w-5 h-5 text-muted-foreground" />
+                                  )}
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  {website.isVerified 
+                                    ? "This tool has been verified by its owner" 
+                                    : "This tool hasn't been verified by its owner yet"
+                                  }
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
+                          {website.category && (
+                            <Link 
+                              href={`/category/${website.category.id}`}
+                              className="inline-flex items-center gap-2 text-muted-foreground text-sm hover:text-foreground transition-colors"
+                            >
+                              {website.category.Icon && (
+                                <website.category.Icon className="w-4 h-4" />
+                              )}
+                              <span>{website.category.name}</span>
+                            </Link>
+                          )}
+                        </div>
+                        <div className="hidden lg:flex flex-row gap-3">
+                          <a 
+                            href={website.url.startsWith('http') ? website.url : `https://${website.url}?utm_source=ai-radar&utm_medium=marketplace&utm_campaign=ai-radar`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md transition-colors h-[40px]"
                           >
-                            {website.category.Icon && (
-                              <website.category.Icon className="w-4 h-4" />
-                            )}
-                            <span>{website.category.name}</span>
-                          </Link>
-                        )}
-                      </div>
-                      <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-                        <a 
-                          href={website.url.startsWith('http') ? website.url : `https://${website.url}?utm_source=ai-radar&utm_medium=marketplace&utm_campaign=ai-radar`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md transition-colors h-[40px]"
-                        >
-                          <ExternalLink className="w-5 h-5" />
-                          <span className="font-medium">Visit</span>
-                          <span className="text-zinc-400 hidden sm:inline">{website.url}</span>
-                        </a>
-                        <WriteReviewButton url={params.url} />
+                            <ExternalLink className="w-5 h-5" />
+                            <span className="font-medium">Visit</span>
+                            <span className="text-zinc-400">{website.url}</span>
+                          </a>
+                          <WriteReviewButton url={params.url} />
+                        </div>
                       </div>
                     </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 lg:hidden">
+                    <a 
+                      href={website.url.startsWith('http') ? website.url : `https://${website.url}?utm_source=ai-radar&utm_medium=marketplace&utm_campaign=ai-radar`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md transition-colors h-[40px]"
+                    >
+                      <ExternalLink className="w-5 h-5" />
+                      <span className="font-medium">Visit</span>
+                    </a>
+                    <WriteReviewButton url={params.url} />
                   </div>
                 </div>
               </div>
