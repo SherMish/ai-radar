@@ -47,11 +47,11 @@ export function SearchSection() {
           <div className="space-y-4">
             <motion.h1 
               variants={itemVariants}
-              className="text-4xl md:text-6xl text-white font-medium tracking-tight"
+              className="text-4xl md:text-6xl text-white font-semibold font-medium tracking-tight"
             >
               Find AI you can{" "}
               <span className="relative inline-block">
-                <span className="relative bg-clip-text font-semibold  via-primary ">
+                <span className="relative bg-clip-text via-primary ">
                   trust
                 </span>
                 <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent" />
