@@ -10,15 +10,6 @@ import { Button } from "@/components/ui/button";
 import { LucideIcon } from "lucide-react";
 import { WebsiteCard } from "@/components/website-card";
 
-interface WebsiteDoc {
-  _id: string;
-  name: string;
-  url: string;
-  description?: string;
-  category: string;
-  averageRating: number;
-  reviewCount: number;
-}
 
 interface PageProps {
   params: {
@@ -53,8 +44,10 @@ const CategoryPage = async ({ params }: PageProps) => {
               <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                 <IconComponent className="w-5 h-5 text-primary" />
               </div>
-              <h1 className="text-3xl font-bold gradient-text">
-                {category.name}
+              <h1 className="text-3xl font-bold">
+                <span className="text-white">
+                  {category.name}
+                </span>
               </h1>
             </div>
             <p className="text-muted-foreground">
