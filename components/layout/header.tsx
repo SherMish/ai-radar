@@ -33,7 +33,7 @@ export function Header() {
             >
               <div className="flex items-center gap-2">
                 <Image
-                  src="logo.svg"
+                  src="/logo.svg"
                   alt="AI-Radar"
                   width={150}
                   height={28}
