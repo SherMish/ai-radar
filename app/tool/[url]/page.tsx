@@ -394,18 +394,18 @@ export default async function ToolPage({ params }: PageProps) {
               </div>
 
               {/* Details Section */}
-              <div className="mb-12">
-                {website.pricingModel || website.launchYear || website.hasFreeTrialPeriod || website.hasAPI ? <h2 className="text-2xl font-semibold mb-6">Details</h2> : null}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="mb-8">
+                {website.pricingModel || website.launchYear || website.hasFreeTrialPeriod || website.hasAPI ? <h2 className="text-2xl font-semibold mb-4">Details</h2> : null}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {website.pricingModel && (
-                    <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
-                      <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                          <CreditCard className="w-4 h-4 text-primary" />
+                    <div className="p-3 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                          <CreditCard className="w-3.5 h-3.5 text-primary" />
                         </div>
                         <div>
-                          <h3 className="text-sm font-medium mb-1">Pricing Model</h3>
-                          <p className="text-muted-foreground text-sm">
+                          <h3 className="text-xs font-medium text-muted-foreground">Pricing</h3>
+                          <p className="text-sm">
                             {formatPricingModel(website.pricingModel)}
                           </p>
                         </div>
@@ -414,56 +414,48 @@ export default async function ToolPage({ params }: PageProps) {
                   )}
 
                   {website.launchYear && (
-                    <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
-                      <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                          <Calendar className="w-4 h-4 text-primary" />
+                    <div className="p-3 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Calendar className="w-3.5 h-3.5 text-primary" />
                         </div>
                         <div>
-                          <h3 className="text-sm font-medium mb-1">Launch Year</h3>
-                          <p className="text-muted-foreground text-sm">
-                            {website.launchYear}
-                          </p>
+                          <h3 className="text-xs font-medium text-muted-foreground">Launch Year</h3>
+                          <p className="text-sm">{website.launchYear}</p>
                         </div>
                       </div>
                     </div>
                   )}
 
                   {website.hasAPI && (
-                    <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
-                      <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                          <Code2 className="w-4 h-4 text-primary" />
+                    <div className="p-3 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Code2 className="w-3.5 h-3.5 text-primary" />
                         </div>
                         <div>
-                          <h3 className="text-sm font-medium mb-1">API Available</h3>
-                          <p className="text-muted-foreground text-sm">
-                            {website.hasAPI ? 'Yes' : 'No'}
-                          </p>
+                          <h3 className="text-xs font-medium text-muted-foreground">API</h3>
+                          <p className="text-sm">{website.hasAPI ? 'Available' : 'No'}</p>
                         </div>
                       </div>
                     </div>
                   )}
 
-                  {website.hasFreeTrialPeriod  && (
-                    <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
-                      <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                          <Clock className="w-4 h-4 text-primary" />
+                  {website.hasFreeTrialPeriod && (
+                    <div className="p-3 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Clock className="w-3.5 h-3.5 text-primary" />
                         </div>
                         <div>
-                          <h3 className="text-sm font-medium mb-1">Free Trial</h3>
-                          <p className="text-muted-foreground text-sm">
-                            {website.hasFreeTrialPeriod ? 'Available' : 'Not available'}
-                          </p>
+                          <h3 className="text-xs font-medium text-muted-foreground">Free Trial</h3>
+                          <p className="text-sm">{website.hasFreeTrialPeriod ? 'Available' : 'No'}</p>
                         </div>
                       </div>
                     </div>
                   )}
                 </div>
               </div>
-
-
 
               {/* Reviews Section */}
               <div className="border-t border-border/50 pt-6">
