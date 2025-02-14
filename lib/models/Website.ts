@@ -1,11 +1,27 @@
 import mongoose, { Schema } from 'mongoose';
+import { PricingModel } from '../types/website';
 
-export enum PricingModel {
-  FREE = 'free',
-  FREEMIUM = 'freemium',
-  SUBSCRIPTION = 'subscription',
-  PAY_PER_USE = 'pay_per_use',
-  ENTERPRISE = 'enterprise'
+// Export the type for client-side use
+export interface WebsiteType {
+  _id: string;
+  name: string;
+  url: string;
+  description?: string;
+  shortDescription?: string;
+  category: string;
+  logo?: string;
+  pricingModel?: PricingModel;
+  hasFreeTrialPeriod?: boolean;
+  hasAPI?: boolean;
+  launchYear?: number;
+  createdBy?: string;
+  owner?: string;
+  reviewCount?: number;
+  averageRating?: number;
+  isVerified?: boolean;
+  isActive?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const WebsiteSchema = new Schema({
@@ -89,31 +105,24 @@ const WebsiteSchema = new Schema({
   timestamps: true,
 });
 
-// Drop existing indexes to clean up old URL index
+// Delete the model if it exists to prevent the "Cannot overwrite model" error
 if (mongoose.models.Website) {
   delete mongoose.models.Website;
 }
 
+// Create and export the model
 const Website = mongoose.model('Website', WebsiteSchema);
 
-// Ensure proper indexes
-async function setupIndexes() {
+// Create indexes in a separate function that can be called explicitly
+export async function createIndexes() {
   try {
-    const collection = Website.collection;
-    // Drop all existing indexes except _id
-    await collection.dropIndexes();
-    // Create new index only on url field with sparse option
-    await collection.createIndex({ url: 1 }, { 
-      unique: true,
-      sparse: true,
-      background: true 
-    });
+    await Website.collection.createIndex(
+      { url: 1 }, 
+      { unique: true, sparse: true, background: true }
+    );
   } catch (error) {
-    console.error('Error setting up indexes:', error);
+    console.error('Error creating indexes:', error);
   }
 }
-
-// Run the index setup
-setupIndexes();
 
 export default Website; 
