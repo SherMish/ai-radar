@@ -1,10 +1,10 @@
 import { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { Star, ThumbsUp, Flag, Globe, Users, Calendar, Check, ShieldCheck, ShieldAlert, ExternalLink } from "lucide-react";
+import { Star, ThumbsUp, Flag, Globe, Users, Calendar, Check, ShieldCheck, ShieldAlert, ExternalLink, CreditCard, Code2, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import connectDB from "@/lib/mongodb";
-import Website from "@/lib/models/Website";
+import Website, { PricingModel } from "@/lib/models/Website";
 import Review from "@/lib/models/Review";
 import { Types } from 'mongoose';
 import {
@@ -67,7 +67,7 @@ async function getWebsiteData(url: string) {
   
   // Get website data
   const website = await Website.findOne({ url: url })
-    .select('name url description shortDescription logo category averageRating reviewCount isVerified')
+    .select('name url description shortDescription logo category averageRating reviewCount isVerified pricingModel launchYear hasAPI hasFreeTrialPeriod')
     .lean();
 
   if (!website) {
@@ -195,6 +195,18 @@ export async function generateStaticParams() {
   return websites.map((website) => ({
     url: website.url,
   }));
+}
+
+// Add this helper function to format the pricing model text
+function formatPricingModel(model: PricingModel): string {
+  const formats: Record<PricingModel, string> = {
+    free: 'Free',
+    freemium: 'Freemium (Free plan + paid tiers)',
+    subscription: 'Subscription-based',
+    pay_per_use: 'Pay per use',
+    enterprise: 'Enterprise (Custom pricing)'
+  };
+  return formats[model];
 }
 
 export default async function ToolPage({ params }: PageProps) {
@@ -381,35 +393,77 @@ export default async function ToolPage({ params }: PageProps) {
                 </div>
               </div>
 
-              {/* Features */}
+              {/* Details Section */}
               <div className="mb-12">
-                <h2 className="text-2xl font-semibold mb-6">Features</h2>
-                {/* {website.features && website.features.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {website.features.map((feature, index) => (
-                      <div
-                        key={index}
-                        className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border"
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                            <Check className="w-4 h-4 text-primary" />
-                          </div>
-                          <span>{feature}</span>
+                {website.pricingModel || website.launchYear || website.hasFreeTrialPeriod || website.hasAPI ? <h2 className="text-2xl font-semibold mb-6">Details</h2> : null}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {website.pricingModel && (
+                    <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                          <CreditCard className="w-4 h-4 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-medium mb-1">Pricing Model</h3>
+                          <p className="text-muted-foreground text-sm">
+                            {formatPricingModel(website.pricingModel)}
+                          </p>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                ) : ( */}
-                  <p className="text-muted-foreground">Features data unavailable</p>
-                {/* )} */}
+                    </div>
+                  )}
+
+                  {website.launchYear && (
+                    <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Calendar className="w-4 h-4 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-medium mb-1">Launch Year</h3>
+                          <p className="text-muted-foreground text-sm">
+                            {website.launchYear}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {website.hasAPI && (
+                    <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Code2 className="w-4 h-4 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-medium mb-1">API Available</h3>
+                          <p className="text-muted-foreground text-sm">
+                            {website.hasAPI ? 'Yes' : 'No'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {website.hasFreeTrialPeriod  && (
+                    <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Clock className="w-4 h-4 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-medium mb-1">Free Trial</h3>
+                          <p className="text-muted-foreground text-sm">
+                            {website.hasFreeTrialPeriod ? 'Available' : 'Not available'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {/* Pricing */}
-              <div className="mb-12">
-                <h2 className="text-2xl font-semibold mb-6">Pricing</h2>
-                <p className="text-muted-foreground">Pricing data unavailable</p>
-              </div>
+
 
               {/* Reviews Section */}
               <div className="border-t border-border/50 pt-6">

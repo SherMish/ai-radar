@@ -1,6 +1,14 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
-const WebsiteSchema = new mongoose.Schema({
+export enum PricingModel {
+  FREE = 'free',
+  FREEMIUM = 'freemium',
+  SUBSCRIPTION = 'subscription',
+  PAY_PER_USE = 'pay_per_use',
+  ENTERPRISE = 'enterprise'
+}
+
+const WebsiteSchema = new Schema({
   name: {
     type: String,
     required: true,
@@ -59,6 +67,23 @@ const WebsiteSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true,
+  },
+  pricingModel: {
+    type: String,
+    enum: Object.values(PricingModel),
+    default: null
+  },
+  hasFreeTrialPeriod: {
+    type: Boolean,
+    default: null
+  },
+  hasAPI: {
+    type: Boolean,
+    default: null
+  },
+  launchYear: {
+    type: Number,
+    default: null
   },
 }, {
   timestamps: true,
