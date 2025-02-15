@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Star, ThumbsUp, Flag, Globe, Users, Calendar, Check, ShieldCheck, ShieldAlert, ExternalLink, CreditCard, Code2, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import connectDB from "@/lib/mongodb";
-import Website, { PricingModel } from "@/lib/models/Website";
+import Website from "@/lib/models/Website";
 import Review from "@/lib/models/Review";
 import { Types } from 'mongoose';
 import {
@@ -21,6 +21,7 @@ import Link from "next/link";
 import { Document } from 'mongoose';
 import { Card } from "@/components/ui/card";
 import WriteReviewButton from "@/app/components/WriteReviewButton";
+import { PricingModel } from '@/lib/types/website';
 
 interface WebsiteDoc {
   _id: Types.ObjectId;
@@ -201,7 +202,7 @@ export async function generateStaticParams() {
 function formatPricingModel(model: PricingModel): string {
   const formats: Record<PricingModel, string> = {
     free: 'Free',
-    freemium: 'Freemium (Free plan + paid tiers)',
+    freemium: 'Freemium',
     subscription: 'Subscription-based',
     pay_per_use: 'Pay per use',
     enterprise: 'Enterprise (Custom pricing)'
@@ -395,17 +396,19 @@ export default async function ToolPage({ params }: PageProps) {
 
               {/* Details Section */}
               <div className="mb-8">
-                {website.pricingModel || website.launchYear || website.hasFreeTrialPeriod || website.hasAPI ? <h2 className="text-2xl font-semibold mb-4">Details</h2> : null}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {website.pricingModel || website.launchYear || website.hasFreeTrialPeriod || website.hasAPI ? (
+                  <h2 className="text-2xl font-semibold mb-4">Details</h2>
+                ) : null}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {website.pricingModel && (
-                    <div className="p-3 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                          <CreditCard className="w-3.5 h-3.5 text-primary" />
+                    <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                          <CreditCard className="w-4 h-4 text-primary" />
                         </div>
                         <div>
-                          <h3 className="text-xs font-medium text-muted-foreground">Pricing</h3>
-                          <p className="text-sm">
+                          <h3 className="text-sm font-medium text-muted-foreground">Pricing</h3>
+                          <p className="text-base mt-1">
                             {formatPricingModel(website.pricingModel)}
                           </p>
                         </div>
@@ -414,42 +417,42 @@ export default async function ToolPage({ params }: PageProps) {
                   )}
 
                   {website.launchYear && (
-                    <div className="p-3 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                          <Calendar className="w-3.5 h-3.5 text-primary" />
+                    <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Calendar className="w-4 h-4 text-primary" />
                         </div>
                         <div>
-                          <h3 className="text-xs font-medium text-muted-foreground">Launch Year</h3>
-                          <p className="text-sm">{website.launchYear}</p>
+                          <h3 className="text-sm font-medium text-muted-foreground">Launch Year</h3>
+                          <p className="text-base mt-1">{website.launchYear}</p>
                         </div>
                       </div>
                     </div>
                   )}
 
                   {website.hasAPI && (
-                    <div className="p-3 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                          <Code2 className="w-3.5 h-3.5 text-primary" />
+                    <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Code2 className="w-4 h-4 text-primary" />
                         </div>
                         <div>
-                          <h3 className="text-xs font-medium text-muted-foreground">API</h3>
-                          <p className="text-sm">{website.hasAPI ? 'Available' : 'No'}</p>
+                          <h3 className="text-sm font-medium text-muted-foreground">API</h3>
+                          <p className="text-base mt-1">{website.hasAPI ? 'Available' : 'No'}</p>
                         </div>
                       </div>
                     </div>
                   )}
 
                   {website.hasFreeTrialPeriod && (
-                    <div className="p-3 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                          <Clock className="w-3.5 h-3.5 text-primary" />
+                    <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Clock className="w-4 h-4 text-primary" />
                         </div>
                         <div>
-                          <h3 className="text-xs font-medium text-muted-foreground">Free Trial</h3>
-                          <p className="text-sm">{website.hasFreeTrialPeriod ? 'Available' : 'No'}</p>
+                          <h3 className="text-sm font-medium text-muted-foreground">Free Trial</h3>
+                          <p className="text-base mt-1">{website.hasFreeTrialPeriod ? 'Available' : 'No'}</p>
                         </div>
                       </div>
                     </div>
