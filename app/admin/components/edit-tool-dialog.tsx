@@ -11,15 +11,17 @@ import { Switch } from "@/components/ui/switch";
 import categoriesData from '@/lib/data/categories.json';
 import { WebsiteType, PricingModel } from '@/lib/types/website';
 import { ImageUpload } from '@/components/image-upload';
+import { toast } from 'react-hot-toast';
 
 interface EditToolDialogProps {
   website: WebsiteType;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSave: () => void;
+  generatedData?: Partial<WebsiteType> | null;
 }
 
-export function EditToolDialog({ website, open, onOpenChange, onSave }: EditToolDialogProps) {
+export function EditToolDialog({ website, open, onOpenChange, onSave, generatedData }: EditToolDialogProps) {
   const [formData, setFormData] = useState({
     name: website.name,
     url: website.url,
@@ -30,7 +32,7 @@ export function EditToolDialog({ website, open, onOpenChange, onSave }: EditTool
     pricingModel: website.pricingModel || '',
     hasFreeTrialPeriod: website.hasFreeTrialPeriod || false,
     hasAPI: website.hasAPI || false,
-    launchYear: website.launchYear || null,
+    launchYear: website.launchYear?.toString() || '',
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -54,6 +56,16 @@ export function EditToolDialog({ website, open, onOpenChange, onSave }: EditTool
     }
   };
 
+  const handleApplyGeneratedData = () => {
+    if (generatedData) {
+      setFormData(prev => ({
+        ...prev,
+        ...generatedData
+      }));
+      toast.success('Generated data applied');
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
@@ -61,11 +73,20 @@ export function EditToolDialog({ website, open, onOpenChange, onSave }: EditTool
           <DialogTitle>Edit Tool: {website.name}</DialogTitle>
         </DialogHeader>
 
+        {generatedData && (
+          <div className="flex items-center justify-between py-2 px-4 bg-secondary rounded-lg">
+            <span className="text-sm">New data has been generated</span>
+            <Button size="sm" onClick={handleApplyGeneratedData}>
+              Apply Changes
+            </Button>
+          </div>
+        )}
+
         <div className="grid gap-6 py-4">
           <div className="grid gap-2">
             <Label>Logo</Label>
             <ImageUpload
-              value={formData.logo}
+              value={formData.logo || ''}
               onChange={(url) => setFormData(prev => ({ ...prev, logo: url }))}
               onRemove={() => setFormData(prev => ({ ...prev, logo: '' }))}
             />

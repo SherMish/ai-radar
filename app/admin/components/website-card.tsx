@@ -4,9 +4,10 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Edit2, Wand2 } from 'lucide-react';
+import { Edit2, Wand2, Loader2 } from 'lucide-react';
 import { EditToolDialog } from './edit-tool-dialog';
 import { WebsiteType } from '@/lib/types/website';
+import { toast } from 'react-hot-toast';
 
 interface WebsiteCardProps {
   website: WebsiteType;
@@ -16,6 +17,7 @@ interface WebsiteCardProps {
 export function WebsiteCard({ website, onUpdate }: WebsiteCardProps) {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedData, setGeneratedData] = useState<Partial<WebsiteType> | null>(null);
 
   const handleGenerateMetadata = async () => {
     setIsGenerating(true);
@@ -26,10 +28,12 @@ export function WebsiteCard({ website, onUpdate }: WebsiteCardProps) {
         body: JSON.stringify({ url: website.url })
       });
       const data = await response.json();
-      // Handle the generated data
+      setGeneratedData(data);
       setIsEditOpen(true);
+      toast.success('Data generated successfully! Click Save Changes to update.');
     } catch (error) {
       console.error('Error generating metadata:', error);
+      toast.error('Failed to generate data');
     } finally {
       setIsGenerating(false);
     }
@@ -72,8 +76,17 @@ export function WebsiteCard({ website, onUpdate }: WebsiteCardProps) {
                 onClick={handleGenerateMetadata}
                 disabled={isGenerating}
               >
-                <Wand2 className="w-4 h-4 mr-2" />
-                Generate Data
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Wand2 className="w-4 h-4 mr-2" />
+                    Generate Data
+                  </>
+                )}
               </Button>
               <Button
                 variant="outline"
@@ -93,6 +106,7 @@ export function WebsiteCard({ website, onUpdate }: WebsiteCardProps) {
         open={isEditOpen}
         onOpenChange={setIsEditOpen}
         onSave={onUpdate}
+        generatedData={generatedData}
       />
     </Card>
   );
