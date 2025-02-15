@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
+import { toast } from "react-hot-toast";
+import { WebsiteType } from "@/lib/types/website";
+import { EditToolDialog } from './edit-tool-dialog';
 
 interface AddToolDialogProps {
   open: boolean;
@@ -14,82 +17,116 @@ interface AddToolDialogProps {
 }
 
 export function AddToolDialog({ open, onOpenChange, onToolAdded }: AddToolDialogProps) {
-  const [url, setUrl] = useState('');
+  const [formData, setFormData] = useState({
+    url: '',
+    name: ''
+  });
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [newWebsite, setNewWebsite] = useState<WebsiteType | null>(null);
+  const [generatedData, setGeneratedData] = useState<Partial<WebsiteType> | null>(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+
+  // Reset state when edit dialog is closed
+  const handleEditDialogChange = (open: boolean) => {
+    setIsEditOpen(open);
+    if (!open) {
+      setNewWebsite(null);
+      setGeneratedData(null);
+      setFormData({ url: '', name: '' });
+    }
+  };
 
   const handleSubmit = async () => {
-    if (!url) return;
+    if (!formData.url || !formData.name) return;
     setIsLoading(true);
-    setError('');
-
     try {
       const response = await fetch('/api/admin/websites', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url })
+        body: JSON.stringify(formData)
       });
-
+      
+      const data = await response.json();
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to add tool');
+        if (data.error === 'Website already exists') {
+          toast.error('This website is already in the database');
+        } else {
+          throw new Error(data.error || 'Failed to create website');
+        }
+        return;
       }
 
-      onToolAdded();
+      // Continue with metadata generation...
+      const metadataResponse = await fetch('/api/admin/generate-metadata', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: data.url })
+      });
+      
+      const metadata = await metadataResponse.json();
+      setNewWebsite(data);
+      setGeneratedData(metadata);
+      setIsEditOpen(true);
       onOpenChange(false);
-      setUrl('');
     } catch (error) {
-      console.error('Error adding tool:', error);
-      setError(error instanceof Error ? error.message : 'Failed to add tool');
+      console.error('Error adding website:', error);
+      toast.error('Failed to add website');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Add New Tool</DialogTitle>
-        </DialogHeader>
-
-        <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label>Website URL</Label>
-            <Input
-              placeholder="Enter website URL..."
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-            />
-            {error && (
-              <p className="text-sm text-red-500">{error}</p>
-            )}
-          </div>
-
-          <div className="flex justify-end gap-2">
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add New Tool</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Tool Name</Label>
+              <Input
+                placeholder="Tool name"
+                value={formData.name}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Website URL</Label>
+              <Input
+                placeholder="website.com"
+                value={formData.url}
+                onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
+              />
+            </div>
             <Button 
-              variant="outline" 
-              onClick={() => onOpenChange(false)}
-            >
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleSubmit}
-              disabled={isLoading || !url}
+              onClick={handleSubmit} 
+              className="w-full"
+              disabled={isLoading || !formData.url || !formData.name}
             >
               {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Adding...
+                  Processing...
                 </>
               ) : (
-                'Add Tool'
+                'Continue'
               )}
             </Button>
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+
+      {newWebsite && (
+        <EditToolDialog
+          website={newWebsite}
+          open={isEditOpen}
+          onOpenChange={handleEditDialogChange}
+          onSave={onToolAdded}
+          generatedData={generatedData}
+        />
+      )}
+    </>
   );
 } 

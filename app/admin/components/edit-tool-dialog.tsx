@@ -21,8 +21,21 @@ interface EditToolDialogProps {
   generatedData?: Partial<WebsiteType> | null;
 }
 
+interface FormData {
+  name: string;
+  url: string;
+  description: string;
+  shortDescription: string;
+  category: string;
+  logo: string;
+  pricingModel: string;
+  hasFreeTrialPeriod: boolean;
+  hasAPI: boolean;
+  launchYear: number | null;
+}
+
 export function EditToolDialog({ website, open, onOpenChange, onSave, generatedData }: EditToolDialogProps) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: website.name,
     url: website.url,
     description: website.description || '',
@@ -32,7 +45,7 @@ export function EditToolDialog({ website, open, onOpenChange, onSave, generatedD
     pricingModel: website.pricingModel || '',
     hasFreeTrialPeriod: website.hasFreeTrialPeriod || false,
     hasAPI: website.hasAPI || false,
-    launchYear: website.launchYear?.toString() || '',
+    launchYear: website.launchYear || null,
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -169,7 +182,7 @@ export function EditToolDialog({ website, open, onOpenChange, onSave, generatedD
             <Label>Launch Year</Label>
             <Input
               type="number"
-              value={formData.launchYear || ''}
+              value={formData.launchYear?.toString() || ''}
               onChange={(e) => setFormData(prev => ({ ...prev, launchYear: parseInt(e.target.value) || null }))}
               min={2000}
               max={new Date().getFullYear()}
