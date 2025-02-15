@@ -1,22 +1,30 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { WebsiteCard } from './website-card';
 import { Plus } from 'lucide-react';
-import { AddToolDialog } from './add-tool-dialog';
 import { WebsiteType } from '@/lib/types/website';
+import { WebsiteCard } from './website-card';
+import { AddToolDialog } from './add-tool-dialog';
 
 export function AdminDashboard() {
+  const router = useRouter();
   const [websites, setWebsites] = useState<WebsiteType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddToolOpen, setIsAddToolOpen] = useState(false);
+  
+  const isLocal = !process.env.NEXT_PUBLIC_IS_PRODUCTION && window.location.hostname.includes('localhost');
 
   useEffect(() => {
+    if (!isLocal) {
+      router.push('/');
+      return;
+    }
     fetchWebsites();
-  }, []);
+  }, [router]);
 
   const fetchWebsites = async () => {
     try {
