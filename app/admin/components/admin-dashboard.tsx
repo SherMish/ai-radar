@@ -16,15 +16,16 @@ export function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddToolOpen, setIsAddToolOpen] = useState(false);
   
-  const isLocal = !process.env.NEXT_PUBLIC_IS_PRODUCTION && window.location.hostname.includes('localhost');
+  const isLocal = process.env.NEXT_PUBLIC_IS_PRODUCTION !== 'true' && window.location.hostname.includes('localhost');
 
   useEffect(() => {
     if (!isLocal) {
       router.push('/');
       return;
     }
-    fetchWebsites();
+    else fetchWebsites();
   }, [router]);
+
 
   const fetchWebsites = async () => {
     try {
