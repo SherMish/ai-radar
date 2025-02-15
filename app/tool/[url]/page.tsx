@@ -377,7 +377,7 @@ export default async function ToolPage({ params }: PageProps) {
                   <div className="hidden md:block w-px bg-border/50 self-stretch" />
 
                   {/* Description Column */}
-                  <div className="flex-1 space-y-4">
+                  <div className="flex-1 space-y-1">
                     <h3 className="text-lg font-semibold">About {website.name}</h3>
                     <div className="space-y-4 text-muted-foreground">
                       {website.description ? (
