@@ -128,7 +128,7 @@ const CategoryPage = async ({ params }: PageProps) => {
                 
                 <div className="mt-8 text-center">
                   <p className="text-muted-foreground mb-4">
-                    Can't find the tool you're looking for?
+                    Can&apos;t find the tool you&apos;re looking for?
                   </p>
                   <Link href="/tool/new" className="text-primary hover:text-primary/90 transition-colors">
                     Add it now in seconds →
