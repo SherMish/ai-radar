@@ -8,6 +8,7 @@ import { Plus } from 'lucide-react';
 import { WebsiteType } from '@/lib/types/website';
 import { WebsiteCard } from './website-card';
 import { AddToolDialog } from './add-tool-dialog';
+import { AddBlogPostDialog } from './add-blog-post-dialog';
 
 export function AdminDashboard() {
   const router = useRouter();
@@ -15,6 +16,7 @@ export function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddToolOpen, setIsAddToolOpen] = useState(false);
+  const [isAddBlogPostOpen, setIsAddBlogPostOpen] = useState(false);
   
   const isLocal = process.env.NEXT_PUBLIC_IS_PRODUCTION !== 'true' && window.location.hostname.includes('localhost');
 
@@ -53,13 +55,22 @@ export function AdminDashboard() {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="max-w-sm"
         />
-        <Button 
-          onClick={() => setIsAddToolOpen(true)}
-          className="gradient-button"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add New Tool
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            onClick={() => setIsAddBlogPostOpen(true)}
+            variant="outline"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            New Blog Post
+          </Button>
+          <Button 
+            onClick={() => setIsAddToolOpen(true)}
+            className="gradient-button"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add New Tool
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (
@@ -82,6 +93,12 @@ export function AdminDashboard() {
         open={isAddToolOpen} 
         onOpenChange={setIsAddToolOpen}
         onToolAdded={fetchWebsites}
+      />
+
+      <AddBlogPostDialog 
+        open={isAddBlogPostOpen}
+        onOpenChange={setIsAddBlogPostOpen}
+        onBlogPostAdded={fetchWebsites}
       />
     </div>
   );
