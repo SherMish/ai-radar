@@ -202,10 +202,10 @@ export async function generateStaticParams() {
 function formatPricingModel(model: PricingModel): string {
   const formats: Record<PricingModel, string> = {
     free: 'Free',
-    freemium: 'Freemium',
-    subscription: 'Subscription-based',
-    pay_per_use: 'Pay per use',
-    enterprise: 'Enterprise (Custom pricing)'
+    freemium: '🎁 Freemium',
+    subscription: '📅 Subscription-based',
+    pay_per_use: '💰 Pay per use',
+    enterprise: '🏢 Enterprise (Custom pricing)'
   };
   return formats[model];
 }
@@ -438,7 +438,7 @@ export default async function ToolPage({ params }: PageProps) {
                         </div>
                         <div>
                           <h3 className="text-sm font-medium text-muted-foreground">API</h3>
-                          <p className="text-base mt-1">{website.hasAPI ? 'Available' : 'No'}</p>
+                          <p className="text-base mt-1">{website.hasAPI ? '✅ Available' : 'No'}</p>
                         </div>
                       </div>
                     </div>
@@ -452,7 +452,7 @@ export default async function ToolPage({ params }: PageProps) {
                         </div>
                         <div>
                           <h3 className="text-sm font-medium text-muted-foreground">Free Trial</h3>
-                          <p className="text-base mt-1">{website.hasFreeTrialPeriod ? 'Available' : 'No'}</p>
+                          <p className="text-base mt-1">{website.hasFreeTrialPeriod ? '✅ Available' : 'No'}</p>
                         </div>
                       </div>
                     </div>
