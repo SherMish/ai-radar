@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import BlogPost from '@/lib/models/BlogPost';
+import { BlogPost as BlogPostType } from '@/lib/types/blog';
 
 export async function GET(request: Request) {
   if (process.env.IS_PRODUCTION === 'true') {
@@ -20,7 +21,7 @@ export async function GET(request: Request) {
         .sort({ publishedAt: -1 })
         .skip(skip)
         .limit(limit)
-        .lean(),
+        .lean() as unknown as (BlogPostType & { _id: any })[],
       BlogPost.countDocuments()
     ]);
 
@@ -28,9 +29,9 @@ export async function GET(request: Request) {
       posts: posts.map(post => ({
         ...post,
         _id: post._id.toString(),
-        createdAt: post.createdAt.toISOString(),
-        updatedAt: post.updatedAt.toISOString(),
-        publishedAt: post.publishedAt?.toISOString(),
+        createdAt: post.createdAt,
+        updatedAt: post.updatedAt,
+        publishedAt: post.publishedAt,
       })),
       total
     });

@@ -12,10 +12,10 @@ export interface BlogPost {
   tags: string[];
   views: number;
   likes: number;
-  publishedAt: string;
+  publishedAt: Date;
   isPublished: boolean;
   estimatedReadTime: number;
   relatedTools: Types.ObjectId[];
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 } 

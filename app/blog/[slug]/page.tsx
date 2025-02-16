@@ -46,8 +46,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: post.title,
       description: post.excerpt,
       type: 'article',
-      publishedTime: post.publishedAt,
-      modifiedTime: post.updatedAt,
+      publishedTime: post.publishedAt.toISOString(),
+      modifiedTime: post.updatedAt.toISOString(),
       authors: ['AI-Radar Team'],
       images: post.coverImage ? [post.coverImage] : [],
     },
@@ -108,7 +108,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           <div className="flex items-center gap-4 text-muted-foreground">
             <div className="flex items-center gap-2">
               <CalendarDays className="w-4 h-4" />
-              <time dateTime={post.publishedAt}>
+              <time dateTime={post.publishedAt.toISOString()}>
                 {formatDate(post.publishedAt)}
               </time>
             </div>
