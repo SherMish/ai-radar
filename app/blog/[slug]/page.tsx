@@ -68,10 +68,11 @@ export default async function BlogPostPage({ params }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background relative">
-      {/* Background effects */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:44px_44px]" />
-      <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 via-purple-500/5 to-pink-500/5" />
+    <div className="min-h-screen bg-background">
+      {/* Background effects - same as home page */}
+      <div className="fixed inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_14px] [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
+      <div className="fixed inset-0 bg-gradient-to-tr from-background to-background [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] opacity-90" />
+      <div className="fixed inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#1a1f2e,transparent)]" />
       
       <article className="relative container max-w-3xl mx-auto px-4 py-12">
         {/* Back Link */}
@@ -120,7 +121,23 @@ export default async function BlogPostPage({ params }: PageProps) {
 
         {/* Content */}
         <div 
-          className="prose prose-invert max-w-none"
+          className="prose prose-invert prose-slate max-w-none
+             [&>p]:leading-relaxed [&>p]:mb-4
+            [&>h2]:text-foreground [&>h2]:font-semibold [&>h2]:mt-8 [&>h2]:mb-4 [&>h2]:text-2xl
+            [&>h3]:text-foreground [&>h3]:font-semibold [&>h3]:mt-8 [&>h3]:mb-4 [&>h3]:text-xl
+            [&>h4]:text-foreground [&>h4]:font-semibold [&>h4]:mt-8 [&>h4]:mb-4 [&>h4]:text-lg
+            [&>a]:text-primary [&>a]:no-underline hover:[&>a]:underline
+            [&>strong]:text-foreground [&>strong]:font-semibold
+            [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:my-4 [&>ul]:text-muted-foreground
+            [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:my-4 [&>ol]:text-muted-foreground
+            [&>li]:my-2
+            [&>blockquote]:border-l-4 [&>blockquote]:border-primary/50 [&>blockquote]:pl-4 [&>blockquote]:italic
+            [&>table]:w-full [&>table]:my-6 [&>table]:text-sm
+            [&>thead>tr>th]:border [&>thead>tr>th]:border-border/50 [&>thead>tr>th]:p-2 [&>thead>tr>th]:bg-secondary/50
+            [&>tbody>tr>td]:border [&>tbody>tr>td]:border-border/50 [&>tbody>tr>td]:p-2
+            [&>code]:text-primary [&>code]:bg-primary/10 [&>code]:px-1 [&>code]:rounded
+            [&>pre]:bg-secondary/50 [&>pre]:p-4 [&>pre]:rounded-lg
+            [&>img]:rounded-lg [&>img]:my-8"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
       </article>
