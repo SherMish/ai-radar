@@ -1,4 +1,4 @@
-import { Metadata } from 'next';
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import connectDB from "@/lib/mongodb";
@@ -6,7 +6,7 @@ import BlogPostModel from "@/lib/models/BlogPost";
 import { formatDate } from "@/lib/utils";
 import { CalendarDays, Clock, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { BlogPost } from '@/lib/types/blog';
+import { BlogPost } from "@/lib/types/blog";
 
 interface PageProps {
   params: {
@@ -16,11 +16,13 @@ interface PageProps {
 
 async function getBlogPost(slug: string) {
   await connectDB();
-  const post = await BlogPostModel.findOne({ slug, isPublished: true })
-    .lean() as unknown as BlogPost & { _id: any };
-  
+  const post = (await BlogPostModel.findOne({
+    slug,
+    isPublished: true,
+  }).lean()) as unknown as BlogPost & { _id: any };
+
   if (!post) return null;
-  
+
   return {
     ...post,
     _id: post._id.toString(),
@@ -30,12 +32,14 @@ async function getBlogPost(slug: string) {
   };
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const post = await getBlogPost(params.slug);
-  
+
   if (!post) {
     return {
-      title: 'Post Not Found | AI-Radar Blog',
+      title: "Post Not Found | AI-Radar Blog",
     };
   }
 
@@ -45,24 +49,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title: post.title,
       description: post.excerpt,
-      type: 'article',
+      type: "article",
       publishedTime: post.publishedAt.toISOString(),
       modifiedTime: post.updatedAt.toISOString(),
-      authors: ['AI-Radar Team'],
+      authors: ["AI-Radar Team"],
       images: post.coverImage ? [post.coverImage] : [],
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title: post.title,
       description: post.excerpt,
       images: post.coverImage ? [post.coverImage] : [],
-    }
+    },
   };
 }
 
 export default async function BlogPostPage({ params }: PageProps) {
   const post = await getBlogPost(params.slug);
-  
+
   if (!post) {
     notFound();
   }
@@ -73,11 +77,11 @@ export default async function BlogPostPage({ params }: PageProps) {
       {/* <div className="fixed inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_14px] [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" /> */}
       <div className="fixed inset-0 bg-gradient-to-tr from-background to-background [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] opacity-90" />
       <div className="fixed inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#1a1f2e,transparent)]" />
-      
+
       <article className="relative container max-w-3xl mx-auto px-4 py-12">
         {/* Back Link */}
-        <Link 
-          href="/blog" 
+        <Link
+          href="/blog"
           className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
         >
           <ArrowLeft className="w-4 h-4 mr-1" />
@@ -120,7 +124,7 @@ export default async function BlogPostPage({ params }: PageProps) {
         </header>
 
         {/* Content */}
-        <div 
+        <div
           className="prose prose-invert prose-slate max-w-none
              [&>p]:leading-relaxed [&>p]:mb-4
             [&>h2]:text-foreground [&>h2]:font-semibold [&>h2]:mt-8 [&>h2]:mb-4 [&>h2]:text-2xl
@@ -143,4 +147,4 @@ export default async function BlogPostPage({ params }: PageProps) {
       </article>
     </div>
   );
-} 
+}

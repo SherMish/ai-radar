@@ -1,21 +1,23 @@
-import { Metadata } from 'next';
+import { Metadata } from "next";
 import connectDB from "@/lib/mongodb";
 import BlogPostModel from "@/lib/models/BlogPost";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import { CalendarDays, Clock, ArrowRight } from "lucide-react";
-import { formatDate } from '@/lib/utils';
-import { BlogPost } from '@/lib/types/blog';
+import { formatDate } from "@/lib/utils";
+import { BlogPost } from "@/lib/types/blog";
 
 export const metadata: Metadata = {
-  title: 'AI Tools Blog - Latest News, Guides & Insights | AI-Radar',
-  description: 'Stay updated with the latest AI tools, industry insights, and practical guides. Expert analysis of emerging AI technologies and their applications.',
+  title: "AI Tools Blog - Latest News, Guides & Insights | AI-Radar",
+  description:
+    "Stay updated with the latest AI tools, industry insights, and practical guides. Expert analysis of emerging AI technologies and their applications.",
   openGraph: {
-    title: 'AI Tools Blog - Latest News & Insights',
-    description: 'Expert analysis of emerging AI technologies and their applications. Stay updated with the latest AI tools and industry insights.',
-    type: 'website',
-  }
+    title: "AI Tools Blog - Latest News & Insights",
+    description:
+      "Expert analysis of emerging AI technologies and their applications. Stay updated with the latest AI tools and industry insights.",
+    type: "website",
+  },
 };
 
 async function getBlogPosts() {
@@ -23,8 +25,8 @@ async function getBlogPosts() {
   const posts = await BlogPostModel.find({ isPublished: true })
     .sort({ publishedAt: -1 })
     .lean();
-  
-  return posts.map(post => ({
+
+  return posts.map((post) => ({
     _id: post._id,
     title: post.title,
     slug: post.slug,
@@ -54,14 +56,18 @@ export default async function BlogPage() {
       <div className="fixed inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_14px] [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
       <div className="fixed inset-0 bg-gradient-to-tr from-background to-background [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] opacity-90" />
       <div className="fixed inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#1a1f2e,transparent)]" />
-      
+
       <div className="relative container max-w-5xl mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">AI Tools Blog</h1>
+          <h1 className="text-4xl font-bold mb-4">
+            AI Insights & Trends – The AI-Radar Blog
+          </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Stay updated with the latest AI tools, industry insights, and practical guides. 
-            Expert analysis of emerging AI technologies and their applications.
+            Stay ahead of the AI revolution with expert insights, comparisons,
+            and the latest trends. Explore in-depth articles on AI tools,
+            automation, and how artificial intelligence is shaping industries,
+            businesses, and careers.
           </p>
         </div>
 
@@ -122,4 +128,4 @@ export default async function BlogPage() {
       </div>
     </div>
   );
-} 
+}
