@@ -4,11 +4,15 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus } from "lucide-react";
+import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { WebsiteType } from "@/lib/types/website";
 import { WebsiteCard } from "./website-card";
 import { AddToolDialog } from "./add-tool-dialog";
 import { AddBlogPostDialog } from "./add-blog-post-dialog";
+import { BlogPost } from "@/lib/types/blog";
+import { BlogPostCard } from "./blog-post-card";
+
+const ITEMS_PER_PAGE = 10;
 
 export function AdminDashboard() {
   const router = useRouter();
@@ -17,76 +21,187 @@ export function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddToolOpen, setIsAddToolOpen] = useState(false);
   const [isAddBlogPostOpen, setIsAddBlogPostOpen] = useState(false);
-
+  const [activeTab, setActiveTab] = useState<'tools' | 'blogs'>('tools');
+  const [toolsPage, setToolsPage] = useState(1);
+  const [blogsPage, setBlogsPage] = useState(1);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [totalTools, setTotalTools] = useState(0);
+  const [totalBlogs, setTotalBlogs] = useState(0);
+  const [isLoadingTools, setIsLoadingTools] = useState(true);
+  const [isLoadingBlogs, setIsLoadingBlogs] = useState(true);
 
   useEffect(() => {
-    if (
-      process.env.NEXT_PUBLIC_IS_PRODUCTION !== "true" &&
-      window.location.hostname.includes("localhost")
-    ) {
-      fetchWebsites();
+    if (process.env.NEXT_PUBLIC_IS_PRODUCTION !== "true" && 
+        window.location.hostname.includes("localhost")) {
+      if (activeTab === 'tools') {
+        fetchWebsites();
+      } else {
+        fetchBlogPosts();
+      }
     } else {
       router.push("/");
-      return;
     }
-  }, []);
+  }, [toolsPage, blogsPage, activeTab]);
 
   const fetchWebsites = async () => {
+    setIsLoadingTools(true);
     try {
-      const response = await fetch("/api/admin/websites");
+      const response = await fetch(`/api/admin/websites?page=${toolsPage}&limit=${ITEMS_PER_PAGE}`);
       const data = await response.json();
-      setWebsites(data);
+      setWebsites(data.websites);
+      setTotalTools(data.total);
     } catch (error) {
       console.error("Error fetching websites:", error);
     } finally {
-      setIsLoading(false);
+      setIsLoadingTools(false);
     }
   };
 
-  const filteredWebsites = websites.filter(
-    (website) =>
-      website.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      website.url.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const fetchBlogPosts = async () => {
+    setIsLoadingBlogs(true);
+    try {
+      const response = await fetch(`/api/admin/blog-posts?page=${blogsPage}&limit=${ITEMS_PER_PAGE}`);
+      const data = await response.json();
+      setBlogPosts(data.posts);
+      setTotalBlogs(data.total);
+    } catch (error) {
+      console.error("Error fetching blog posts:", error);
+    } finally {
+      setIsLoadingBlogs(false);
+    }
+  };
+
+  const maxToolsPages = Math.ceil(totalTools / ITEMS_PER_PAGE);
+  const maxBlogsPages = Math.ceil(totalBlogs / ITEMS_PER_PAGE);
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
-        <Input
-          placeholder="Search tools..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="max-w-sm"
-        />
-        <div className="flex gap-2">
-          <Button onClick={() => setIsAddBlogPostOpen(true)} variant="outline">
-            <Plus className="w-4 h-4 mr-2" />
-            New Blog Post
-          </Button>
-          <Button
-            onClick={() => setIsAddToolOpen(true)}
-            className="gradient-button"
+        <div className="flex gap-4">
+          <Button 
+            variant={activeTab === 'tools' ? "default" : "outline"}
+            onClick={() => setActiveTab('tools')}
           >
-            <Plus className="w-4 h-4 mr-2" />
-            Add New Tool
+            Tools
           </Button>
+          <Button 
+            variant={activeTab === 'blogs' ? "default" : "outline"}
+            onClick={() => setActiveTab('blogs')}
+          >
+            Blog Posts
+          </Button>
+        </div>
+        <div className="flex gap-2">
+          {activeTab === 'blogs' ? (
+            <Button onClick={() => setIsAddBlogPostOpen(true)} variant="outline">
+              <Plus className="w-4 h-4 mr-2" />
+              New Blog Post
+            </Button>
+          ) : (
+            <Button onClick={() => setIsAddToolOpen(true)} className="gradient-button">
+              <Plus className="w-4 h-4 mr-2" />
+              Add New Tool
+            </Button>
+          )}
         </div>
       </div>
 
-      {isLoading ? (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">Loading tools...</p>
-        </div>
+      {activeTab === 'tools' ? (
+        <>
+          <Input
+            placeholder="Search tools..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="max-w-sm"
+          />
+          {isLoadingTools ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Loading tools...</p>
+            </div>
+          ) : !websites || websites.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No tools found</p>
+            </div>
+          ) : (
+            <>
+              <div className="grid gap-4">
+                {websites.map((website) => (
+                  <WebsiteCard
+                    key={website._id}
+                    website={website}
+                    onUpdate={fetchWebsites}
+                  />
+                ))}
+              </div>
+              <div className="flex justify-center gap-2 mt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setToolsPage(p => Math.max(1, p - 1))}
+                  disabled={toolsPage === 1}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+                <span className="py-2 px-3 text-sm">
+                  Page {toolsPage} of {maxToolsPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setToolsPage(p => Math.min(maxToolsPages, p + 1))}
+                  disabled={toolsPage === maxToolsPages}
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </>
+          )}
+        </>
       ) : (
-        <div className="grid gap-4">
-          {filteredWebsites.map((website) => (
-            <WebsiteCard
-              key={website._id}
-              website={website}
-              onUpdate={fetchWebsites}
-            />
-          ))}
-        </div>
+        <>
+          {isLoadingBlogs ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Loading blog posts...</p>
+            </div>
+          ) : !blogPosts || blogPosts.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No blog posts found</p>
+            </div>
+          ) : (
+            <>
+              <div className="grid gap-4">
+                {blogPosts.map((post) => (
+                  <BlogPostCard
+                    key={post._id.toString()}
+                    post={post}
+                    onUpdate={fetchBlogPosts}
+                  />
+                ))}
+              </div>
+              <div className="flex justify-center gap-2 mt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setBlogsPage(p => Math.max(1, p - 1))}
+                  disabled={blogsPage === 1}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+                <span className="py-2 px-3 text-sm">
+                  Page {blogsPage} of {maxBlogsPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setBlogsPage(p => Math.min(maxBlogsPages, p + 1))}
+                  disabled={blogsPage === maxBlogsPages}
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </>
+          )}
+        </>
       )}
 
       <AddToolDialog
@@ -98,7 +213,7 @@ export function AdminDashboard() {
       <AddBlogPostDialog
         open={isAddBlogPostOpen}
         onOpenChange={setIsAddBlogPostOpen}
-        onBlogPostAdded={fetchWebsites}
+        onBlogPostAdded={fetchBlogPosts}
       />
     </div>
   );

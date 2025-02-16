@@ -5,22 +5,43 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import categoriesData from '@/lib/data/categories.json';
 
-export async function GET() {
+export async function GET(request: Request) {
   if (process.env.IS_PRODUCTION === 'true') {
     return new NextResponse('Not authorized', { status: 401 });
   }
 
   try {
-    await connectDB();
-    const websites = await Website.find()
-      .select('name url description shortDescription category logo pricingModel hasFreeTrialPeriod hasAPI launchYear')
-      .sort({ createdAt: -1 })
-      .lean();
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    const skip = (page - 1) * limit;
 
-    return NextResponse.json(websites);
+    await connectDB();
+
+    const [websites, total] = await Promise.all([
+      Website.find()
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      Website.countDocuments()
+    ]);
+
+    return NextResponse.json({
+      websites: websites.map(website => ({
+        ...website,
+        _id: website._id.toString(),
+        createdAt: website.createdAt?.toISOString(),
+        updatedAt: website.updatedAt?.toISOString(),
+      })),
+      total
+    });
   } catch (error) {
     console.error('Error fetching websites:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return new NextResponse(
+      JSON.stringify({ error: 'Failed to fetch websites' }), 
+      { status: 500 }
+    );
   }
 }
 
