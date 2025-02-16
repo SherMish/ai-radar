@@ -1,12 +1,12 @@
 import { Metadata } from 'next';
 import connectDB from "@/lib/mongodb";
 import BlogPostModel from "@/lib/models/BlogPost";
-import { BlogPost } from '@/lib/types/blog';
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import { CalendarDays, Clock, ArrowRight } from "lucide-react";
 import { formatDate } from '@/lib/utils';
+import { BlogPost } from '@/lib/types/blog';
 
 export const metadata: Metadata = {
   title: 'AI Tools Blog - Latest News, Guides & Insights | AI-Radar',
