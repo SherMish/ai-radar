@@ -4,7 +4,7 @@ import { Github, Twitter, Linkedin } from "lucide-react";
 const navigation = {
   main: [
     { name: "About", href: "/about" },
-    // { name: "Blog", href: "/blog" },
+    { name: "Blog", href: "/blog" },
     { name: "For Businesses", href: "/business" },
     // { name: "Contact", href: "/contact" },
   ],
