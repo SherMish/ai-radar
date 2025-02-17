@@ -1,31 +1,32 @@
-import './globals.css';
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import { Header } from '@/components/layout/header';
-import { Footer } from '@/components/layout/footer';
+import "./globals.css";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import { Header } from "@/components/layout/header";
+import { Footer } from "@/components/layout/footer";
 import { LoginModal } from "@/components/auth/login-modal";
 import { Toaster } from "@/components/ui/toaster";
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import type { Session } from "next-auth";
-import { Providers } from '@/components/providers/providers';
-import Script from 'next/script'
-import { GA_TRACKING_ID } from '@/lib/gtag'
-import { AnalyticsProvider } from '@/components/providers/analytics-provider';
+import { Providers } from "@/components/providers/providers";
+import Script from "next/script";
+import { GA_TRACKING_ID } from "@/lib/gtag";
+import { AnalyticsProvider } from "@/components/providers/analytics-provider";
+import { CookieBanner } from "@/components/cookie-banner";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
-    default: 'AI-Radar',
-    template: '%s | AI-Radar',
+    default: "AI-Radar",
+    template: "%s | AI-Radar",
   },
-  description: 'Find and review AI tools',
+  description: "Find and review AI tools",
   icons: {
     icon: [
       {
-        url: '/favicon.png',
-        sizes: 'any',
+        url: "/favicon.png",
+        sizes: "any",
       },
     ],
   },
@@ -36,7 +37,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const isProduction = process.env.NEXT_PUBLIC_IS_PRODUCTION === 'true';
+  const isProduction = process.env.NEXT_PUBLIC_IS_PRODUCTION === "true";
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -68,6 +69,7 @@ export default async function RootLayout({
           </div>
           <LoginModal />
           <Toaster />
+          <CookieBanner />
         </Providers>
       </body>
     </html>
