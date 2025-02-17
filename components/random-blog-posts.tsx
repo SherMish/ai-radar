@@ -11,7 +11,7 @@ export async function RandomBlogPosts() {
   if (posts.length === 0) return null;
 
   return (
-    <section className="relative py-24">
+    <section className="relative py-20">
       {/* Background effects */}
       <div className="absolute inset-0 bg-[#0A0F1F]/40" />
       <div className="absolute inset-0 bg-[linear-gradient(110deg,#2563eb10,#9333ea10,#2563eb10)] backdrop-blur-[100px]" />
