@@ -7,6 +7,8 @@ import { formatDate } from "@/lib/utils";
 import { CalendarDays, Clock, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { BlogPost } from "@/lib/types/blog";
+import { Card } from "@/components/ui/card";
+import { Types } from "mongoose";
 
 interface PageProps {
   params: {
@@ -30,6 +32,30 @@ async function getBlogPost(slug: string) {
     updatedAt: post.updatedAt,
     publishedAt: post.publishedAt,
   };
+}
+
+async function getRandomPosts(currentPostId: string, limit: number = 2) {
+  await connectDB();
+  const posts = await BlogPostModel.aggregate([
+    { $match: { 
+      _id: { $ne: new Types.ObjectId(currentPostId) },
+      isPublished: true 
+    }},
+    { $sample: { size: limit } },
+    { $project: {
+      title: 1,
+      slug: 1,
+      excerpt: 1,
+      coverImage: 1,
+      category: 1,
+      estimatedReadTime: 1
+    }}
+  ]);
+
+  return posts.map(post => ({
+    ...post,
+    _id: post._id.toString()
+  }));
 }
 
 export async function generateMetadata({
@@ -70,6 +96,8 @@ export default async function BlogPostPage({ params }: PageProps) {
   if (!post) {
     notFound();
   }
+
+  const relatedPosts = await getRandomPosts(post._id.toString());
 
   return (
     <div className="min-h-screen bg-background">
@@ -145,6 +173,42 @@ export default async function BlogPostPage({ params }: PageProps) {
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
       </article>
+
+      {/* Related Posts */}
+      <div className="relative container max-w-3xl mx-auto px-4 mt-16 mb-12">
+        <h2 className="text-2xl font-bold mb-8">Continue Reading</h2>
+        <div className="grid gap-6 md:grid-cols-2">
+          {relatedPosts.map((relatedPost) => (
+            <Link key={relatedPost._id} href={`/blog/${relatedPost.slug}`}>
+              <Card className="group h-full overflow-hidden border border-border/50 bg-secondary/50 backdrop-blur-sm hover:bg-secondary/80 transition-colors">
+                {relatedPost.coverImage && (
+                  <div className="relative h-48 overflow-hidden">
+                    <Image
+                      src={relatedPost.coverImage}
+                      alt={relatedPost.title}
+                      fill
+                      className="object-cover transition-transform group-hover:scale-105"
+                    />
+                  </div>
+                )}
+                <div className="p-6">
+                  {relatedPost.category && (
+                    <span className="inline-block bg-primary/10 text-primary px-2 py-1 rounded-md text-sm mb-3">
+                      {relatedPost.category}
+                    </span>
+                  )}
+                  <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">
+                    {relatedPost.title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm line-clamp-2">
+                    {relatedPost.excerpt}
+                  </p>
+                </div>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
