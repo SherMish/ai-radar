@@ -139,7 +139,7 @@ export function Header() {
                     setIsOpen(false);
                     loginModal.onOpen();
                   }}
-                  className="w-full justify-start text-base font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
+                  className="px-0 w-full justify-start text-base font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
                 >
                   Login
                 </Button>
