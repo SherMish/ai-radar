@@ -27,7 +27,7 @@ export function CookieBanner() {
         <div className="fixed inset-x-0 bottom-0 z-50 bg-background/80 border-t border-border p-4 backdrop-blur-sm">
           <div className="container mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              We use cookies to enhance your experience. Choose your preferences or click "Accept All" to agree to our use of cookies.
+              We use cookies to enhance your experience. Choose your preferences or click &ldquo;Accept All&rdquo; to agree to our use of cookies.
             </p>
             <div className="flex gap-4 shrink-0">
               <Button variant="outline" onClick={() => setShowSettings(true)}>
