@@ -44,16 +44,29 @@ export default async function RootLayout({
       <head>
         {isProduction && GA_TRACKING_ID && (
           <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
-              strategy="afterInteractive"
-            />
-            <Script id="google-analytics" strategy="afterInteractive">
+            <Script id="check-consent">
               {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', '${GA_TRACKING_ID}');
+                function hasAnalyticsConsent() {
+                  try {
+                    const consent = localStorage.getItem("cookie-consent");
+                    if (!consent) return false;
+                    const settings = JSON.parse(consent);
+                    return settings.analytics === true;
+                  } catch {
+                    return false;
+                  }
+                }
+                if (hasAnalyticsConsent()) {
+                  // Load GA script only if we have consent
+                  const script = document.createElement('script');
+                  script.src = 'https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}';
+                  script.async = true;
+                  document.head.appendChild(script);
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${GA_TRACKING_ID}');
+                }
               `}
             </Script>
           </>

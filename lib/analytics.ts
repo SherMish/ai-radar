@@ -6,8 +6,19 @@ import { event as gtagEvent } from './gtag';
 const IS_PRODUCTION = process.env.NEXT_PUBLIC_IS_PRODUCTION === 'true';
 const MIXPANEL_TOKEN = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN || '';
 
-// Only initialize Mixpanel in production
-if (IS_PRODUCTION && MIXPANEL_TOKEN) {
+function hasAnalyticsConsent(): boolean {
+  try {
+    const consent = localStorage.getItem("cookie-consent");
+    if (!consent) return false;
+    const settings = JSON.parse(consent);
+    return settings.analytics === true;
+  } catch {
+    return false;
+  }
+}
+
+// Only initialize Mixpanel if we have consent
+if (IS_PRODUCTION && MIXPANEL_TOKEN && hasAnalyticsConsent()) {
   mixpanel.init(MIXPANEL_TOKEN, {
     debug: false,
     track_pageview: true,
@@ -26,6 +37,12 @@ export function trackEvent(
   eventName: string,
   properties: TrackingEventProperties = {}
 ) {
+  // Only track if we have consent
+  if (!hasAnalyticsConsent()) {
+    console.log('Analytics tracking disabled - no consent');
+    return;
+  }
+
   // Only track in production
   if (!IS_PRODUCTION) {
     console.log('📊 [DEV] Track Event:', eventName, properties);

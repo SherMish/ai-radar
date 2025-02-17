@@ -6,6 +6,6 @@ export interface CookieSettings {
 
 export const defaultSettings: CookieSettings = {
   necessary: true,
-  analytics: false,
-  marketing: false,
+  analytics: true,
+  marketing: true,
 }; 
