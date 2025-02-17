@@ -19,6 +19,12 @@
       "icon": "Code"
     },
     {
+      "id": "business",
+      "name": "Business",
+      "description": "AI solutions for business operations",
+      "icon": "Briefcase"
+    },
+    {
       "id": "creative-tools",
       "name": "Creative Tools",
       "description": "AI tools for artists and designers",
@@ -29,12 +35,6 @@
       "name": "General AI",
       "description": "Multi-purpose AI platforms",
       "icon": "Sparkles"
-    },
-    {
-      "id": "audio-tools",
-      "name": "Audio Tools",
-      "description": "Voice synthesis, music generation, and audio editing",
-      "icon": "Music"
     },
     {
       "id": "video-tools",
@@ -61,10 +61,10 @@
       "icon": "Brain"
     },
     {
-      "id": "business",
-      "name": "Business",
-      "description": "AI solutions for business operations",
-      "icon": "Briefcase"
+      "id": "audio-tools",
+      "name": "Audio Tools",
+      "description": "Voice synthesis, music generation, and audio editing",
+      "icon": "Music"
     },
     {
       "id": "ai-agents",
