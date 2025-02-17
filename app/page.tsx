@@ -27,6 +27,7 @@ import { LatestReviewsCarousel } from "./components/latest-reviews-carousel";
 import { RadarAnimation } from "./components/radar-animation";
 import { Metadata } from 'next';
 import { Types, Document } from 'mongoose';
+import { RandomBlogPosts } from "@/components/random-blog-posts";
 
 const categories = [
   { name: "Text Generation", icon: MessageSquare, count: 156 },
@@ -209,6 +210,7 @@ export default async function Home() {
           </div>
         </div>
       </main>
+      <RandomBlogPosts />
     </>
   );
 }
