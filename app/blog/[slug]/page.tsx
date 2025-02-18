@@ -160,8 +160,8 @@ export default async function BlogPostPage({ params }: PageProps) {
             [&>h4]:text-foreground [&>h4]:font-semibold [&>h4]:mt-8 [&>h4]:mb-4 [&>h4]:text-lg
             [&>a]:text-primary [&>a]:no-underline hover:[&>a]:underline
             [&>strong]:text-foreground [&>strong]:font-semibold
-            [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:my-4 [&>ul]:text-muted-foreground
-            [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:my-4 [&>ol]:text-muted-foreground
+            [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:my-4 
+            [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:my-4
             [&>li]:my-2
             [&>blockquote]:border-l-4 [&>blockquote]:border-primary/50 [&>blockquote]:pl-4 [&>blockquote]:italic
             [&>table]:w-full [&>table]:my-6 [&>table]:text-sm
