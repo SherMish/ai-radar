@@ -9,6 +9,7 @@ import Link from "next/link";
 import { BlogPost } from "@/lib/types/blog";
 import { Card } from "@/components/ui/card";
 import { Types } from "mongoose";
+import { headers } from "next/headers";
 
 interface PageProps {
   params: {
@@ -37,31 +38,69 @@ async function getBlogPost(slug: string) {
 async function getRandomPosts(currentPostId: string, limit: number = 2) {
   await connectDB();
   const posts = await BlogPostModel.aggregate([
-    { $match: { 
-      _id: { $ne: new Types.ObjectId(currentPostId) },
-      isPublished: true 
-    }},
+    {
+      $match: {
+        _id: { $ne: new Types.ObjectId(currentPostId) },
+        isPublished: true,
+      },
+    },
     { $sample: { size: limit } },
-    { $project: {
-      title: 1,
-      slug: 1,
-      excerpt: 1,
-      coverImage: 1,
-      category: 1,
-      estimatedReadTime: 1
-    }}
+    {
+      $project: {
+        title: 1,
+        slug: 1,
+        excerpt: 1,
+        coverImage: 1,
+        category: 1,
+        estimatedReadTime: 1,
+      },
+    },
   ]);
 
-  return posts.map(post => ({
+  return posts.map((post) => ({
     ...post,
-    _id: post._id.toString()
+    _id: post._id.toString(),
   }));
+}
+
+function generateStructuredData(post: BlogPost, baseUrl: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.excerpt,
+    image: post.coverImage ? [post.coverImage] : [],
+    datePublished: post.publishedAt.toISOString(),
+    dateModified: post.updatedAt.toISOString(),
+    author: {
+      "@type": "Organization",
+      name: "AI-Radar Team",
+      url: baseUrl,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "AI-Radar",
+      logo: {
+        "@type": "ImageObject",
+        url: `${baseUrl}/logo.svg`,
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${baseUrl}/blog/${post.slug}`,
+    },
+    wordCount: post.content.split(/\s+/g).length,
+    articleBody: post.content.replace(/<[^>]+>/g, ""), // Strip HTML tags
+    timeRequired: `PT${post.estimatedReadTime}M`,
+  };
 }
 
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const post = await getBlogPost(params.slug);
+  const headersList = headers();
+  const baseUrl = `https://${headersList.get("host")}`;
 
   if (!post) {
     return {
@@ -72,6 +111,13 @@ export async function generateMetadata({
   return {
     title: `${post.title} | AI-Radar Blog`,
     description: post.excerpt,
+    keywords: [
+      "AI",
+      "artificial intelligence",
+      "technology",
+      post.category,
+    ].filter(Boolean),
+    authors: [{ name: "AI-Radar Team" }],
     openGraph: {
       title: post.title,
       description: post.excerpt,
@@ -79,28 +125,54 @@ export async function generateMetadata({
       publishedTime: post.publishedAt.toISOString(),
       modifiedTime: post.updatedAt.toISOString(),
       authors: ["AI-Radar Team"],
-      images: post.coverImage ? [post.coverImage] : [],
+      images: post.coverImage
+        ? [
+            {
+              url: post.coverImage,
+              width: 1200,
+              height: 630,
+              alt: post.title,
+            },
+          ]
+        : [],
+      url: `${baseUrl}/blog/${post.slug}`,
+      siteName: "AI-Radar Blog",
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.excerpt,
       images: post.coverImage ? [post.coverImage] : [],
+      creator: "@ai_radar", // Replace with your actual Twitter handle
+    },
+    alternates: {
+      canonical: `${baseUrl}/blog/${post.slug}`,
     },
   };
 }
 
 export default async function BlogPostPage({ params }: PageProps) {
   const post = await getBlogPost(params.slug);
+  const headersList = headers();
+  const baseUrl = `https://${headersList.get("host")}`;
 
   if (!post) {
     notFound();
   }
 
   const relatedPosts = await getRandomPosts(post._id.toString());
+  const structuredData = generateStructuredData(post, baseUrl);
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Add structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData),
+        }}
+      />
+
       {/* Background effects - same as home page */}
       {/* <div className="fixed inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_14px] [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" /> */}
       <div className="fixed inset-0 bg-gradient-to-tr from-background to-background [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] opacity-90" />
