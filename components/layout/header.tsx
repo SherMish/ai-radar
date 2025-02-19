@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useLoginModal } from "@/hooks/use-login-modal";
@@ -20,6 +20,7 @@ const navigation = [
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
   const { data: session } = useSession();
   const loginModal = useLoginModal();
   const router = useRouter();
@@ -27,6 +28,7 @@ export function Header() {
 
   const handleSearch = (query: string) => {
     router.push(`/search?q=${encodeURIComponent(query)}`);
+    setShowMobileSearch(false);
   };
 
   const showSearch = pathname !== '/';
@@ -99,8 +101,21 @@ export function Header() {
             </div>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="flex md:hidden">
+          {/* Mobile Actions */}
+          <div className="flex items-center gap-2 md:hidden">
+            {/* Search Icon */}
+            {showSearch && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative h-10 w-10"
+                onClick={() => setShowMobileSearch(!showMobileSearch)}
+              >
+                <Search className="h-5 w-5" />
+              </Button>
+            )}
+
+            {/* Menu Button */}
             <Button
               variant="ghost"
               size="icon"
@@ -117,6 +132,16 @@ export function Header() {
           </div>
         </div>
 
+        {/* Mobile Search Bar */}
+        {showSearch && showMobileSearch && (
+          <div className="md:hidden py-2 px-1">
+            <SearchInput 
+              onSearch={handleSearch} 
+              variant="header" 
+            />
+          </div>
+        )}
+
         {/* Mobile Navigation */}
         <div
           className={cn(
@@ -124,13 +149,6 @@ export function Header() {
             isOpen ? "block" : "hidden"
           )}
         >
-          {/* Search Input - Mobile */}
-          {showSearch && (
-            <div className="py-4">
-              <SearchInput onSearch={handleSearch} variant="header" />
-            </div>
-          )}
-
           <div className="space-y-1 pb-3">
             {navigation.map((item) => (
               <Link
