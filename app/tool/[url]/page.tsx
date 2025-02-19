@@ -315,7 +315,8 @@ export default async function ToolPage({ params }: PageProps) {
 
         <div className="relative container max-w-6xl mx-auto sm:px-4 py-8">
           <div className="rounded-lg border border-border/50 bg-secondary/50 backdrop-blur-sm">
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr,300px] gap-6 p-6">
+            <div className="p-6 space-y-8">
+              {/* Full width sections */}
               <div>
                 {/* Header */}
                 <div className="mb-8">
@@ -416,7 +417,7 @@ export default async function ToolPage({ params }: PageProps) {
                 </div>
 
                 {/* Rating Overview */}
-                <div className="mb-8 p-6 rounded-lg border border-border/50 bg-background/50">
+                <div className="p-6 rounded-lg border border-border/50 bg-background/50">
                   <div className="flex flex-col md:flex-row gap-8">
                     {/* Rating Column */}
                     <div className="flex flex-col items-center justify-center text-center md:w-48">
@@ -467,130 +468,135 @@ export default async function ToolPage({ params }: PageProps) {
                     </div>
                   </div>
                 </div>
-
-                {/* Details Section */}
-                <div className="mb-8">
-                  {website.pricingModel ||
-                  website.launchYear ||
-                  website.hasFreeTrialPeriod ||
-                  website.hasAPI ? (
-                    <h2 className="text-2xl font-semibold mb-4">Details</h2>
-                  ) : null}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {website.pricingModel && (
-                      <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
-                        <div className="flex items-start gap-3">
-                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                            <CreditCard className="w-4 h-4 text-primary" />
-                          </div>
-                          <div>
-                            <h3 className="text-sm font-medium text-muted-foreground">
-                              Pricing
-                            </h3>
-                            <p className="text-base mt-1">
-                              {formatPricingModel(website.pricingModel)}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {website.launchYear && (
-                      <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
-                        <div className="flex items-start gap-3">
-                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                            <Calendar className="w-4 h-4 text-primary" />
-                          </div>
-                          <div>
-                            <h3 className="text-sm font-medium text-muted-foreground">
-                              Launch Year
-                            </h3>
-                            <p className="text-base mt-1">
-                              {website.launchYear}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {website.hasAPI && (
-                      <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
-                        <div className="flex items-start gap-3">
-                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                            <Code2 className="w-4 h-4 text-primary" />
-                          </div>
-                          <div>
-                            <h3 className="text-sm font-medium text-muted-foreground">
-                              API
-                            </h3>
-                            <p className="text-base mt-1">
-                              {website.hasAPI ? "✅ Available" : "No"}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {website.hasFreeTrialPeriod && (
-                      <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
-                        <div className="flex items-start gap-3">
-                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                            <Clock className="w-4 h-4 text-primary" />
-                          </div>
-                          <div>
-                            <h3 className="text-sm font-medium text-muted-foreground">
-                              Free Trial
-                            </h3>
-                            <p className="text-base mt-1">
-                              {website.hasFreeTrialPeriod
-                                ? "✅ Available"
-                                : "No"}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Reviews Section */}
-                <div className="border-t border-border/50 pt-6">
-                  {reviews.length > 0 ? (
-                    <ReviewsSection reviews={reviews} />
-                  ) : (
-                    <div className="text-center py-12">
-                      <h3 className="text-2xl font-semibold mb-3">
-                        No Reviews Yet
-                      </h3>
-                      <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                        Be the first to share your experience with{" "}
-                        {website.name} and help others make informed decisions.
-                      </p>
-                      <Link
-                        href={`/tool/${params.url}/review`}
-                        className="inline-flex items-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary px-6 py-3 rounded-lg font-medium transition-colors"
-                      >
-                        Write the First Review
-                        <ArrowRight className="w-4 h-4" />
-                      </Link>
-                    </div>
-                  )}
-                </div>
               </div>
 
-              {/* Similar Tools Column */}
-              {suggestedTools.length > 0 && (
-                <div className="">
-                  <h2 className="text-xl font-bold text-zinc-100 mb-3">
-                    Similar Tools
-                  </h2>
-                  <div className="flex flex-col gap-3">
-                    {suggestedTools.map((tool) => (
-                      <SuggestedToolCard key={tool._id.toString()} website={tool} />
-                    ))}
+              {/* Two column layout for remaining content */}
+              <div className="grid grid-cols-1 lg:grid-cols-[1fr,300px] gap-6">
+                <div>
+                  {/* Details Section */}
+                  <div className="mb-8">
+                    {website.pricingModel ||
+                    website.launchYear ||
+                    website.hasFreeTrialPeriod ||
+                    website.hasAPI ? (
+                      <h2 className="text-2xl font-semibold mb-4">Details</h2>
+                    ) : null}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                      {website.pricingModel && (
+                        <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
+                          <div className="flex items-start gap-3">
+                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                              <CreditCard className="w-4 h-4 text-primary" />
+                            </div>
+                            <div>
+                              <h3 className="text-sm font-medium text-muted-foreground">
+                                Pricing
+                              </h3>
+                              <p className="text-base mt-1">
+                                {formatPricingModel(website.pricingModel)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {website.launchYear && (
+                        <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
+                          <div className="flex items-start gap-3">
+                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                              <Calendar className="w-4 h-4 text-primary" />
+                            </div>
+                            <div>
+                              <h3 className="text-sm font-medium text-muted-foreground">
+                                Launch Year
+                              </h3>
+                              <p className="text-base mt-1">
+                                {website.launchYear}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {website.hasAPI && (
+                        <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
+                          <div className="flex items-start gap-3">
+                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                              <Code2 className="w-4 h-4 text-primary" />
+                            </div>
+                            <div>
+                              <h3 className="text-sm font-medium text-muted-foreground">
+                                API
+                              </h3>
+                              <p className="text-base mt-1">
+                                {website.hasAPI ? "✅ Available" : "No"}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {website.hasFreeTrialPeriod && (
+                        <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
+                          <div className="flex items-start gap-3">
+                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                              <Clock className="w-4 h-4 text-primary" />
+                            </div>
+                            <div>
+                              <h3 className="text-sm font-medium text-muted-foreground">
+                                Free Trial
+                              </h3>
+                              <p className="text-base mt-1">
+                                {website.hasFreeTrialPeriod
+                                  ? "✅ Available"
+                                  : "No"}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Reviews Section */}
+                  <div className="border-t border-border/50 pt-6">
+                    {reviews.length > 0 ? (
+                      <ReviewsSection reviews={reviews} />
+                    ) : (
+                      <div className="text-center py-12">
+                        <h3 className="text-2xl font-semibold mb-3">
+                          No Reviews Yet
+                        </h3>
+                        <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                          Be the first to share your experience with{" "}
+                          {website.name} and help others make informed decisions.
+                        </p>
+                        <Link
+                          href={`/tool/${params.url}/review`}
+                          className="inline-flex items-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary px-6 py-3 rounded-lg font-medium transition-colors"
+                        >
+                          Write the First Review
+                          <ArrowRight className="w-4 h-4" />
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 </div>
-              )}
+
+                {/* Similar Tools Column */}
+                {suggestedTools.length > 0 && (
+                  <div>
+                     <h2 className="text-2xl font-semibold mb-4">
+                      Similar Tools
+                    </h2>
+                    <div className="flex flex-col gap-3">
+                      {suggestedTools.map((tool) => (
+                        <SuggestedToolCard key={tool._id.toString()} website={tool} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

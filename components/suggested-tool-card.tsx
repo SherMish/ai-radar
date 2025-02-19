@@ -19,7 +19,7 @@ interface SuggestedToolCardProps {
 export function SuggestedToolCard({ website }: SuggestedToolCardProps) {
   return (
     <Link href={`/tool/${website.url}`}>
-      <Card className="p-4 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors border-zinc-700/50">
+      <Card className=" p-4 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors border-zinc-700/50">
         <div className="flex items-center gap-3">
           <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center overflow-hidden">
             {website.logo ? (
