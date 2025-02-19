@@ -5,7 +5,7 @@ import { Types } from "mongoose";
 export async function getRandomBlogPosts(limit: number = 3) {
   try {
     await connectDB();
-    
+
     const posts = await BlogPost.aggregate([
       { $match: { isPublished: true } },
       { $sample: { size: limit } },

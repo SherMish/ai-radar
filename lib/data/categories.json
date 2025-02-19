@@ -13,6 +13,12 @@
       "icon": "ImageIcon"
     },
     {
+      "id": "productivity",
+      "name": "Productivity",
+      "description": "Personal and team productivity tools",
+      "icon": "Zap"
+    },
+    {
       "id": "code-tools",
       "name": "Code Tools",
       "description": "AI-powered coding and development tools",
@@ -113,12 +119,6 @@
       "name": "SEO",
       "description": "AI-powered SEO optimization tools",
       "icon": "SearchIcon"
-    },
-    {
-      "id": "productivity",
-      "name": "Productivity",
-      "description": "Personal and team productivity tools",
-      "icon": "Zap"
     }
   ]
 } 

@@ -21,9 +21,12 @@ export async function RandomBlogPosts() {
       {/* Content */}
       <div className="relative container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-semibold">The AI Radar Blog: Uncover the Future of AI</h2>
+          <h2 className="text-4xl font-semibold">
+            The AI Radar Blog: Uncover the Future of AI
+          </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto my-2">
-            Find AI tool reviews, news, and expert insights to navigate the AI landscape.
+            Find AI tool reviews, news, and expert insights to navigate the AI
+            landscape.
           </p>
         </div>
 
@@ -83,7 +86,7 @@ export async function RandomBlogPosts() {
 
         {/* View All Posts Button */}
         <div className="flex justify-center mt-8">
-          <Link 
+          <Link
             href="/blog"
             className="inline-flex items-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary px-6 py-3 rounded-lg font-medium transition-colors"
           >
