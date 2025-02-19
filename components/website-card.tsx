@@ -64,9 +64,9 @@ export function WebsiteCard({ website }: WebsiteCardProps) {
                       />
                     ))}
                   </div>
-                  <span className="text-sm text-zinc-400">
+                  {/* <span className="text-sm text-zinc-400">
                     {website.reviewCount || 0} reviews
-                  </span>
+                  </span> */}
                 </div>
               </div>
               

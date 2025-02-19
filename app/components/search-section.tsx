@@ -61,7 +61,7 @@ export function SearchSection() {
               variants={itemVariants}
               className="text-xl text-muted-foreground"
             >
-              Discover and share insights on the best AI tools
+              Explore the best AI tools, rated by real users.
             </motion.p>
           </div>
           

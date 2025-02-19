@@ -22,11 +22,11 @@ export async function RandomBlogPosts() {
       <div className="relative container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-semibold">
-            The AI Radar Blog: Uncover the Future of AI
+            Trending AI Topics
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto my-2">
             Find AI tool reviews, news, and expert insights to navigate the AI
-            landscape.
+            landscape
           </p>
         </div>
 

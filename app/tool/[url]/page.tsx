@@ -1,7 +1,7 @@
 import { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { Star, ThumbsUp, Flag, Globe, Users, Calendar, Check, ShieldCheck, ShieldAlert, ExternalLink, CreditCard, Code2, Clock } from "lucide-react";
+import { Star, ThumbsUp, Flag, Globe, Users, Calendar, Check, ShieldCheck, ShieldAlert, ExternalLink, CreditCard, Code2, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import connectDB from "@/lib/mongodb";
 import Website from "@/lib/models/Website";
@@ -462,7 +462,23 @@ export default async function ToolPage({ params }: PageProps) {
 
               {/* Reviews Section */}
               <div className="border-t border-border/50 pt-6">
-                <ReviewsSection reviews={reviews} />            
+                {reviews.length > 0 ? (
+                  <ReviewsSection reviews={reviews} />
+                ) : (
+                  <div className="text-center py-12">
+                    <h3 className="text-2xl font-semibold mb-3">No Reviews Yet</h3>
+                    <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                      Be the first to share your experience with {website.name} and help others make informed decisions.
+                    </p>
+                    <Link 
+                      href={`/tool/${params.url}/review`}
+                      className="inline-flex items-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary px-6 py-3 rounded-lg font-medium transition-colors"
+                    >
+                      Write the First Review
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                )}           
               </div>
             </div>
           </div>
