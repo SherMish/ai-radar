@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useState, FormEvent, useRef, useEffect } from "react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface Suggestion {
   _id: string;
@@ -16,9 +17,10 @@ interface Suggestion {
 interface SearchInputProps {
   className?: string;
   onSearch: (query: string) => void;
+  variant?: 'default' | 'header';
 }
 
-export function SearchInput({ className, onSearch }: SearchInputProps) {
+export function SearchInput({ className, onSearch, variant = 'default' }: SearchInputProps) {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -83,12 +85,18 @@ export function SearchInput({ className, onSearch }: SearchInputProps) {
   return (
     <div className="relative w-full" ref={suggestionsRef}>
       <form onSubmit={handleSubmit} className={`relative w-full ${className || ''}`}>
-        <div className="flex flex-col sm:flex-row gap-2">
+        <div className={cn(
+          "flex gap-2",
+          variant === 'default' ? "flex-col sm:flex-row" : "flex-row"
+        )}>
           <div className="relative flex-1">
             <Input
               type="search"
               placeholder="Search for an AI tool by URL or name"
-              className="w-full h-12 pl-12 text-lg bg-secondary/50 border-secondary-foreground/10 gradient-border"
+              className={cn(
+                "w-full bg-secondary/50 border-secondary-foreground/10 gradient-border",
+                variant === 'default' ? "h-12 pl-12 text-lg" : "h-10 pl-10"
+              )}
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value);
@@ -97,12 +105,18 @@ export function SearchInput({ className, onSearch }: SearchInputProps) {
               }}
               onFocus={() => setShowSuggestions(true)}
             />
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5" />
+            <Search className={cn(
+              "absolute top-1/2 -translate-y-1/2 text-muted-foreground",
+              variant === 'default' ? "left-4 h-5 w-5" : "left-3 h-4 w-4"
+            )} />
           </div>
           <Button 
             type="submit" 
-            size="lg" 
-            className="gradient-button h-12 w-full sm:w-[120px]"
+            size={variant === 'default' ? "lg" : "default"}
+            className={cn(
+              "gradient-button",
+              variant === 'default' ? "h-12 w-full sm:w-[120px]" : "hidden sm:inline-flex"
+            )}
           >
             Search
           </Button>

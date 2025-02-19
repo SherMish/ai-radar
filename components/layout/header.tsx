@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
 import { useLoginModal } from "@/hooks/use-login-modal";
 import { useSession, signOut } from "next-auth/react";
 import { UserNav } from "@/components/user-nav";
+import { SearchInput } from "@/components/search-input";
+import { useRouter, usePathname } from "next/navigation";
 
 const navigation = [
   // { name: "For Businesses", href: "/business" },
@@ -20,13 +22,21 @@ export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const { data: session } = useSession();
   const loginModal = useLoginModal();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleSearch = (query: string) => {
+    router.push(`/search?q=${encodeURIComponent(query)}`);
+  };
+
+  const showSearch = pathname !== '/';
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav className="container mx-auto px-4" aria-label="Main navigation">
-        <div className="relative flex h-16 items-center justify-between">
+        <div className="relative flex h-16 items-center justify-between gap-4">
           {/* Logo */}
-          <div className="flex items-center">
+          <div className="flex items-center flex-shrink-0">
             <Link
               href="/"
               className="flex items-center hover:opacity-90 transition-opacity"
@@ -39,12 +49,19 @@ export function Header() {
                   height={28}
                   
                 />
-                <span className="text-xs px-1.5 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">
+                {/* <span className="text-xs px-1.5 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">
                   BETA
-                </span>
+                </span> */}
               </div>
             </Link>
           </div>
+
+          {/* Search Input - Desktop */}
+          {showSearch && (
+            <div className="hidden md:flex flex-1 max-w-xl">
+              <SearchInput onSearch={handleSearch} variant="header" />
+            </div>
+          )}
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex md:items-center md:space-x-8">
@@ -107,7 +124,14 @@ export function Header() {
             isOpen ? "block" : "hidden"
           )}
         >
-          <div className="space-y-1 pb-3 pt-2">
+          {/* Search Input - Mobile */}
+          {showSearch && (
+            <div className="py-4">
+              <SearchInput onSearch={handleSearch} variant="header" />
+            </div>
+          )}
+
+          <div className="space-y-1 pb-3">
             {navigation.map((item) => (
               <Link
                 key={item.name}
