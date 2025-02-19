@@ -82,6 +82,12 @@ export function SearchInput({ className, onSearch, variant = 'default' }: Search
     }
   };
 
+  const clearSearch = () => {
+    setQuery("");
+    setShowSuggestions(false);
+    setSelectedIndex(-1);
+  };
+
   return (
     <div className="relative w-full" ref={suggestionsRef}>
       <form onSubmit={handleSubmit} className={`relative w-full ${className || ''}`}>
@@ -143,6 +149,7 @@ export function SearchInput({ className, onSearch, variant = 'default' }: Search
                   `}
                   onMouseEnter={() => setSelectedIndex(index)}
                   onMouseLeave={() => setSelectedIndex(-1)}
+                  onClick={clearSearch}
                 >
                   <div className="flex flex-col items-start">
                     <div className="font-medium">{suggestion.name}</div>
@@ -156,6 +163,7 @@ export function SearchInput({ className, onSearch, variant = 'default' }: Search
                 <Link
                   href="/tool/new"
                   className="flex items-center p-3 rounded-md hover:bg-muted/50 hover:text-primary transition-colors text-primary"
+                  onClick={clearSearch}
                 >
                   <div className="font-medium">
                     Can&apos;t find the tool? Add it now in seconds!
