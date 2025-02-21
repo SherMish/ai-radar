@@ -21,21 +21,27 @@ export async function POST(request: Request) {
     }
 
     // Prepare categories for Perplexity prompt
-    const categoryOptions = categoriesData.categories.map((cat) => cat.id);
+    const categoryOptions = Array.isArray(categoriesData.categories)
+      ? categoriesData.categories.map((cat) => cat.id)
+      : [];
+
+    if (categoryOptions.length === 0) {
+      console.warn("No categories found in categories.json");
+    }
 
     // Construct Perplexity API payload
     const payload = {
-      model: "sonar",
+      model: "sonar-pro",
       messages: [
         {
           role: "system",
-          content: `Analyze the AI tool available at ${url} based on real-time web search. Ensure an objective, structured review with precise scoring.`,
+          content: `You are a JSON-only response API. Analyze the AI tool available at ${url} based on real-time web search. Return only raw JSON without any markdown formatting or additional text.`,
         },
         {
           role: "user",
           content: `Analyze the AI tool at ${url}. Your task is to generate a **neutral, structured review** using real-time web search.
 
-Return a JSON object with:
+Return ONLY a raw JSON object (no markdown, no \`\`\`json tags) with:
 {
   "shortDescription": "10 words",
   "description": "100 words in a single paragraph",
@@ -51,7 +57,7 @@ Return a JSON object with:
     3. **Market Adoption & Reputation (20%)** - Analyze brand recognition, partnerships, and industry presence.
     4. **Pricing & Accessibility (10%)** - Free or freemium models score higher; premium pricing without clear value-add lowers the score.
 
-Return **only the JSON object**. No additional text.`,
+Return the raw JSON object without any markdown formatting or additional text.`,
         },
       ],
       max_tokens: 500,
@@ -60,12 +66,14 @@ Return **only the JSON object**. No additional text.`,
       search_domain_filter: null,
       return_images: false,
       return_related_questions: false,
-      search_recency_filter: "30d",
+      search_recency_filter: "month",
       top_k: 3,
       stream: false,
       presence_penalty: 0,
       frequency_penalty: 1,
-      response_format: "json_schema", // ✅ FIXED: Now correctly set to a string "json_schema"
+      response_format: {
+        type: "text",
+      },
     };
 
     // Call Perplexity AI API
@@ -81,11 +89,23 @@ Return **only the JSON object**. No additional text.`,
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(`Perplexity API error: ${JSON.stringify(data)}`);
+      console.error(`Perplexity API error: ${JSON.stringify(data)}`);
+      throw new Error(`Perplexity API error: ${data.error.message}`);
     }
 
-    console.log("✅ AI Generated Metadata:", data);
-    return NextResponse.json(data);
+    // Parse the response content to get the JSON object
+    try {
+      // Clean the response by removing markdown code blocks if present
+      let content = data.choices[0].message.content;
+      content = content.replace(/```json\n?|\n?```/g, '').trim();
+      const jsonResponse = JSON.parse(content);
+      console.log("✅ AI Generated Metadata:", jsonResponse);
+      return NextResponse.json(jsonResponse);
+    } catch (parseError) {
+      console.error("Failed to parse AI response as JSON:", parseError);
+      console.error("Raw content:", data.choices[0].message.content);
+      throw new Error("Invalid response format from AI");
+    }
   } catch (error) {
     console.error("❌ Error generating metadata:", error);
     return new NextResponse("Failed to generate metadata", { status: 500 });
