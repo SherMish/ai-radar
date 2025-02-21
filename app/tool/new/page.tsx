@@ -215,6 +215,9 @@ export default function NewTool() {
                 className={`w-full ${errors.url ? "border-red-500" : ""}`}
                 maxLength={CHAR_LIMITS.url}
               />
+              <p className="text-xs text-gray-500">
+                {formData.url.length} / {CHAR_LIMITS.url}
+              </p>
               {errors.url && (
                 <p className="text-sm text-red-500">{errors.url}</p>
               )}
@@ -238,6 +241,9 @@ export default function NewTool() {
                 className={`w-full ${errors.name ? "border-red-500" : ""}`}
                 maxLength={CHAR_LIMITS.name}
               />
+              <p className="text-xs text-gray-500">
+                {formData.name.length} / {CHAR_LIMITS.name}
+              </p>
               {errors.name && (
                 <p className="text-sm text-red-500">{errors.name}</p>
               )}
@@ -282,8 +288,14 @@ export default function NewTool() {
                 placeholder="Enter a detailed description of the tool"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                className={`w-full rounded-md border bg-background px-3 py-2 text-sm ${
+                  errors.description ? "border-red-500" : ""
+                }`}
+                maxLength={CHAR_LIMITS.description}
               />
+              <p className="text-xs text-gray-500">
+                {formData.description.length} / {CHAR_LIMITS.description}
+              </p>
               {errors.description && (
                 <p className="text-sm text-red-500">{errors.description}</p>
               )}
@@ -307,8 +319,13 @@ export default function NewTool() {
                 className={errors.shortDescription ? "border-red-500" : ""}
                 maxLength={CHAR_LIMITS.shortDescription}
               />
+              <p className="text-xs text-gray-500">
+                {formData.shortDescription.length} / {CHAR_LIMITS.shortDescription}
+              </p>
               {errors.shortDescription && (
-                <p className="text-sm text-red-500">{errors.shortDescription}</p>
+                <p className="text-sm text-red-500">
+                  {errors.shortDescription}
+                </p>
               )}
             </div>
 
