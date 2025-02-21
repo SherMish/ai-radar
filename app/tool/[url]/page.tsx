@@ -421,7 +421,7 @@ export default async function ToolPage({ params }: PageProps) {
 
                 {/* Rating Overview */}
                 <div className="p-6 rounded-lg border border-border/50 bg-background/50">
-                  <div className="flex flex-col md:flex-row gap-8">
+                  <div className="flex flex-col md:flex-row gap-6 md:gap-8">
                     {/* User Rating Column - Only show if there are reviews */}
                     {website.reviewCount > 0 && (
                       <div className="flex flex-col items-center justify-center text-center md:w-48">
@@ -451,6 +451,11 @@ export default async function ToolPage({ params }: PageProps) {
                       </div>
                     )}
 
+                    {/* Mobile Divider - Only show if there are reviews */}
+                    {website.reviewCount > 0 && (
+                      <div className="block md:hidden w-full h-px bg-border/50" />
+                    )}
+
                     {/* RadarTrust Score */}
                     {website.radarTrust && (
                       <>
@@ -475,7 +480,8 @@ export default async function ToolPage({ params }: PageProps) {
                       </>
                     )}
 
-                    {/* Vertical Divider */}
+                    {/* Vertical/Horizontal Divider */}
+                    <div className="block md:hidden w-full h-px bg-border/50" />
                     <div className="hidden md:block w-px bg-border/50 self-stretch" />
 
                     {/* Description Column */}
