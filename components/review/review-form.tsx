@@ -47,6 +47,10 @@ interface ReviewFormProps {
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_FILE_TYPES = ["jpg", "png", "pdf"];
 
+const CHAR_LIMITS = {
+  title: 100,
+};
+
 export default function ReviewForm({ isNewTool = false, initialUrl = "" }: ReviewFormProps) {
   const router = useRouter();
   const { data: session } = useSession();
@@ -120,8 +124,8 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
     }
     if (!reviewData.title.trim()) {
       errors.title = "Please enter a review title";
-    } else if (reviewData.title.length > 30) {
-      errors.title = "Title cannot be longer than 30 characters";
+    } else if (reviewData.title.length > CHAR_LIMITS.title) {
+      errors.title = `Title must be ${CHAR_LIMITS.title} characters or less`;
     }
     if (reviewData.content.length < 25) {
       errors.content = "Review must be at least 25 characters long";
@@ -414,8 +418,12 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
               value={reviewData.title}
               onChange={(e) => setReviewData({ ...reviewData, title: e.target.value })}
               placeholder="Summarize your experience"
-              className="bg-background/50"
+              className={`bg-background/50 ${formErrors.title ? 'border-red-500' : ''}`}
+              maxLength={CHAR_LIMITS.title}
             />
+            <p className="text-sm text-muted-foreground">
+              {reviewData.title.length} / {CHAR_LIMITS.title}
+            </p>
             {formErrors.title && (
               <p className="text-sm text-destructive">{formErrors.title}</p>
             )}
@@ -434,7 +442,7 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
               <p className="text-sm text-destructive">{formErrors.content}</p>
             )}
             <p className="text-sm text-muted-foreground">
-              {reviewData.content.length}/1000 characters
+              {reviewData.content.length}/1000
             </p>
           </div>
 
