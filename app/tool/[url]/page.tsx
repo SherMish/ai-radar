@@ -40,6 +40,7 @@ import WriteReviewButton from "@/app/components/WriteReviewButton";
 import { PricingModel } from "@/lib/types/website";
 import { WebsiteCard } from "@/components/website-card";
 import { SuggestedToolCard } from "@/components/suggested-tool-card";
+import { RadarTrustInfo } from "@/components/radar-trust-info";
 
 interface WebsiteDoc {
   _id: Types.ObjectId;
@@ -474,7 +475,10 @@ export default async function ToolPage({ params }: PageProps) {
                             RadarTrust™ Score
                           </div>
                           <div className="text-sm text-zinc-400">
-                            AI-powered analysis
+                            <div className="flex items-center gap-1">
+                              AI-powered analysis
+                              <RadarTrustInfo />
+                            </div>
                           </div>
                         </div>
                       </>
