@@ -460,6 +460,7 @@ export default async function ToolPage({ params }: PageProps) {
                         <div className="flex flex-col items-center justify-center text-center md:w-48">
                           <div className="text-5xl font-bold mb-2">
                             {website.radarTrust.toFixed(1)}
+                            <span className="text-2xl text-muted-foreground">/10</span>
                           </div>
                           <div className="flex items-center gap-1 mb-2">
                             <RadarIcon className="w-6 h-6 text-primary" />
