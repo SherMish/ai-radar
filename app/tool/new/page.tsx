@@ -22,11 +22,20 @@ import { UploadImage } from "@/components/upload-image";
 // Get the categories array from the JSON structure
 const categories = categoriesJson.categories;
 
+// Add these constants at the top of the file
+const CHAR_LIMITS = {
+  url: 50,
+  name: 50,
+  shortDescription: 100,
+  description: 1000,
+};
+
 interface FormErrors {
   url?: string;
   name?: string;
   category?: string;
   shortDescription?: string;
+  description?: string;
 }
 
 export default function NewTool() {
@@ -142,6 +151,9 @@ export default function NewTool() {
       if (!urlPattern.test(formData.url)) {
         newErrors.url = "Please enter a valid URL";
       }
+      if (formData.url.length > CHAR_LIMITS.url) {
+        newErrors.url = `URL must be ${CHAR_LIMITS.url} characters or less`;
+      }
     }
 
     // Name validation
@@ -149,8 +161,8 @@ export default function NewTool() {
       newErrors.name = "Name is required";
     } else if (formData.name.length < 3) {
       newErrors.name = "Name must be at least 3 characters";
-    } else if (formData.name.length > 50) {
-      newErrors.name = "Name must be less than 50 characters";
+    } else if (formData.name.length > CHAR_LIMITS.name) {
+      newErrors.name = `Name must be less than ${CHAR_LIMITS.name} characters`;
     }
 
     // Category validation
@@ -163,6 +175,16 @@ export default function NewTool() {
       const wordCount = formData.shortDescription.trim().split(/\s+/).length;
       if (wordCount > 10) {
         newErrors.shortDescription = "Short description must be 10 words or less";
+      }
+      if (formData.shortDescription.length > CHAR_LIMITS.shortDescription) {
+        newErrors.shortDescription = `Short description must be ${CHAR_LIMITS.shortDescription} characters or less`;
+      }
+    }
+
+    // Description validation
+    if (formData.description) {
+      if (formData.description.length > CHAR_LIMITS.description) {
+        newErrors.description = `Description must be ${CHAR_LIMITS.description} characters or less`;
       }
     }
 
@@ -191,6 +213,7 @@ export default function NewTool() {
                   }
                 }}
                 className={`w-full ${errors.url ? "border-red-500" : ""}`}
+                maxLength={CHAR_LIMITS.url}
               />
               {errors.url && (
                 <p className="text-sm text-red-500">{errors.url}</p>
@@ -213,6 +236,7 @@ export default function NewTool() {
                   }
                 }}
                 className={`w-full ${errors.name ? "border-red-500" : ""}`}
+                maxLength={CHAR_LIMITS.name}
               />
               {errors.name && (
                 <p className="text-sm text-red-500">{errors.name}</p>
@@ -260,11 +284,14 @@ export default function NewTool() {
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 className="w-full rounded-md border bg-background px-3 py-2 text-sm"
               />
+              {errors.description && (
+                <p className="text-sm text-red-500">{errors.description}</p>
+              )}
             </div>
 
             <div className="grid gap-2">
               <label htmlFor="shortDescription" className="text-sm font-medium">
-                Short Description (Optional, max 10 words)
+                Short Description (Optional)
               </label>
               <Input
                 id="shortDescription"
@@ -278,6 +305,7 @@ export default function NewTool() {
                   }
                 }}
                 className={errors.shortDescription ? "border-red-500" : ""}
+                maxLength={CHAR_LIMITS.shortDescription}
               />
               {errors.shortDescription && (
                 <p className="text-sm text-red-500">{errors.shortDescription}</p>
