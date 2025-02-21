@@ -49,7 +49,7 @@ Return ONLY a raw JSON object (no markdown, no \`\`\`json tags) with:
   "hasFreeTrialPeriod": true/false,
   "hasAPI": true/false,
   "launchYear": Number (or null if uncertain),
-  "category": "Must match one from: ${JSON.stringify(categoryOptions)}",
+  "category": "The id from one of these: ${JSON.stringify(categoryOptions)}",
   "radarTrust": "Score between 1 and 10 (e.g., 8.3, 6.7, etc.), based on:
 
     1. **User Reviews & Ratings (40%)** - Aggregate ratings from Futurepedia, Trustpilot, G2, and Perplexity web search.

@@ -106,7 +106,7 @@ const WebsiteSchema = new Schema({
     type: Number,
     min: 1,
     max: 10,
-    default: 5
+    default: 8.0
   },
 }, {
   timestamps: true,

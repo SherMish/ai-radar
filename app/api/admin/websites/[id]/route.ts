@@ -28,6 +28,7 @@ export async function PATCH(
           hasFreeTrialPeriod: body.hasFreeTrialPeriod,
           hasAPI: body.hasAPI,
           launchYear: body.launchYear,
+          radarTrust: body.radarTrust,
         }
       },
       { new: true }

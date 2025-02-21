@@ -24,6 +24,7 @@ export interface WebsiteType {
   averageRating?: number;
   isVerified?: boolean;
   isActive?: boolean;
+  radarTrust?: number;
   createdAt?: Date;
   updatedAt?: Date;
 } 

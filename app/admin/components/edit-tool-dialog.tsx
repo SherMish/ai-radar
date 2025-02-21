@@ -32,6 +32,7 @@ interface FormData {
   hasFreeTrialPeriod: boolean;
   hasAPI: boolean;
   launchYear: number | null;
+  radarTrust: number | null;
 }
 
 export function EditToolDialog({ website, open, onOpenChange, onSave, generatedData }: EditToolDialogProps) {
@@ -46,6 +47,7 @@ export function EditToolDialog({ website, open, onOpenChange, onSave, generatedD
     hasFreeTrialPeriod: website.hasFreeTrialPeriod || false,
     hasAPI: website.hasAPI || false,
     launchYear: website.launchYear || null,
+    radarTrust: website.radarTrust || null,
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -71,9 +73,14 @@ export function EditToolDialog({ website, open, onOpenChange, onSave, generatedD
 
   const handleApplyGeneratedData = () => {
     if (generatedData) {
+      const updatedData = {
+        ...generatedData,
+        category: generatedData.category || formData.category,
+      };
+      
       setFormData(prev => ({
         ...prev,
-        ...generatedData
+        ...updatedData
       }));
       toast.success('Generated data applied');
     }
@@ -186,6 +193,22 @@ export function EditToolDialog({ website, open, onOpenChange, onSave, generatedD
               onChange={(e) => setFormData(prev => ({ ...prev, launchYear: parseInt(e.target.value) || null }))}
               min={2000}
               max={new Date().getFullYear()}
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label>RadarTrust™ Score</Label>
+            <Input
+              type="number"
+              value={formData.radarTrust?.toString() || ''}
+              onChange={(e) => setFormData(prev => ({ 
+                ...prev, 
+                radarTrust: e.target.value ? Number(e.target.value) : null 
+              }))}
+              min={1}
+              max={10}
+              step={0.1}
+              placeholder="Enter score (1-10)"
             />
           </div>
 
