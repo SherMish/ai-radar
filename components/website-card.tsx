@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
-import { Star } from "lucide-react";
+import { Star, Radar as RadarIcon } from "lucide-react";
 import { Types } from "mongoose";
 
 interface WebsiteCardProps {
@@ -16,6 +16,7 @@ interface WebsiteCardProps {
     logo?: string;
     averageRating: number;
     reviewCount: number;
+    radarTrust?: number;
   };
 }
 
@@ -51,7 +52,7 @@ export function WebsiteCard({ website }: WebsiteCardProps) {
                 <h2 className="text-lg font-semibold text-zinc-50">
                   {website.name}
                 </h2>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <div className="flex items-center">
                     {[...Array(5)].map((_, i) => (
                       <Star
@@ -64,9 +65,23 @@ export function WebsiteCard({ website }: WebsiteCardProps) {
                       />
                     ))}
                   </div>
-                  {/* <span className="text-sm text-zinc-400">
-                    {website.reviewCount || 0} reviews
-                  </span> */}
+                  {website.reviewCount > 0 && (
+                    <span className="text-sm text-zinc-400">
+                      {website.averageRating.toFixed(1)}
+                    </span>
+                  )}
+                  {(website.reviewCount > 0 && website.radarTrust) && (
+                    <div className="w-px h-4 bg-zinc-700" />
+                  )}
+                  {website.radarTrust && (
+                    <div className="flex items-center gap-1 text-primary">
+                      <RadarIcon className="w-4 h-4" />
+                      <span className="text-sm font-medium">
+                        {website.radarTrust.toFixed(1)}
+                        <span className="ml-1">RadarTrust™</span>
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
               

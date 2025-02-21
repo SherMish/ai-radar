@@ -60,7 +60,7 @@ const CategoryPage = async ({ params }: PageProps) => {
 
   await connectDB();
   const websites = await Website.find({ category: category.id })
-    .select('name url description logo shortDescription category averageRating reviewCount')
+    .select('name url description logo shortDescription category averageRating reviewCount radarTrust')
     .lean();
 
   // Get the icon component
