@@ -422,34 +422,57 @@ export default async function ToolPage({ params }: PageProps) {
                 {/* Rating Overview */}
                 <div className="p-6 rounded-lg border border-border/50 bg-background/50">
                   <div className="flex flex-col md:flex-row gap-8">
-                    {/* Rating Column */}
-                    <div className="flex flex-col items-center justify-center text-center md:w-48">
-                      <div className="text-5xl font-bold mb-2">
-                        {website.averageRating
-                          ? website.averageRating.toFixed(1)
-                          : "0"}
+                    {/* User Rating Column - Only show if there are reviews */}
+                    {website.reviewCount > 0 && (
+                      <div className="flex flex-col items-center justify-center text-center md:w-48">
+                        <div className="text-5xl font-bold mb-2">
+                          {website.averageRating
+                            ? website.averageRating.toFixed(1)
+                            : "0"}
+                        </div>
+                        <div className="flex items-center gap-1 mb-2">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`w-6 h-6 ${
+                                i < (website.averageRating || 0)
+                                  ? "text-yellow-400 fill-yellow-400"
+                                  : "text-zinc-600"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <div className={`text-sm font-medium ${ratingStatus.color} mb-1`}>
+                          {ratingStatus.label}
+                        </div>
+                        <div className="text-sm text-zinc-400">
+                          Based on {website.reviewCount} reviews
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1 mb-2">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`w-6 h-6 ${
-                              i < (website.averageRating || 0)
-                                ? "text-yellow-400 fill-yellow-400"
-                                : "text-zinc-600"
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      <div
-                        className={`text-sm font-medium ${ratingStatus.color} mb-1`}
-                      >
-                        {ratingStatus.label}
-                      </div>
-                      <div className="text-sm text-zinc-400">
-                        Based on {website.reviewCount || 0} reviews
-                      </div>
-                    </div>
+                    )}
+
+                    {/* RadarTrust Score */}
+                    {website.radarTrust && (
+                      <>
+                        {website.reviewCount > 0 && (
+                          <div className="hidden md:block w-px bg-border/50 self-stretch" />
+                        )}
+                        <div className="flex flex-col items-center justify-center text-center md:w-48">
+                          <div className="text-5xl font-bold mb-2">
+                            {website.radarTrust.toFixed(1)}
+                          </div>
+                          <div className="flex items-center gap-1 mb-2">
+                            <RadarIcon className="w-6 h-6 text-primary" />
+                          </div>
+                          <div className="text-sm font-medium text-primary mb-1">
+                            RadarTrust™ Score
+                          </div>
+                          <div className="text-sm text-zinc-400">
+                            AI-powered analysis
+                          </div>
+                        </div>
+                      </>
+                    )}
 
                     {/* Vertical Divider */}
                     <div className="hidden md:block w-px bg-border/50 self-stretch" />
@@ -481,34 +504,10 @@ export default async function ToolPage({ params }: PageProps) {
                     {website.pricingModel ||
                     website.launchYear ||
                     website.hasFreeTrialPeriod ||
-                    website.radarTrust ||
                     website.hasAPI ? (
                       <h2 className="text-2xl font-semibold mb-4">Details</h2>
                     ) : null}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                      {website.radarTrust && (
-                        <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
-                          <div className="flex items-start gap-3">
-                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                              <RadarIcon className="w-4 h-4 text-primary" />
-                            </div>
-                            <div>
-                              <h3 className="text-sm font-medium text-muted-foreground">
-                                RadarTrust Score
-                              </h3>
-                              <div className="flex items-center gap-2 mt-1">
-                                <p className="text-xl font-semibold">
-                                  {website.radarTrust.toFixed(1)}
-                                </p>
-                                <span className="text-sm text-muted-foreground">
-                                  / 10
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
                       {website.pricingModel && (
                         <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
                           <div className="flex items-start gap-3">
