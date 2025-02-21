@@ -20,6 +20,7 @@ export interface WebsiteType {
   averageRating?: number;
   isVerified?: boolean;
   isActive?: boolean;
+  radarTrust?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -100,6 +101,12 @@ const WebsiteSchema = new Schema({
   launchYear: {
     type: Number,
     default: null
+  },
+  radarTrust: {
+    type: Number,
+    min: 1,
+    max: 10,
+    default: 5
   },
 }, {
   timestamps: true,

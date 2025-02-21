@@ -16,6 +16,7 @@ import {
   Code2,
   Clock,
   ArrowRight,
+  Radar as RadarIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import connectDB from "@/lib/mongodb";
@@ -47,6 +48,7 @@ interface WebsiteDoc {
   isVerified: boolean;
   relatedCategory: { name: string };
   owner: { name: string };
+  radarTrust?: number;
 }
 
 interface ReviewDoc extends Document {
@@ -86,7 +88,7 @@ async function getWebsiteData(url: string) {
   // Get website data
   const website = await Website.findOne({ url: url })
     .select(
-      "name url description shortDescription logo category averageRating reviewCount isVerified pricingModel launchYear hasAPI hasFreeTrialPeriod"
+      "name url description shortDescription logo category averageRating reviewCount isVerified pricingModel launchYear hasAPI hasFreeTrialPeriod radarTrust"
     )
     .lean();
 
@@ -121,6 +123,7 @@ async function getWebsiteData(url: string) {
     _id: website._id.toString(),
     averageRating: Math.round(averageRating * 10) / 10,
     reviewCount,
+    radarTrust: website.radarTrust,
     category: categoryData
       ? {
           ...categoryData,
@@ -478,10 +481,34 @@ export default async function ToolPage({ params }: PageProps) {
                     {website.pricingModel ||
                     website.launchYear ||
                     website.hasFreeTrialPeriod ||
+                    website.radarTrust ||
                     website.hasAPI ? (
                       <h2 className="text-2xl font-semibold mb-4">Details</h2>
                     ) : null}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                      {website.radarTrust && (
+                        <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
+                          <div className="flex items-start gap-3">
+                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                              <RadarIcon className="w-4 h-4 text-primary" />
+                            </div>
+                            <div>
+                              <h3 className="text-sm font-medium text-muted-foreground">
+                                RadarTrust Score
+                              </h3>
+                              <div className="flex items-center gap-2 mt-1">
+                                <p className="text-xl font-semibold">
+                                  {website.radarTrust.toFixed(1)}
+                                </p>
+                                <span className="text-sm text-muted-foreground">
+                                  / 10
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
                       {website.pricingModel && (
                         <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
                           <div className="flex items-start gap-3">
@@ -569,7 +596,8 @@ export default async function ToolPage({ params }: PageProps) {
                         </h3>
                         <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                           Be the first to share your experience with{" "}
-                          {website.name} and help others make informed decisions.
+                          {website.name} and help others make informed
+                          decisions.
                         </p>
                         <Link
                           href={`/tool/${params.url}/review`}
@@ -586,12 +614,15 @@ export default async function ToolPage({ params }: PageProps) {
                 {/* Similar Tools Column */}
                 {suggestedTools.length > 0 && (
                   <div>
-                     <h2 className="text-2xl font-semibold mb-4">
+                    <h2 className="text-2xl font-semibold mb-4">
                       Similar Tools
                     </h2>
                     <div className="flex flex-col gap-3">
                       {suggestedTools.map((tool) => (
-                        <SuggestedToolCard key={tool._id.toString()} website={tool} />
+                        <SuggestedToolCard
+                          key={tool._id.toString()}
+                          website={tool}
+                        />
                       ))}
                     </div>
                   </div>

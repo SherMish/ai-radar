@@ -21,7 +21,8 @@ export async function POST(req: Request) {
       category,
       description,
       shortDescription,
-      logo
+      logo,
+      radarTrust
     } = body;
 
     // Validate required fields
@@ -30,6 +31,17 @@ export async function POST(req: Request) {
         { error: "Missing required fields" },
         { status: 400 }
       );
+    }
+
+    // Validate radarTrust if provided
+    if (radarTrust !== undefined) {
+      const trustScore = Number(radarTrust);
+      if (isNaN(trustScore) || trustScore < 1 || trustScore > 10) {
+        return NextResponse.json(
+          { error: "RadarTrust must be a number between 1 and 10" },
+          { status: 400 }
+        );
+      }
     }
 
     await connectDB();
@@ -57,6 +69,7 @@ export async function POST(req: Request) {
       description: description || undefined,
       shortDescription: shortDescription || undefined,
       logo: process.env.NEXT_PUBLIC_IS_PRODUCTION === 'false' ? (logo || undefined) : undefined,
+      radarTrust: radarTrust || 5, // Default to 5 if not provided
       createdBy: session.user.id,
       isActive: true,
     });
