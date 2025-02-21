@@ -1,149 +1,93 @@
 import { NextResponse } from "next/server";
-import OpenAI from "openai";
 import categoriesData from "@/lib/data/categories.json";
-import puppeteer from "puppeteer";
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
-
-// Simpler fetch function
-async function fetchWebsiteText(url: string): Promise<string | null> {
-    try {
-        if (!url.startsWith("http")) {
-            url = `https://${url}`; // Ensure it's a full URL
-        }
-
-        console.log(`🌐 Launching Puppeteer to scrape: ${url}`);
-
-        const browser = await puppeteer.launch({
-            headless: true,
-            args: ["--no-sandbox", "--disable-setuid-sandbox"],
-        });
-
-        const page = await browser.newPage();
-        await page.setUserAgent(
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-        );
-
-        console.log("Navigating to page...");
-        await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 });
-
-        console.log("Scrolling for lazy loading...");
-        await page.evaluate(async () => {
-            await new Promise((resolve) => {
-                let totalHeight = 0;
-                let distance = 500;
-                let timer = setInterval(() => {
-                    let scrollHeight = document.body.scrollHeight;
-                    window.scrollBy(0, distance);
-                    totalHeight += distance;
-
-                    if (totalHeight >= scrollHeight) {
-                        clearInterval(timer);
-                        resolve(true);
-                    }
-                }, 300);
-            });
-        });
-
-        // Extract visible text
-        const content = await page.evaluate(() => {
-            return document.body.innerText
-                .replace(/\s+/g, " ")
-                .trim()
-                .slice(0, 5000); // Increase limit for longer content
-        });
-
-        console.log("Extracting iframe content...");
-        const iframes = await page.$$("iframe");
-        for (const frame of iframes) {
-            try {
-                const frameContent = await (await frame.contentFrame())?.evaluate(() => document.body.innerText);
-                if (frameContent) console.log("📌 Found text in iframe:", frameContent);
-            } catch (e) {
-                console.error("❌ Error extracting iframe:", e);
-            }
-        }
-
-        await browser.close();
-
-        return content || null;
-    } catch (error) {
-        console.error("❌ Error fetching website text:", url, error);
-        return null;
-    }
-}
-
-// Example Usage
-fetchWebsiteText("example.com").then(console.log);
+// Perplexity API Key (Set it in your .env)
+const PERPLEXITY_API_KEY = "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"
 
 export async function POST(request: Request) {
-    if (process.env.IS_PRODUCTION === "true") {
-        return new NextResponse("Not authorized", { status: 401 });
+  if (process.env.IS_PRODUCTION === "true") {
+    return new NextResponse("Not authorized", { status: 401 });
+  }
+
+  if (!PERPLEXITY_API_KEY) {
+    console.error("Perplexity API key is not set");
+    return new NextResponse("Perplexity API key is not configured", { status: 500 });
+  }
+
+  try {
+    const { url } = await request.json();
+    if (!url) {
+      return new NextResponse("URL is required", { status: 400 });
     }
 
-    if (!process.env.OPENAI_API_KEY) {
-        console.error("OpenAI API key is not set");
-        return new NextResponse("OpenAI API key is not configured", { status: 500 });
-    }
+    // Prepare categories for Perplexity prompt
+    const categoryOptions = categoriesData.categories.map((cat) => cat.id);
 
-    try {
-        const { url } = await request.json();
-        if (!url) {
-            return new NextResponse("URL is required", { status: 400 });
-        }
+    // Construct Perplexity API payload
+    const payload = {
+      model: "sonar",
+      messages: [
+        {
+          role: "system",
+          content: `Analyze the AI tool available at ${url} based on real-time web search. Ensure an objective, structured review with precise scoring.`,
+        },
+        {
+          role: "user",
+          content: `Analyze the AI tool at ${url}. Your task is to generate a **neutral, structured review** using real-time web search.
 
-        // Scrape website content
-        const websiteContent = await fetchWebsiteText(url);
-        if (!websiteContent) {
-            return new NextResponse("Failed to fetch website content", { status: 500 });
-        }
-        console.log(websiteContent)
-
-        // Prepare categories for GPT
-        const categoryOptions = categoriesData.categories.map((cat) => ({
-            id: cat.id,
-            name: cat.name,
-            description: cat.description,
-        }));
-
-        // Construct GPT prompt with real content
-        const prompt = `Analyze this AI tool based on its website content.
-
-Website URL: ${url}
-Extracted Website Content:
-"${websiteContent}"
-
-Your task is to generate metadata for this AI tool. Return a JSON object with:
-
+Return a JSON object with:
 {
   "shortDescription": "10 words",
-  "description": "100 words",
-  "pricingModel": "Choose from [free, freemium, subscription, pay_per_use, enterprise]",
+  "description": "100 words in a single paragraph",
+  "pricingModel": "Choose from ['free', 'freemium', 'subscription', 'pay_per_use', 'enterprise']",
   "hasFreeTrialPeriod": true/false,
   "hasAPI": true/false,
   "launchYear": Number (or null if uncertain),
-  "category": "Must match one from: ${JSON.stringify(categoryOptions.map(c => c.id))}"
-}
+  "category": "Must match one from: ${JSON.stringify(categoryOptions)}",
+  "radarTrust": "Score between 1 and 10 (e.g., 8.3, 6.7, etc.), based on:
 
-Return only the JSON object. No other text.`;
+    1. **User Reviews & Ratings (40%)** - Aggregate ratings from Futurepedia, Trustpilot, G2, and Perplexity web search.
+    2. **Feature Robustness & Innovation (30%)** - Compare AI capabilities to competitors.
+    3. **Market Adoption & Reputation (20%)** - Analyze brand recognition, partnerships, and industry presence.
+    4. **Pricing & Accessibility (10%)** - Free or freemium models score higher; premium pricing without clear value-add lowers the score.
 
-console.log(prompt)
+Return **only the JSON object**. No additional text.`,
+        },
+      ],
+      max_tokens: 500,
+      temperature: 0.3,
+      top_p: 0.9,
+      search_domain_filter: null,
+      return_images: false,
+      return_related_questions: false,
+      search_recency_filter: "30d",
+      top_k: 3,
+      stream: false,
+      presence_penalty: 0,
+      frequency_penalty: 1,
+      response_format: "json_schema", // ✅ FIXED: Now correctly set to a string "json_schema"
+    };
 
-        const completion = await openai.chat.completions.create({
-            messages: [{ role: "user", content: prompt }],
-            model: "gpt-4o",
-            response_format: { type: "json_object" },
-        });
+    // Call Perplexity AI API
+    const response = await fetch("https://api.perplexity.ai/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${PERPLEXITY_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
 
-        const content = completion.choices[0].message.content;
-        const metadata = content ? JSON.parse(content) : {};
-        console.log("✅ AI Generated Metadata:", metadata);
+    const data = await response.json();
 
-        return NextResponse.json(metadata);
-    } catch (error) {
-        console.error("❌ Error generating metadata:", error);
-        return new NextResponse("Failed to generate metadata", { status: 500 });
+    if (!response.ok) {
+      throw new Error(`Perplexity API error: ${JSON.stringify(data)}`);
     }
+
+    console.log("✅ AI Generated Metadata:", data);
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("❌ Error generating metadata:", error);
+    return new NextResponse("Failed to generate metadata", { status: 500 });
+  }
 }
