@@ -518,7 +518,7 @@ export default async function ToolPage({ params }: PageProps) {
                     website.hasAPI ? (
                       <h2 className="text-2xl font-semibold mb-4">Details</h2>
                     ) : null}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {website.pricingModel && (
                         <div className="p-4 bg-secondary/50 backdrop-blur-sm rounded-lg border border-border">
                           <div className="flex items-start gap-3">
