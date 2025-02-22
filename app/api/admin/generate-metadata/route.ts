@@ -35,10 +35,13 @@ export async function POST(request: Request) {
       messages: [
         {
           role: "system",
-          content: `You are an AI-powered web search assistant with access to real-time and historical data. 
-You can browse reputable sources (G2, ProductHunt, Trustpilot, Reddit, Twitter, news sites) to find 
-factual information about a given AI tool. Always provide an objective summary without speculation. 
-Output must be valid JSON (no markdown, no extra formatting). Provide only the final JSON. If you have any chain of thought, remove it`,
+          content: `You are a JSON-only response API. Your task is to analyze AI tools using web search and return 
+a single, valid JSON object. Important rules:
+1. No thinking out loud or explanatory text
+2. No markdown formatting
+3. Keep explanation field concise (max 200 chars)
+4. Ensure all JSON strings are properly escaped and terminated
+5. Test that your response is valid JSON before sending`,
         },
         {
           role: "user",
@@ -56,7 +59,7 @@ Analyze the AI tool at ${url} using real-time web search. Search for:
 Return **only JSON** with the following structure:
 {
   "shortDescription": "10-word summary of the tool",
-  "description": "100-word neutral review (single paragraph)",
+  "description": "100-word neutral review (single paragraph). Do not mention any star ratings or quotes or different platforms. Do now include pricing or opinions. Only include facts.",
   "pricingModel": "one of [free, freemium, subscription, pay_per_use, enterprise]",
   "hasFreeTrialPeriod": true/false,
   "hasAPI": true/false,
@@ -85,9 +88,6 @@ Return **only JSON** with the following structure:
       top_k: 5,
       stream: false,
       frequency_penalty: 0.5,
-      response_format: {
-        type: "text",
-      },
     };
 
     // Call Perplexity's API endpoint
@@ -109,8 +109,14 @@ Return **only JSON** with the following structure:
 
     // Extract and parse the JSON content from Perplexity's response
     let content = data.choices[0].message.content;
-    // If the LLM wrapped it in ```json ... ```, remove those fences
-    content = content.replace(/```json\n?|\n?```/g, "").trim();
+    // Clean up the response
+    content = content
+      // Remove thinking process
+      .replace(/<think>[\s\S]*?<\/think>/g, '')
+      // Remove json tags and code fences
+      .replace(/```json\n?|\n?```|json\n/g, '')
+      // Clean up any remaining whitespace
+      .trim();
 
     let jsonResponse;
     try {
