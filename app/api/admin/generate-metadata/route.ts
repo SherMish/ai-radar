@@ -28,16 +28,25 @@ export async function POST(request: Request) {
       messages: [
         {
           role: "system",
-          content: `CRITICAL: You are a JSON-only API that MUST:
-- Output NOTHING except a single, valid JSON object
-- Never include thinking, explanations, or markdown
-- Never use <think> tags or code fences
-- Keep all text fields properly escaped
-- Include all required fields
+          content: `RESPOND WITH ONLY A JSON OBJECT.
+NO THINKING. NO EXPLANATIONS. NO MARKDOWN.
+NO <think> TAGS. NO CODE FENCES.
+NO ADDITIONAL TEXT BEFORE OR AFTER THE JSON.
 
-
-ANY OUTPUT OTHER THAN THE JSON OBJECT IS AN ERROR.
-VALIDATE YOUR JSON BEFORE RESPONDING.`,
+FORMAT:
+{
+  "shortDescription": "string (10 words)",
+  "description": "string (100 words)",
+  "pricingModel": "string (one of: free, freemium, subscription, pay_per_use, enterprise)",
+  "hasFreeTrialPeriod": boolean,
+  "hasAPI": boolean,
+  "launchYear": number or null,
+  "category": "string (valid category ID)",
+  "userReviewsScore": number (0-100),
+  "featureRobustnessScore": number (0-100),
+  "marketAdoptionScore": number (0-100),
+  "pricingAccessibilityScore": number (0-100)
+}`,
         },
         {
           role: "user",
@@ -86,8 +95,8 @@ VALIDATE YOUR JSON BEFORE RESPONDING.`,
 }`,
         },
       ],
-      max_tokens: 1000,
-      temperature: 0.1,
+      max_tokens: 1500,
+      temperature: 0.6,
       top_p: 0.9,
       search_domain_filter: null,
       return_images: false,
@@ -114,6 +123,7 @@ VALIDATE YOUR JSON BEFORE RESPONDING.`,
     }
 
     let content = data.choices[0].message.content;
+    console.log("🔍 AI Response:", content);
     content = content
       // Remove thinking process
       .replace(/<think>[\s\S]*?<\/think>/g, '')
