@@ -35,13 +35,16 @@ export async function POST(request: Request) {
       messages: [
         {
           role: "system",
-          content: `You are a JSON-only response API. Your task is to analyze AI tools using web search and return 
-a single, valid JSON object. Important rules:
-1. No thinking out loud or explanatory text
-2. No markdown formatting
-3. Keep explanation field concise (max 200 chars)
-4. Ensure all JSON strings are properly escaped and terminated
-5. Test that your response is valid JSON before sending`,
+          content: `You are a strict JSON-only API. Rules:
+1. Return ONLY a valid JSON object
+2. NO thinking out loud, NO explanatory text
+3. NO markdown or code fences
+4. All strings must be properly escaped
+5. All fields must be present and properly formatted
+6. Maximum 300 characters for radarTrustExplanation
+7. Test your JSON is valid before responding
+
+If you need to think, keep it internal. The ONLY output should be the JSON object.`,
         },
         {
           role: "user",
@@ -66,7 +69,7 @@ Return **only JSON** with the following structure:
   "launchYear": number or null,
   "category": "one ID from: ${JSON.stringify(categoryOptions)}",
   "radarTrust": number (1.0 to 10.0, decimal allowed),
-  "explanation": "Explain how each dimension (Reviews, Features, Market, Pricing) contributed to the final radarTrust score."
+  "radarTrustExplanation": "Explain how each dimension (Reviews, Features, Market, Pricing) contributed to the final radarTrust score."
 }
 
 **Important**:

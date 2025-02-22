@@ -29,6 +29,7 @@ export async function PATCH(
           hasAPI: body.hasAPI,
           launchYear: body.launchYear,
           radarTrust: body.radarTrust,
+          radarTrustExplanation: body.radarTrustExplanation,
         }
       },
       { new: true }

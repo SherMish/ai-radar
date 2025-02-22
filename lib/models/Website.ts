@@ -108,6 +108,10 @@ const WebsiteSchema = new Schema({
     max: 10,
     default: 8.0
   },
+  radarTrustExplanation: {
+    type: String,
+    default: "",
+  },
 }, {
   timestamps: true,
 });

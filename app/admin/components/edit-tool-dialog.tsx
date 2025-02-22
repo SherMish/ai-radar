@@ -33,6 +33,7 @@ interface FormData {
   hasAPI: boolean;
   launchYear: number | null;
   radarTrust: number | null;
+  radarTrustExplanation: string;
 }
 
 export function EditToolDialog({ website, open, onOpenChange, onSave, generatedData }: EditToolDialogProps) {
@@ -48,6 +49,7 @@ export function EditToolDialog({ website, open, onOpenChange, onSave, generatedD
     hasAPI: website.hasAPI || false,
     launchYear: website.launchYear || null,
     radarTrust: website.radarTrust || null,
+    radarTrustExplanation: website.radarTrustExplanation || '',
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -76,6 +78,7 @@ export function EditToolDialog({ website, open, onOpenChange, onSave, generatedD
       const updatedData = {
         ...generatedData,
         category: generatedData.category || formData.category,
+        radarTrustExplanation: generatedData.radarTrustExplanation || formData.radarTrustExplanation,
       };
       
       setFormData(prev => ({
@@ -209,6 +212,19 @@ export function EditToolDialog({ website, open, onOpenChange, onSave, generatedD
               max={10}
               step={0.1}
               placeholder="Enter score (1-10)"
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label>RadarTrust™ Explanation</Label>
+            <Textarea
+              value={formData.radarTrustExplanation}
+              onChange={(e) => setFormData(prev => ({ 
+                ...prev, 
+                radarTrustExplanation: e.target.value 
+              }))}
+              placeholder="Explanation of the RadarTrust score"
+              rows={3}
             />
           </div>
 

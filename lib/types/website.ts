@@ -25,6 +25,7 @@ export interface WebsiteType {
   isVerified?: boolean;
   isActive?: boolean;
   radarTrust?: number;
+  radarTrustExplanation?: string;
   createdAt?: Date;
   updatedAt?: Date;
 } 
