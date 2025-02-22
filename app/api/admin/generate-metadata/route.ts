@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import categoriesData from "@/lib/data/categories.json";
 
-const PERPLEXITY_API_KEY = "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";
+const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY;
 
 export async function POST(request: Request) {
   if (process.env.IS_PRODUCTION === "true") {
