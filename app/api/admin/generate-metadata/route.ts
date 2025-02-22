@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import categoriesData from "@/lib/data/categories.json";
 
-// Perplexity API Key (Set it in your .env)
+// Make sure you have your Perplexity API key set in .env
+// e.g., PERPLEXITY_API_KEY="pplx-xxxxxx"
 const PERPLEXITY_API_KEY = "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"
 
 export async function POST(request: Request) {
+  // Optional: block requests in production if you prefer not to expose this endpoint
   if (process.env.IS_PRODUCTION === "true") {
     return new NextResponse("Not authorized", { status: 401 });
   }
@@ -16,71 +18,83 @@ export async function POST(request: Request) {
 
   try {
     const { url } = await request.json();
+
     if (!url) {
       return new NextResponse("URL is required", { status: 400 });
     }
 
-    // Prepare categories for Perplexity prompt
+    // Prepare the list of category IDs from your local categories.json
     const categoryOptions = Array.isArray(categoriesData.categories)
       ? categoriesData.categories.map((cat) => cat.id)
       : [];
 
-    if (categoryOptions.length === 0) {
-      console.warn("No categories found in categories.json");
-    }
-
-    // Construct Perplexity API payload
+    // Construct a prompt that explicitly tells Perplexity to do a thorough web search,
+    // and to provide unique user reviews, feature analysis, etc.
     const payload = {
-      model: "sonar-pro",
+      model: "sonar-reasoning-pro",
       messages: [
         {
           role: "system",
-          content: `You are a JSON-only response API. Analyze the AI tool available at ${url} based on real-time web search. Return only raw JSON without any markdown formatting or additional text.`,
+          content: `You are an AI-powered web search assistant with access to real-time and historical data. 
+You can browse reputable sources (G2, ProductHunt, Trustpilot, Reddit, Twitter, news sites) to find 
+factual information about a given AI tool. Always provide an objective summary without speculation. 
+Output must be valid JSON (no markdown, no extra formatting). Provide only the final JSON. If you have any chain of thought, remove it`,
         },
         {
           role: "user",
-          content: `Analyze the AI tool at ${url}. Your task is to generate a **neutral, structured review** using real-time web search.
+          content: `
+Analyze the AI tool at ${url} using real-time web search. Search for:
+1) **User reviews**:
+   - Check G2, Trustpilot, Product Hunt, Reddit, etc. for the number of reviews, average star ratings, common praise/complaints.
+2) **Feature robustness & innovation**:
+   - Highlight any unique AI capabilities, automations, or integrations that distinguish this tool from competitors.
+3) **Market adoption & reputation**:
+   - Look for partnerships, media coverage, user base milestones, or brand recognition in AI communities.
+4) **Pricing & accessibility**:
+   - Identify pricing tiers, free/freemium availability, trial periods, and clarity of pricing info.
 
-Return ONLY a raw JSON object (no markdown, no \`\`\`json tags) with:
+Return **only JSON** with the following structure:
 {
-  "shortDescription": "10 words",
-  "description": "100 words in a single paragraph",
-  "pricingModel": "Choose from ['free', 'freemium', 'subscription', 'pay_per_use', 'enterprise']",
+  "shortDescription": "10-word summary of the tool",
+  "description": "100-word neutral review (single paragraph)",
+  "pricingModel": "one of [free, freemium, subscription, pay_per_use, enterprise]",
   "hasFreeTrialPeriod": true/false,
   "hasAPI": true/false,
-  "launchYear": Number (or null if uncertain),
-  "category": "The id from one of these: ${JSON.stringify(categoryOptions)}",
-  "radarTrust": "Score between 1 and 10 (e.g., 8.3, 6.7, etc.), based on:
+  "launchYear": number or null,
+  "category": "one ID from: ${JSON.stringify(categoryOptions)}",
+  "radarTrust": number (1.0 to 10.0, decimal allowed),
+  "explanation": "Explain how each dimension (Reviews, Features, Market, Pricing) contributed to the final radarTrust score."
+}
 
-    1. **User Reviews & Ratings (40%)** - Aggregate ratings from Futurepedia, Trustpilot, G2, and Perplexity web search.
-    2. **Feature Robustness & Innovation (30%)** - Compare AI capabilities to competitors.
-    3. **Market Adoption & Reputation (20%)** - Analyze brand recognition, partnerships, and industry presence.
-    4. **Pricing & Accessibility (10%)** - Free or freemium models score higher; premium pricing without clear value-add lowers the score.
+**Important**:
+- Provide a genuinely unique "radarTrust" score based on real data from your web search.
+- If you find star ratings or quotes, mention them briefly in the explanation.
+- If data is missing, say so; do not invent statistics.
+- Output valid JSON only—no code fences, no extra text or chain-of-thoughts
 
-Return the raw JSON object without any markdown formatting or additional text.`,
+          `,
         },
       ],
-      max_tokens: 500,
-      temperature: 0.3,
+      max_tokens: 1000,
+      temperature: 0.6,
       top_p: 0.9,
       search_domain_filter: null,
       return_images: false,
       return_related_questions: false,
-      search_recency_filter: "month",
-      top_k: 3,
+      search_recency_filter: "year", // you can adjust based on tool age
+      top_k: 5,
       stream: false,
-      presence_penalty: 0,
-      frequency_penalty: 1,
+      frequency_penalty: 0.5,
       response_format: {
         type: "text",
       },
     };
 
-    // Call Perplexity AI API
+    // Call Perplexity's API endpoint
     const response = await fetch("https://api.perplexity.ai/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${PERPLEXITY_API_KEY}`,
+        Authorization: `Bearer ${PERPLEXITY_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
@@ -90,22 +104,26 @@ Return the raw JSON object without any markdown formatting or additional text.`,
 
     if (!response.ok) {
       console.error(`Perplexity API error: ${JSON.stringify(data)}`);
-      throw new Error(`Perplexity API error: ${data.error.message}`);
+      throw new Error(`Perplexity API error: ${data.error?.message ?? "Unknown error"}`);
     }
 
-    // Parse the response content to get the JSON object
+    // Extract and parse the JSON content from Perplexity's response
+    let content = data.choices[0].message.content;
+    // If the LLM wrapped it in ```json ... ```, remove those fences
+    content = content.replace(/```json\n?|\n?```/g, "").trim();
+
+    let jsonResponse;
     try {
-      // Clean the response by removing markdown code blocks if present
-      let content = data.choices[0].message.content;
-      content = content.replace(/```json\n?|\n?```/g, '').trim();
-      const jsonResponse = JSON.parse(content);
-      console.log("✅ AI Generated Metadata:", jsonResponse);
-      return NextResponse.json(jsonResponse);
+      jsonResponse = JSON.parse(content);
     } catch (parseError) {
       console.error("Failed to parse AI response as JSON:", parseError);
       console.error("Raw content:", data.choices[0].message.content);
-      throw new Error("Invalid response format from AI");
+      throw new Error("Invalid response format from AI (JSON parse failed).");
     }
+
+    console.log("✅ AI Generated Metadata:", jsonResponse);
+    return NextResponse.json(jsonResponse);
+
   } catch (error) {
     console.error("❌ Error generating metadata:", error);
     return new NextResponse("Failed to generate metadata", { status: 500 });
