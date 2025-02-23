@@ -3,14 +3,11 @@ import connectDB from "@/lib/mongodb";
 import categoriesData from '@/lib/data/categories.json';
 import { Website } from "@/lib/models";
 import Link from "next/link";
-import { Card } from "@/components/ui/card";
-import { Star, ChevronLeft } from "lucide-react";
+import { Star, ChevronLeft, LucideIcon } from "lucide-react";
 import * as Icons from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { LucideIcon } from "lucide-react";
 import { WebsiteCard } from "@/components/website-card";
 import { Metadata } from 'next';
-
 
 interface PageProps {
   params: {
@@ -52,16 +49,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-const CategoryPage = async ({ params }: PageProps) => {
-  const category = categoriesData.categories.find(cat => cat.id === params.slug);
-  if (!category) {
-    notFound();
-  }
-
+async function getCategoryTools(categoryId: string) {
   await connectDB();
-  const websites = await Website.find({ category: category.id })
-    .select('name url description logo shortDescription category averageRating reviewCount radarTrust')
+  
+  const tools = await Website.find({ category: categoryId })
+    .sort({ radarTrust: -1 }) // Keep the sorting by radarTrust
     .lean();
+
+  return tools;
+}
+
+export default async function CategoryPage({ params }: PageProps) {
+  const category = categoriesData.categories.find(cat => cat.id === params.slug);
+  if (!category) return notFound();
+
+  const tools = await getCategoryTools(params.slug);
 
   // Get the icon component
   const IconComponent = (category.icon ? Icons[category.icon as keyof typeof Icons] : Star) as LucideIcon;
@@ -100,8 +102,8 @@ const CategoryPage = async ({ params }: PageProps) => {
             </p>
           </div>
 
-          <div className="p-6">
-            {websites.length === 0 ? (
+          <div className="p-4">
+            {tools.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-muted-foreground text-lg mb-4">
                   No tools found in {category.name} category yet.
@@ -118,7 +120,7 @@ const CategoryPage = async ({ params }: PageProps) => {
             ) : (
               <>
                 <div className="grid gap-6">
-                  {websites.map((website) => (
+                  {tools.map((website) => (
                     <WebsiteCard
                       key={website._id.toString()}
                       website={website}
@@ -141,6 +143,4 @@ const CategoryPage = async ({ params }: PageProps) => {
       </div>
     </div>
   );
-};
-
-export default CategoryPage; 
+} 
