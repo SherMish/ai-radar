@@ -1,5 +1,21 @@
 import { useState, useRef, useEffect } from "react";
-import { Search, PlusCircle, Star, MessageSquare, Image as ImageIcon, Code, Music, Video, Database, Brain, Sparkles, Palette, Bot, Shield, Radar as RadarIcon } from "lucide-react";
+import {
+  Search,
+  PlusCircle,
+  Star,
+  MessageSquare,
+  Image as ImageIcon,
+  Code,
+  Music,
+  Video,
+  Database,
+  Brain,
+  Sparkles,
+  Palette,
+  Bot,
+  Shield,
+  Radar as RadarIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
@@ -17,6 +33,7 @@ import { Types, Document } from "mongoose";
 import { RandomBlogPosts } from "@/components/random-blog-posts";
 import { WebsiteCard } from "@/components/website-card";
 import { LatestToolCard } from "@/app/components/latest-tool-card";
+import { RadarTrustVisual } from "@/app/components/radar-trust-visual";
 
 const categories = [
   { name: "Text Generation", icon: MessageSquare, count: 156 },
@@ -269,17 +286,21 @@ export default async function Home() {
                 <div className="space-y-6">
                   <div>
                     <h2 className="text-3xl font-bold mb-4">
-                      <span className="text-primary">
-                        RadarTrust™
-                      </span>
+                      <span className="text-primary">RadarTrust™</span>
                       <br />
-                      The AI Industry’s Benchmark for Quality
-
+                      The AI Industry&apos;s Benchmark for Quality
                     </h2>
                     <p className="text-muted-foreground text-lg leading-relaxed mb-6">
-                      Our proprietary <strong>RadarTrust™</strong> score empowers businesses and professionals to make data-driven decisions 
-            when selecting AI tools. We analyze key factors like <strong>user feedback, innovation, reliability, and market adoption </strong> 
-            to ensure you invest in the most effective and trustworthy solutions.
+                      Our proprietary <strong>RadarTrust™</strong> score
+                      empowers businesses and professionals to make data-driven
+                      decisions when selecting AI tools. We analyze key factors
+                      like{" "}
+                      <strong>
+                        user feedback, innovation, reliability, and market
+                        adoption{" "}
+                      </strong>
+                      to ensure you invest in the most effective and trustworthy
+                      solutions.
                     </p>
                     <div className="space-y-4">
                       <div className="flex items-start gap-4">
@@ -287,9 +308,12 @@ export default async function Home() {
                           <Star className="w-4 h-4 text-primary" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-semibold mb-1">User Reviews & Credibility</h3>
+                          <h3 className="text-lg font-semibold mb-1">
+                            User Reviews & Credibility
+                          </h3>
                           <p className="text-muted-foreground">
-                            Authentic feedback and ratings from real users who have experienced the tools firsthand.
+                            Authentic feedback and ratings from real users who
+                            have experienced the tools firsthand.
                           </p>
                         </div>
                       </div>
@@ -298,9 +322,12 @@ export default async function Home() {
                           <Sparkles className="w-4 h-4 text-primary" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-semibold mb-1">Innovation & Technological Edge</h3>
+                          <h3 className="text-lg font-semibold mb-1">
+                            Innovation & Technological Edge
+                          </h3>
                           <p className="text-muted-foreground">
-                            Assessment of unique features, technological advancement, and problem-solving capabilities.
+                            Assessment of unique features, technological
+                            advancement, and problem-solving capabilities.
                           </p>
                         </div>
                       </div>
@@ -309,10 +336,15 @@ export default async function Home() {
                           <Shield className="w-4 h-4 text-primary" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-semibold mb-1">Reliability & Performance</h3>
+                          <h3 className="text-lg font-semibold mb-1">
+                            Reliability & Performance
+                          </h3>
                           <p className="text-muted-foreground">
-                            A deep dive into <strong>uptime, support quality, and long-term stability</strong>, ensuring seamless business operations.
-
+                            A deep dive into{" "}
+                            <strong>
+                              uptime, support quality, and long-term stability
+                            </strong>
+                            , ensuring seamless business operations.
                           </p>
                         </div>
                       </div>
@@ -321,15 +353,7 @@ export default async function Home() {
                 </div>
 
                 {/* Right Column - Visual */}
-                <div className="relative">
-                  <div className="aspect-square rounded-full bg-primary/5 flex items-center justify-center">
-                    <div className="w-48 h-48 rounded-full bg-primary/10 flex items-center justify-center">
-                      <div className="w-32 h-32 rounded-full bg-primary/20 flex items-center justify-center">
-                        <RadarIcon className="w-16 h-16 text-primary" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <RadarTrustVisual />
               </div>
             </div>
           </section>
