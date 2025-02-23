@@ -35,6 +35,7 @@ import { WebsiteCard } from "@/components/website-card";
 import { LatestToolCard } from "@/app/components/latest-tool-card";
 import { RadarTrustVisual } from "@/app/components/radar-trust-visual";
 import { RadarTrustContent } from "@/app/components/radar-trust-content";
+import { LatestToolsContent } from "@/app/components/latest-tools-content";
 
 const categories = [
   { name: "Text Generation", icon: MessageSquare, count: 156 },
@@ -233,42 +234,16 @@ export default async function Home() {
             <div className="container max-w-6xl mx-auto px-4">
               <div className="grid lg:grid-cols-[400px,1fr] gap-12">
                 {/* Left Column - Content */}
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-3xl font-bold mb-4">
-                      Stay ahead.
-                      <br />
-                      Optimize workflows.
-                      <br />
-                      Scale smarter.
-                    </h2>
-                    <p className="text-muted-foreground text-lg leading-relaxed">
-                      Unlock the latest AI solutions designed to drive
-                      efficiency, innovation, and growth. From automation to
-                      advanced analytics, explore cutting-edge tools that can
-                      give your business a competitive edge.
-                    </p>
-                  </div>
-
-                  <div>
-                    <p className="text-muted-foreground text-lg">
-                      Want to feature your AI solution?{" "}
-                      <Link
-                        href="/tool/new"
-                        className="text-primary hover:text-primary/90 hover:underline transition-colors"
-                      >
-                        List it today for free
-                      </Link>{" "}
-                      and reach professionals looking for the next big
-                      innovation.
-                    </p>
-                  </div>
-                </div>
+                <LatestToolsContent />
 
                 {/* Right Column - Cards */}
                 <div className="grid gap-6 md:grid-cols-2">
-                  {latestTools.map((tool) => (
-                    <LatestToolCard key={tool._id.toString()} website={tool} />
+                  {latestTools.map((tool, index) => (
+                    <LatestToolCard 
+                      key={tool._id.toString()} 
+                      website={tool} 
+                      index={index}
+                    />
                   ))}
                 </div>
               </div>

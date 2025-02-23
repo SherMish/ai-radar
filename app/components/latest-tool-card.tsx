@@ -5,6 +5,9 @@ import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Star, Radar as RadarIcon } from "lucide-react";
 import { Types } from "mongoose";
+import { motion } from "framer-motion";
+import { useRef } from "react";
+import { useInView } from "framer-motion";
 
 interface LatestToolCardProps {
   website: {
@@ -18,11 +21,21 @@ interface LatestToolCardProps {
     reviewCount: number;
     radarTrust?: number;
   };
+  index: number;
 }
 
-export function LatestToolCard({ website }: LatestToolCardProps) {
+export function LatestToolCard({ website, index }: LatestToolCardProps) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
   return (
-    <div className="relative">
+    <motion.div
+      ref={ref}
+      className="relative"
+      initial={{ opacity: 0, y: 20 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+      transition={{ duration: 0.5, delay: 0.2 + (index * 0.1) }}
+    >
       <Link href={`/tool/${encodeURIComponent(website.url)}`}>
         <Card className="p-6 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors border-zinc-700/50">
           <div className="flex flex-col sm:flex-row items-start gap-4">
@@ -90,6 +103,6 @@ export function LatestToolCard({ website }: LatestToolCardProps) {
           </div>
         </Card>
       </Link>
-    </div>
+    </motion.div>
   );
 } 
