@@ -1,22 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import { Search, PlusCircle } from "lucide-react";
+import { Search, PlusCircle, Star, MessageSquare, Image as ImageIcon, Code, Music, Video, Database, Brain, Sparkles, Palette, Bot, Shield, Radar as RadarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import useEmblaCarousel from "embla-carousel-react";
-import {
-  Star,
-  MessageSquare,
-  Image as ImageIcon,
-  Code,
-  Music,
-  Video,
-  Database,
-  Brain,
-  Sparkles,
-  Palette,
-  Bot,
-} from "lucide-react";
 import { Review, Website } from "@/lib/models";
 import connectDB from "@/lib/mongodb";
 import { Card } from "@/components/ui/card";
@@ -273,6 +260,79 @@ export default async function Home() {
           <div className="px-4 sm:px-6 lg:px-8">
             <MarketingSection />
           </div>
+
+          {/* TrustRadar Section */}
+          <section className="py-24 relative overflow-hidden">
+            <div className="container max-w-6xl mx-auto px-4">
+              <div className="grid lg:grid-cols-[1fr,400px] gap-12 items-center">
+                {/* Left Column - Content */}
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="text-3xl font-bold mb-4">
+                      <span className="text-primary">
+                        RadarTrust™
+                      </span>
+                      <br />
+                      The AI Industry’s Benchmark for Quality
+
+                    </h2>
+                    <p className="text-muted-foreground text-lg leading-relaxed mb-6">
+                      Our proprietary <strong>RadarTrust™</strong> score empowers businesses and professionals to make data-driven decisions 
+            when selecting AI tools. We analyze key factors like <strong>user feedback, innovation, reliability, and market adoption </strong> 
+            to ensure you invest in the most effective and trustworthy solutions.
+                    </p>
+                    <div className="space-y-4">
+                      <div className="flex items-start gap-4">
+                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center mt-1">
+                          <Star className="w-4 h-4 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold mb-1">User Reviews & Credibility</h3>
+                          <p className="text-muted-foreground">
+                            Authentic feedback and ratings from real users who have experienced the tools firsthand.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-4">
+                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center mt-1">
+                          <Sparkles className="w-4 h-4 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold mb-1">Innovation & Technological Edge</h3>
+                          <p className="text-muted-foreground">
+                            Assessment of unique features, technological advancement, and problem-solving capabilities.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-4">
+                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center mt-1">
+                          <Shield className="w-4 h-4 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold mb-1">Reliability & Performance</h3>
+                          <p className="text-muted-foreground">
+                            A deep dive into <strong>uptime, support quality, and long-term stability</strong>, ensuring seamless business operations.
+
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Column - Visual */}
+                <div className="relative">
+                  <div className="aspect-square rounded-full bg-primary/5 flex items-center justify-center">
+                    <div className="w-48 h-48 rounded-full bg-primary/10 flex items-center justify-center">
+                      <div className="w-32 h-32 rounded-full bg-primary/20 flex items-center justify-center">
+                        <RadarIcon className="w-16 h-16 text-primary" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
       </main>
       <RandomBlogPosts />
