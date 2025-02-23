@@ -25,6 +25,9 @@ import {
 import { useLoginModal } from '@/hooks/use-login-modal';
 import { useToast } from '@/components/ui/use-toast';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
+import Link from 'next/link';
+
 
 const loginSchema = z.object({
   email: z
@@ -47,7 +50,11 @@ const registerSchema = z.object({
   password: z
     .string()
     .min(6, 'Password must be at least 6 characters'),
-  confirmPassword: z.string()
+  confirmPassword: z.string(),
+  agreeToTerms: z.boolean().refine(val => val === true, {
+    message: "You must agree to the terms and conditions"
+  }),
+  agreeToMarketing: z.boolean()
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -84,6 +91,8 @@ export function LoginModal() {
       email: "",
       password: "",
       confirmPassword: "",
+      agreeToTerms: false,
+      agreeToMarketing: true,
     },
     mode: "onChange",
   });
@@ -129,6 +138,14 @@ export function LoginModal() {
     try {
       setIsLoading(true);
       
+      // Add this console.log to verify the data being sent
+      console.log('Registration data being sent:', {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        isAgreeMarketing: data.agreeToMarketing
+      });
+
       // Check if email exists before trying to register
       const checkEmailRes = await fetch(`/api/auth/check-email?email=${encodeURIComponent(data.email)}`);
       const checkEmailData = await checkEmailRes.json();
@@ -151,6 +168,7 @@ export function LoginModal() {
           name: data.name,
           email: data.email,
           password: data.password,
+          isAgreeMarketing: data.agreeToMarketing,
         }),
       });
 
@@ -310,6 +328,60 @@ export function LoginModal() {
                       </p>
                     )}
                   </div>
+                </div>
+
+                <div className="space-y-3">
+                  <FormField
+                    control={registerForm.control}
+                    name="agreeToTerms"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>
+                            I agree to the{' '}
+                            <Link href="/terms" className="text-primary hover:underline">
+                              Terms of Service
+                            </Link>{' '}
+                            and{' '}
+                            <Link href="/privacy" className="text-primary hover:underline">
+                              Privacy Policy
+                            </Link>
+                          </FormLabel>
+                          {registerForm.formState.errors.agreeToTerms && (
+                            <p className="text-sm text-red-500">
+                              {registerForm.formState.errors.agreeToTerms.message}
+                            </p>
+                          )}
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={registerForm.control}
+                    name="agreeToMarketing"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel className="text-muted-foreground">
+                            I agree to receive occasional emails about new tools and updates
+                          </FormLabel>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
                 </div>
 
                 <Button 

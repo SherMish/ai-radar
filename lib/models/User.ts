@@ -35,6 +35,10 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  isAgreeMarketing: {
+    type: Boolean,
+    default: false,
+  },
   resetToken: {
     type: String,
     default: null,

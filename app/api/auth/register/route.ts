@@ -8,11 +8,17 @@ const registerSchema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
   password: z.string().min(6),
+  isAgreeMarketing: z.boolean().optional(),
 });
 
 export async function POST(request: Request) {
   try {
-    const { email, password, name } = await request.json();
+    await connectDB();
+
+    const body = await request.json();
+
+
+    const { name, email, password, isAgreeMarketing } = body;
 
     if (!email || !password || !name) {
       return NextResponse.json(
@@ -20,8 +26,6 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-
-    await connectDB();
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -35,17 +39,20 @@ export async function POST(request: Request) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create user with hashedPassword field
-    await User.create({
-      email,
+    // Create user with marketing preference
+    const user = await User.create({
       name,
-      hashedPassword, // Note: using hashedPassword field, not password
+      email: email.toLowerCase(),
+      hashedPassword,
+      isAgreeMarketing: isAgreeMarketing === true, // Explicitly convert to boolean
     });
 
-    return NextResponse.json(
-      { message: 'User created successfully' },
-      { status: 201 }
-    );
+    return NextResponse.json({
+      user: {
+        name: user.name,
+        email: user.email,
+      },
+    });
   } catch (error) {
     console.error('Registration error:', error);
     
