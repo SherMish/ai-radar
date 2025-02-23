@@ -385,7 +385,7 @@ export function LoginModal() {
                           />
                         </FormControl>
                         <div className="space-y-1 leading-none">
-                          <FormLabel className="text-muted-foreground">
+                          <FormLabel>
                             I agree to receive occasional emails about new tools and updates
                           </FormLabel>
                         </div>
