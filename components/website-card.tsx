@@ -53,34 +53,36 @@ export function WebsiteCard({ website }: WebsiteCardProps) {
                   {website.name}
                 </h2>
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-4 h-4 ${
-                          i < (website.averageRating || 0)
-                            ? "text-yellow-400 fill-yellow-400"
-                            : "text-zinc-600"
-                        }`}
-                      />
-                    ))}
-                  </div>
                   {website.reviewCount > 0 && (
-                    <span className="text-sm text-zinc-400">
-                      {website.averageRating.toFixed(1)}
-                    </span>
-                  )}
-                  {(website.reviewCount > 0 && website.radarTrust) && (
-                    <div className="w-px h-4 bg-zinc-700" />
+                    <>
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`w-4 h-4 ${
+                              i < (website.averageRating || 0)
+                                ? "text-yellow-400 fill-yellow-400"
+                                : "text-zinc-600"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-sm text-zinc-400">
+                        {website.averageRating.toFixed(1)}
+                      </span>
+                    </>
                   )}
                   {website.radarTrust && (
-                    <div className="flex items-center gap-1 text-primary">
-                      <RadarIcon className="w-4 h-4" />
-                      <span className="text-sm font-medium">
-                        {website.radarTrust.toFixed(1)}
-                        <span className="ml-1">RadarTrust™</span>
-                      </span>
-                    </div>
+                    <>
+                      {website.reviewCount > 0 && <div className="w-px h-4 bg-zinc-700" />}
+                      <div className="flex items-center gap-1 text-primary">
+                        <RadarIcon className="w-4 h-4" />
+                        <span className="text-sm font-medium">
+                          {website.radarTrust.toFixed(1)}
+                          <span className="ml-1">RadarTrust™</span>
+                        </span>
+                      </div>
+                    </>
                   )}
                 </div>
               </div>

@@ -13,13 +13,15 @@ interface SuggestedToolCardProps {
     url: string;
     logo?: string;
     averageRating: number;
+    reviewCount: number;
+    radarTrust?: number;
   };
 }
 
 export function SuggestedToolCard({ website }: SuggestedToolCardProps) {
   return (
     <Link href={`/tool/${website.url}`}>
-      <Card className=" p-4 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors border-zinc-700/50">
+      <Card className="p-4 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors border-zinc-700/50">
         <div className="flex items-center gap-3">
           <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center overflow-hidden">
             {website.logo ? (
@@ -38,17 +40,30 @@ export function SuggestedToolCard({ website }: SuggestedToolCardProps) {
           </div>
           <div>
             <h3 className="font-medium text-zinc-100">{website.name}</h3>
-            <div className="flex items-center">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={`w-3 h-3 ${
-                    i < (website.averageRating || 0)
-                      ? "text-yellow-400 fill-yellow-400"
-                      : "text-zinc-600"
-                  }`}
-                />
-              ))}
+            <div className="flex items-center gap-2">
+              {website.reviewCount > 0 && (
+                <div className="flex items-center">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-3 h-3 ${
+                        i < (website.averageRating || 0)
+                          ? "text-yellow-400 fill-yellow-400"
+                          : "text-zinc-600"
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
+              {website.reviewCount > 0 && website.radarTrust && (
+                <div className="w-px h-3 bg-zinc-700" />
+              )}
+              {website.radarTrust && (
+                <div className="flex items-center gap-1 text-primary text-xs">
+                  <span>{website.radarTrust.toFixed(1)}</span>
+                  <span>RadarTrust™</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
