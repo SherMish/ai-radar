@@ -1,14 +1,19 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 
 export default function SignIn() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   const handleGoogleSignIn = () => {
-    // Mock sign in - just redirect back to home
-    router.push("/");
+    signIn("google", {
+      callbackUrl,
+      redirect: true,
+    });
   };
 
   return (

@@ -16,6 +16,7 @@ export interface Review {
     isVerified?: boolean;
     relatedUser?: {
       name: string;
+      image?: string;
     };
   } 
 

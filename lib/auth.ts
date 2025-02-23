@@ -8,8 +8,8 @@ import connectDB from '@/lib/mongodb';
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
     }),
     CredentialsProvider({
       name: 'credentials',
@@ -43,19 +43,77 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.role = user.role;
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith(baseUrl) || url.startsWith('/')) {
+        return url;
       }
-      return token;
+      return baseUrl;
+    },
+    async signIn({ user, account }) {
+      if (account?.provider === "google") {
+        try {
+          console.log("Google sign in attempt:", { 
+            email: user.email,
+            name: user.name,
+            id: user.id 
+          });
+          
+          await connectDB();
+          
+          // Check if user already exists
+          const existingUser = await User.findOne({ email: user.email });
+          console.log("Existing user check:", { exists: !!existingUser });
+          
+          if (!existingUser) {
+            // Create new user if doesn't exist
+            const newUser = await User.create({
+              name: user.name,
+              email: user.email,
+              image: user.image,
+              googleId: user.id,
+              hashedPassword: await bcrypt.hash(Math.random().toString(36), 12),
+              emailVerified: new Date(),
+            });
+            console.log("New user created:", { id: newUser._id });
+          } else if (!existingUser.googleId) {
+            // If user exists but doesn't have googleId, update it
+            const updatedUser = await User.findByIdAndUpdate(existingUser._id, {
+              googleId: user.id,
+              image: user.image || existingUser.image,
+            }, { new: true });
+            console.log("Updated existing user with Google ID:", { id: updatedUser._id });
+          }
+          
+          return true;
+        } catch (error) {
+          console.error("Error in Google Sign In:", error);
+          return false;
+        }
+      }
+      return true;
     },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as string;
+      if (session?.user) {
+        try {
+          await connectDB();
+          const dbUser = await User.findOne({ email: session.user.email });
+          if (dbUser) {
+            session.user.id = dbUser._id.toString();
+            session.user.role = dbUser.role;
+            session.user.isWebsiteOwner = dbUser.isWebsiteOwner;
+            session.user.isVerifiedWebsiteOwner = dbUser.isVerifiedWebsiteOwner;
+          }
+        } catch (error) {
+          console.error("Error in session callback:", error);
+        }
       }
       return session;
+    },
+    async jwt({ token, user, account }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
     }
   },
   pages: {

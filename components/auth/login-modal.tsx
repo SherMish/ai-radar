@@ -99,7 +99,8 @@ export function LoginModal() {
 
   const handleGoogleLogin = () => {
     signIn('google', { 
-      callbackUrl: window.location.href 
+      callbackUrl: window.location.href,
+      redirect: true
     });
   };
 
@@ -406,7 +407,7 @@ export function LoginModal() {
           </TabsContent>
         </Tabs>
 
-        {/* <div className="relative my-4">
+        <div className="relative my-4">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-border/50" />
           </div>
@@ -430,7 +431,7 @@ export function LoginModal() {
 
         <p className="text-xs text-center text-muted-foreground px-6">
           By continuing, you agree to our Terms of Service and Privacy Policy
-        </p> */}
+        </p>
       </DialogContent>
     </Dialog>
   );
