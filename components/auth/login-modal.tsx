@@ -345,11 +345,21 @@ export function LoginModal() {
                         <div className="space-y-1 leading-none">
                           <FormLabel>
                             I agree to the{' '}
-                            <Link href="/terms" className="text-primary hover:underline">
+                            <Link 
+                              href="/terms" 
+                              className="text-primary hover:underline"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
                               Terms of Service
                             </Link>{' '}
                             and{' '}
-                            <Link href="/privacy" className="text-primary hover:underline">
+                            <Link 
+                              href="/privacy" 
+                              className="text-primary hover:underline"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
                               Privacy Policy
                             </Link>
                           </FormLabel>
