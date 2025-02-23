@@ -17,7 +17,7 @@ import {
   Palette,
   Bot,
 } from "lucide-react";
-import { Review } from "@/lib/models";
+import { Review, Website } from "@/lib/models";
 import connectDB from "@/lib/mongodb";
 import { Card } from "@/components/ui/card";
 import { SearchSection } from "./components/search-section";
@@ -28,6 +28,8 @@ import { RadarAnimation } from "./components/radar-animation";
 import { Metadata } from "next";
 import { Types, Document } from "mongoose";
 import { RandomBlogPosts } from "@/components/random-blog-posts";
+import { WebsiteCard } from "@/components/website-card";
+import { LatestToolCard } from "@/app/components/latest-tool-card";
 
 const categories = [
   { name: "Text Generation", icon: MessageSquare, count: 156 },
@@ -88,6 +90,17 @@ interface Suggestion {
   _id: string;
   name: string;
   url: string;
+}
+
+async function getLatestTools(limit = 6) {
+  await connectDB();
+
+  const tools = await Website.find()
+    .sort({ createdAt: -1 })
+    .limit(limit)
+    .lean();
+
+  return tools;
 }
 
 export const metadata: Metadata = {
@@ -169,6 +182,7 @@ const jsonLd = {
 
 export default async function Home() {
   const latestReviews = await getLatestReviews();
+  const latestTools = await getLatestTools();
 
   return (
     <>
@@ -204,14 +218,60 @@ export default async function Home() {
             <CategoriesSection />
           </div>
 
+          {/* Latest Reviews Section - Added px-4 for mobile padding */}
+          {/* <div className="px-4 sm:px-6 lg:px-8">
+            <LatestReviewsCarousel reviews={latestReviews} />
+          </div> */}
+
+          {/* Latest Tools Section */}
+          <section className="py-12 bg-secondary/50 backdrop-blur-sm border-y border-border/50">
+            <div className="container max-w-6xl mx-auto px-4">
+              <div className="grid lg:grid-cols-[400px,1fr] gap-12">
+                {/* Left Column - Content */}
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="text-3xl font-bold mb-4">
+                      Stay ahead.
+                      <br />
+                      Optimize workflows.
+                      <br />
+                      Scale smarter.
+                    </h2>
+                    <p className="text-muted-foreground text-lg leading-relaxed">
+                      Unlock the latest AI solutions designed to drive
+                      efficiency, innovation, and growth. From automation to
+                      advanced analytics, explore cutting-edge tools that can
+                      give your business a competitive edge.
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-muted-foreground text-lg">
+                      Want to feature your AI solution?{" "}
+                      <Link
+                        href="/tool/new"
+                        className="text-primary hover:text-primary/90 hover:underline transition-colors"
+                      >
+                        List it today for free
+                      </Link>{" "}
+                      and reach professionals looking for the next big
+                      innovation.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Right Column - Cards */}
+                <div className="grid gap-6 md:grid-cols-2">
+                  {latestTools.map((tool) => (
+                    <LatestToolCard key={tool._id.toString()} website={tool} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
           {/* Marketing Section - Added px-4 for mobile padding */}
           <div className="px-4 sm:px-6 lg:px-8">
             <MarketingSection />
-          </div>
-
-          {/* Latest Reviews Section - Added px-4 for mobile padding */}
-          <div className="px-4 sm:px-6 lg:px-8">
-            <LatestReviewsCarousel reviews={latestReviews} />
           </div>
         </div>
       </main>
