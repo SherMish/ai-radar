@@ -79,14 +79,14 @@ export function Header() {
               </Link>
             ))}
 
-            {showBusinessCTA && (
+            {/* {showBusinessCTA && (
               <Link
                 href="/business"
                 className="inline-flex items-center gap-1 px-4 py-2 text-sm font-semibold text-white bg-primary rounded-full hover:bg-primary/90 transition-colors"
               >
                 For Business
               </Link>
-            )}
+            )} */}
 
             {/* {session?.user && (
               <Link

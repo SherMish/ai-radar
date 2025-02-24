@@ -104,6 +104,21 @@ function useCountUp(end: number, duration: number = 1000, decimals: number = 0) 
   return decimals === 0 ? Math.floor(count) : count.toFixed(decimals);
 }
 
+function GrowthIndicator({ value, delay = 1500 }: { value: number, delay?: number }) {
+  const [show, setShow] = useState(false);
+  
+  useEffect(() => {
+    const timer = setTimeout(() => setShow(true), delay);
+    return () => clearTimeout(timer);
+  }, [delay]);
+
+  return (
+    <div className={`text-xs text-emerald-500 transition-opacity duration-300 ${show ? 'opacity-100' : 'opacity-0'}`}>
+      ↑ {value}%
+    </div>
+  );
+}
+
 export default function BusinessPage() {
   const router = useRouter();
 
@@ -137,65 +152,65 @@ export default function BusinessPage() {
             <div className="relative aspect-square md:aspect-auto md:h-[500px] rounded-lg overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 backdrop-blur-sm border border-border/50 rounded-lg">
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="relative w-full max-w-[80%] aspect-square">
+                  <div className="relative w-full max-w-[90%] md:max-w-[80%] aspect-square">
                     {/* Floating Elements */}
                     <div className="absolute top-0 left-[10%] w-20 h-20 bg-primary/20 rounded-lg animate-float-diagonal" />
                     <div className="absolute top-[20%] right-[10%] w-16 h-16 bg-secondary/20 rounded-full animate-float-right" />
                     <div className="absolute bottom-[20%] left-[20%] w-24 h-24 bg-blue-500/20 rounded-lg rotate-45 animate-float-left" />
 
-                    {/* Central Element */}
-                    <div className="absolute inset-[20%] bg-background/50 backdrop-blur-xl rounded-2xl border border-border/50 shadow-2xl p-6">
+                    {/* Central Element - Adjust sizing for mobile */}
+                    <div className="absolute inset-[10%] md:inset-[20%] bg-background/50 backdrop-blur-xl rounded-2xl border border-border/50 shadow-2xl p-4 md:p-6">
                       <div className="h-full flex flex-col">
-                        {/* Analytics Header */}
-                        <div className="flex items-center justify-between mb-6">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/20 flex items-center justify-center relative group">
-                              <Bot className="w-5 h-5 text-primary absolute group-hover:opacity-0 transition-opacity" />
-                              <Sparkles className="w-5 h-5 text-primary absolute opacity-0 group-hover:opacity-100 transition-opacity" />
+                        {/* Analytics Header - Adjust spacing for mobile */}
+                        <div className="flex items-center justify-between mb-4 md:mb-6">
+                          <div className="flex items-center gap-2 md:gap-3">
+                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/20 flex items-center justify-center relative group">
+                              <Bot className="w-4 h-4 md:w-5 md:h-5 text-primary absolute group-hover:opacity-0 transition-opacity" />
+                              <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-primary absolute opacity-0 group-hover:opacity-100 transition-opacity" />
                             </div>
                             <div>
-                              <div className="font-medium">Your AI Tool</div>
-                              <div className="text-sm text-muted-foreground">Last 30 days</div>
+                              <div className="font-medium text-sm md:text-base">Your AI Tool</div>
+                              <div className="text-xs md:text-sm text-muted-foreground">Last 30 days</div>
                             </div>
                           </div>
                         </div>
 
-                        {/* Stats Grid */}
-                        <div className="grid grid-cols-2 gap-4 mb-6">
-                          <div className="bg-background/50 rounded-lg p-3">
-                            <div className="text-sm text-muted-foreground">Page Views</div>
-                            <div className="text-2xl font-bold">
-                              {useCountUp(9226, 1500)}
+                        {/* Stats Grid - Adjust spacing and text sizes for mobile */}
+                        <div className="grid grid-cols-2 gap-2 md:gap-4 mb-4 md:mb-6">
+                          <div className="bg-background/50 rounded-lg p-2 md:p-3">
+                            <div className="text-xs md:text-sm text-muted-foreground">Page Views</div>
+                            <div className="text-lg md:text-2xl font-bold">
+                              {useCountUp(9600, 1500)}
                             </div>
-                            <div className="text-xs text-emerald-500">↑ 12%</div>
+                            <GrowthIndicator value={12} />
                           </div>
-                          <div className="bg-background/50 rounded-lg p-3">
-                            <div className="text-sm text-muted-foreground">Conversions</div>
-                            <div className="text-2xl font-bold">
-                              {useCountUp(1023, 1500)}
+                          <div className="bg-background/50 rounded-lg p-2 md:p-3">
+                            <div className="text-xs md:text-sm text-muted-foreground">Conversions</div>
+                            <div className="text-lg md:text-2xl font-bold">
+                              {useCountUp(1200, 1500)}
                             </div>
-                            <div className="text-xs text-emerald-500">↑ 26%</div>
+                            <GrowthIndicator value={26} />
                           </div>
                         </div>
 
-                        {/* Trust Score */}
+                        {/* Trust Score - Adjust spacing and text sizes for mobile */}
                         <div className="mt-auto">
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-1 text-primary">
-                              <RadarIcon className="w-4 h-4" />
-                              <span className="text-sm font-medium">RadarTrust™</span>
+                              <RadarIcon className="w-3 h-3 md:w-4 md:h-4" />
+                              <span className="text-xs md:text-sm font-medium">RadarTrust™</span>
                             </div>
-                            <div className="text-sm text-primary">
+                            <div className="text-xs md:text-sm text-primary">
                               {useCountUp(9.1, 1500, 1)}
                             </div>
                           </div>
-                          <div className="h-2 rounded-full bg-background overflow-hidden">
+                          <div className="h-1.5 md:h-2 rounded-full bg-background overflow-hidden">
                             <div 
                               className="h-full bg-gradient-to-r from-primary to-blue-500 rounded-full transition-all duration-[1500ms]" 
                               style={{ width: `${useCountUp(91, 1500)}%` }}
                             />
                           </div>
-                          <div className="mt-2 text-xs text-muted-foreground">
+                          <div className="mt-1 md:mt-2 text-[10px] md:text-xs text-muted-foreground">
                             Top 9% of AI tools
                           </div>
                         </div>
