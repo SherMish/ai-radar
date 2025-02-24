@@ -31,7 +31,8 @@ export function Header() {
     setShowMobileSearch(false);
   };
 
-  const showSearch = pathname !== '/';
+  const showSearch = pathname !== '/' && pathname !== '/business';
+  const showBusinessCTA = !pathname.includes('/business');
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -49,11 +50,12 @@ export function Header() {
                   alt="AI-Radar"
                   width={150}
                   height={28}
-                  
                 />
-                {/* <span className="text-xs px-1.5 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">
-                  BETA
-                </span> */}
+                {pathname.includes('/business') && (
+                  <span className="text-sm font-medium text-muted-foreground border-border/50 mt-[11px]">
+                    Business
+                  </span>
+                )}
               </div>
             </Link>
           </div>
@@ -77,14 +79,23 @@ export function Header() {
               </Link>
             ))}
 
-            {session?.user && (
+            {showBusinessCTA && (
+              <Link
+                href="/business"
+                className="inline-flex items-center gap-1 px-4 py-2 text-sm font-semibold text-white bg-primary rounded-full hover:bg-primary/90 transition-colors"
+              >
+                For Business
+              </Link>
+            )}
+
+            {/* {session?.user && (
               <Link
                 href="/my-reviews"
                 className="text-base font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 My Reviews
               </Link>
-            )}
+            )} */}
 
             <div className="flex items-center gap-2">
               {session?.user ? (
@@ -160,6 +171,16 @@ export function Header() {
                 {item.name}
               </Link>
             ))}
+
+            {showBusinessCTA && (
+              <Link
+                href="/business"
+                className="block rounded-md px-3 py-4 text-base font-medium text-primary hover:bg-muted/50 hover:text-primary/80 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                For Business
+              </Link>
+            )}
 
             {session?.user && (
               <Link
