@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Search, CheckCircle2, ArrowRight, Quote } from "lucide-react";
+import { Search, CheckCircle2, ArrowRight, Quote, Sparkles, Bot, Radar as RadarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
@@ -82,6 +82,28 @@ const testimonials = [
   },
 ];
 
+function useCountUp(end: number, duration: number = 1000, decimals: number = 0) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let startTimestamp: number | null = null;
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      
+      setCount(progress * end);
+      
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      }
+    };
+
+    window.requestAnimationFrame(step);
+  }, [end, duration]);
+
+  return decimals === 0 ? Math.floor(count) : count.toFixed(decimals);
+}
+
 export default function BusinessPage() {
   const router = useRouter();
 
@@ -122,48 +144,59 @@ export default function BusinessPage() {
                     <div className="absolute bottom-[20%] left-[20%] w-24 h-24 bg-blue-500/20 rounded-lg rotate-45 animate-float-left" />
 
                     {/* Central Element */}
-                    <div className="absolute inset-[20%] bg-background/50 backdrop-blur-xl rounded-2xl border border-border/50 shadow-2xl p-4">
+                    <div className="absolute inset-[20%] bg-background/50 backdrop-blur-xl rounded-2xl border border-border/50 shadow-2xl p-6">
                       <div className="h-full flex flex-col">
-                        {/* Card Header */}
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
-                            <span className="text-sm font-bold text-primary">A</span>
-                          </div>
-                          <div className="flex-1">
-                            <div className="text-sm font-semibold">AI Assistant Pro</div>
-                            <div className="text-xs text-muted-foreground">ai-assistant.pro</div>
+                        {/* Analytics Header */}
+                        <div className="flex items-center justify-between mb-6">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/20 flex items-center justify-center relative group">
+                              <Bot className="w-5 h-5 text-primary absolute group-hover:opacity-0 transition-opacity" />
+                              <Sparkles className="w-5 h-5 text-primary absolute opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </div>
+                            <div>
+                              <div className="font-medium">Your AI Tool</div>
+                              <div className="text-sm text-muted-foreground">Last 30 days</div>
+                            </div>
                           </div>
                         </div>
 
-                        {/* Ratings */}
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center gap-1">
-                            {[...Array(5)].map((_, i) => (
-                              <div
-                                key={i}
-                                className={`w-3 h-3 ${
-                                  i < 4 ? "text-yellow-400 fill-yellow-400" : "text-zinc-600"
-                                }`}
-                              >
-                                ★
-                              </div>
-                            ))}
-                            <span className="text-xs ml-1 text-muted-foreground">4.0</span>
+                        {/* Stats Grid */}
+                        <div className="grid grid-cols-2 gap-4 mb-6">
+                          <div className="bg-background/50 rounded-lg p-3">
+                            <div className="text-sm text-muted-foreground">Page Views</div>
+                            <div className="text-2xl font-bold">
+                              {useCountUp(9226, 1500)}
+                            </div>
+                            <div className="text-xs text-emerald-500">↑ 12%</div>
                           </div>
-                          <div className="text-xs text-muted-foreground">(128 reviews)</div>
+                          <div className="bg-background/50 rounded-lg p-3">
+                            <div className="text-sm text-muted-foreground">Conversions</div>
+                            <div className="text-2xl font-bold">
+                              {useCountUp(1023, 1500)}
+                            </div>
+                            <div className="text-xs text-emerald-500">↑ 26%</div>
+                          </div>
                         </div>
 
-                        {/* TrustRadar Score */}
+                        {/* Trust Score */}
                         <div className="mt-auto">
-                          <div className="text-xs text-muted-foreground mb-1">TrustRadar Score</div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
-                              <span className="text-lg font-bold text-white">87</span>
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-1 text-primary">
+                              <RadarIcon className="w-4 h-4" />
+                              <span className="text-sm font-medium">RadarTrust™</span>
                             </div>
-                            <div className="text-xs">
-                              <div className="font-medium">Excellent</div>
-                              <div className="text-muted-foreground">Top 15%</div>
+                            <div className="text-sm text-primary">
+                              {useCountUp(9.1, 1500, 1)}
                             </div>
+                          </div>
+                          <div className="h-2 rounded-full bg-background overflow-hidden">
+                            <div 
+                              className="h-full bg-gradient-to-r from-primary to-blue-500 rounded-full transition-all duration-[1500ms]" 
+                              style={{ width: `${useCountUp(91, 1500)}%` }}
+                            />
+                          </div>
+                          <div className="mt-2 text-xs text-muted-foreground">
+                            Top 9% of AI tools
                           </div>
                         </div>
                       </div>
