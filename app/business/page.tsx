@@ -117,20 +117,61 @@ export default function BusinessPage() {
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="relative w-full max-w-[80%] aspect-square">
                     {/* Floating Elements */}
-                    <div className="absolute top-0 left-[10%] w-20 h-20 bg-primary/20 rounded-lg animate-float" />
-                    <div className="absolute top-[20%] right-[10%] w-16 h-16 bg-secondary/20 rounded-full animate-float-delayed" />
-                    <div className="absolute bottom-[20%] left-[20%] w-24 h-24 bg-blue-500/20 rounded-lg rotate-45 animate-float" />
-                    
+                    <div className="absolute top-0 left-[10%] w-20 h-20 bg-primary/20 rounded-lg animate-float-diagonal" />
+                    <div className="absolute top-[20%] right-[10%] w-16 h-16 bg-secondary/20 rounded-full animate-float-right" />
+                    <div className="absolute bottom-[20%] left-[20%] w-24 h-24 bg-blue-500/20 rounded-lg rotate-45 animate-float-left" />
+
                     {/* Central Element */}
-                    <div className="absolute inset-[20%] bg-background/50 backdrop-blur-xl rounded-2xl border border-border/50 shadow-2xl flex items-center justify-center">
-                      <div className="text-3xl font-bold gradient-text text-center">
-                        Trust<br />Radar
+                    <div className="absolute inset-[20%] bg-background/50 backdrop-blur-xl rounded-2xl border border-border/50 shadow-2xl p-4">
+                      <div className="h-full flex flex-col">
+                        {/* Card Header */}
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                            <span className="text-sm font-bold text-primary">A</span>
+                          </div>
+                          <div className="flex-1">
+                            <div className="text-sm font-semibold">AI Assistant Pro</div>
+                            <div className="text-xs text-muted-foreground">ai-assistant.pro</div>
+                          </div>
+                        </div>
+
+                        {/* Ratings */}
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-1">
+                            {[...Array(5)].map((_, i) => (
+                              <div
+                                key={i}
+                                className={`w-3 h-3 ${
+                                  i < 4 ? "text-yellow-400 fill-yellow-400" : "text-zinc-600"
+                                }`}
+                              >
+                                ★
+                              </div>
+                            ))}
+                            <span className="text-xs ml-1 text-muted-foreground">4.0</span>
+                          </div>
+                          <div className="text-xs text-muted-foreground">(128 reviews)</div>
+                        </div>
+
+                        {/* TrustRadar Score */}
+                        <div className="mt-auto">
+                          <div className="text-xs text-muted-foreground mb-1">TrustRadar Score</div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+                              <span className="text-lg font-bold text-white">87</span>
+                            </div>
+                            <div className="text-xs">
+                              <div className="font-medium">Excellent</div>
+                              <div className="text-muted-foreground">Top 15%</div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
                     {/* Additional Floating Elements */}
-                    <div className="absolute bottom-[10%] right-[15%] w-12 h-12 bg-purple-500/20 rounded-full animate-float-delayed" />
-                    <div className="absolute top-[40%] left-[5%] w-14 h-14 bg-pink-500/20 rounded-lg rotate-12 animate-float" />
+                    <div className="absolute bottom-[10%] right-[15%] w-12 h-12 bg-purple-500/20 rounded-full animate-float" />
+                    <div className="absolute top-[40%] left-[5%] w-14 h-14 bg-pink-500/20 rounded-lg rotate-12 animate-float-right" />
                   </div>
                 </div>
               </div>

@@ -92,3 +92,42 @@
 .animate-float-delayed {
   animation: float-delayed 8s ease-in-out infinite;
 }
+
+@keyframes float-left {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-20px);
+  }
+}
+
+@keyframes float-right {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(20px);
+  }
+}
+
+@keyframes float-diagonal {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-15px, -15px);
+  }
+}
+
+.animate-float-left {
+  animation: float-left 7s ease-in-out infinite;
+}
+
+.animate-float-right {
+  animation: float-right 8s ease-in-out infinite;
+}
+
+.animate-float-diagonal {
+  animation: float-diagonal 9s ease-in-out infinite;
+}
