@@ -18,6 +18,12 @@ import Image from "next/image";
 import { AnimatedWord } from "@/components/ui/animated-word";
 import { Card } from "@/components/ui/card";
 import { fetchLatestWebsites } from "@/app/actions/website";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/autoplay";
 
 const benefits = [
   {
@@ -177,7 +183,7 @@ export default function BusinessPage() {
   useEffect(() => {
     const getWebsites = async () => {
       try {
-        const websites = await fetchLatestWebsites(2);
+        const websites = await fetchLatestWebsites(10);
 
         // Transform websites to match Tool interface
         const toolsData = websites.map((website) => ({
@@ -509,72 +515,103 @@ export default function BusinessPage() {
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
               Latest AI Tools on AI-Radar
             </h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              {latestTools.map((tool) => (
-                <Card
-                  key={tool._id}
-                  className="p-6 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors border-zinc-700/50"
-                >
-                  <div className="flex flex-col sm:flex-row items-start gap-4">
-                    <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center overflow-hidden">
-                      <div className="w-6 h-6 bg-zinc-700 rounded-full flex items-center justify-center">
-                        <span className="text-xs text-zinc-400">
-                          {tool.name.charAt(0)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex-1 min-w-0 space-y-3">
-                      <div>
-                        <h2 className="text-lg font-semibold text-zinc-50">
-                          {tool.name}
-                        </h2>
-                        <div className="flex items-center gap-3">
-                          <div className="flex items-center">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`w-4 h-4 ${
-                                  i < tool.averageRating
-                                    ? "text-yellow-400 fill-yellow-400"
-                                    : "text-zinc-600"
-                                }`}
-                              />
-                            ))}
-                          </div>
-                          <span className="text-sm text-zinc-400">
-                            {tool.averageRating.toFixed(1)}
-                          </span>
-                          <div className="w-px h-4 bg-zinc-700" />
-                          <div className="flex items-center gap-1 text-primary">
-                            <RadarIcon className="w-4 h-4" />
-                            <span className="text-sm font-medium">
-                              {tool.radarTrust}
-                              <span className="ml-1">RadarTrust™</span>
-                            </span>
-                          </div>
+            
+            <div className="max-w-full mx-auto">
+              <Swiper
+                modules={[Pagination, Autoplay]}
+                spaceBetween={20}
+                slidesPerView={1}
+                breakpoints={{
+                  640: {
+                    slidesPerView: 2,
+                  },
+                  1024: {
+                    slidesPerView: 3,
+                  },
+                }}
+                pagination={{ clickable: true }}
+                autoplay={{
+                  delay: 3000,
+                  disableOnInteraction: false,
+                }}
+                loop={true}
+                className="rounded-xl"
+              >
+                {latestTools.map((tool) => (
+                  <SwiperSlide key={tool._id}>
+                    <Card className="p-4 bg-zinc-900/50 border-zinc-700/50 h-[230px] flex flex-col">
+                      <div className="flex items-center gap-3">
+                        <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center overflow-hidden">
+                          {tool.logo ? (
+                            <Image
+                              src={tool.logo}
+                              alt={tool.name}
+                              width={28}
+                              height={28}
+                              className="object-contain"
+                            />
+                          ) : (
+                            <div className="w-5 h-5 bg-zinc-700 rounded-full flex items-center justify-center">
+                              <span className="text-xs text-zinc-400">
+                                {tool.name.charAt(0)}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          <h3 className="text-base font-semibold text-zinc-50">
+                            {tool.name}
+                          </h3>
+                          <p className="text-xs text-zinc-400 truncate">
+                            {tool.url}
+                          </p>
                         </div>
                       </div>
-
+                      
                       {tool.shortDescription && (
-                        <p className="text-sm text-zinc-400 line-clamp-2">
+                        <p className="text-sm text-zinc-400 line-clamp-3 mt-3">
                           {tool.shortDescription}
                         </p>
                       )}
-
-                      <div className="flex items-center">
-                        <Button
-                          onClick={() =>
-                            window.open(`https://${tool.url}`, "_blank")
-                          }
-                          className="sm:ml-auto inline-flex items-center justify-center px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md transition-colors text-sm"
-                        >
-                          Visit Website
-                        </Button>
+                      
+                      <div className="mt-auto pt-3">
+                        <div className="flex items-center justify-between">
+                          {tool.reviewCount > 0 ? (
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className={`w-3 h-3 ${
+                                      i < tool.averageRating
+                                        ? "text-yellow-400 fill-yellow-400"
+                                        : "text-zinc-600"
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                              <span className="text-xs text-zinc-400">
+                                {tool.averageRating.toFixed(1)} ({tool.reviewCount})
+                              </span>
+                            </div>
+                          ) : (
+                            <span className="text-xs text-zinc-500">No reviews yet</span>
+                          )}
+                          
+                          {tool.radarTrust && (
+                            <div className="flex items-center gap-1 text-primary">
+                              <RadarIcon className="w-3 h-3" />
+                              <span className="text-xs font-medium">
+                                {tool.radarTrust}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                </Card>
-              ))}
+                    </Card>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
             </div>
           </div>
         </div>
