@@ -52,6 +52,11 @@ const UserSchema = new mongoose.Schema({
     default: null,
   },
   lastLoginAt: Date,
+  verification: {
+    token: String,
+    expires: Date,
+    websiteUrl: String
+  },
 }, {
   timestamps: true,
 });

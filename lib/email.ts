@@ -1,14 +1,32 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: process.env.SMTP_SECURE === 'true',
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASSWORD,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+export async function sendEmail({ 
+  to, 
+  subject, 
+  html, 
+  text 
+}: { 
+  to: string; 
+  subject: string; 
+  html: string; 
+  text?: string;
+}) {
+  console.log("Sending email to:", to);
+  console.log("Subject:", subject);
+  console.log("HTML:", html);
+  console.log("API Key:", process.env.RESEND_API_KEY?.slice(0, 5) + "...");
+
+  return resend.emails.send({
+    from: "noreply@ai-radar.com",
+    to,
+    subject,
+    html,
+    text,
+    react: null
+  });
+}
 
 export async function sendVerificationEmail(
   to: string,
@@ -17,8 +35,7 @@ export async function sendVerificationEmail(
 ) {
   const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verify-ownership?token=${token}`;
 
-  const mailOptions = {
-    from: process.env.SMTP_FROM,
+  return sendEmail({
     to,
     subject: `Verify ownership of ${websiteName}`,
     html: `
@@ -26,8 +43,6 @@ export async function sendVerificationEmail(
       <p>Please click the link below to verify your ownership of ${websiteName}:</p>
       <a href="${verificationUrl}">${verificationUrl}</a>
       <p>This link will expire in 24 hours.</p>
-    `,
-  };
-
-  await transporter.sendMail(mailOptions);
+    `
+  });
 } 
