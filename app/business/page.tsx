@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { AnimatedWord } from "@/components/ui/animated-word";
 import { Card } from "@/components/ui/card";
+import { fetchLatestWebsites } from "@/app/actions/website";
 
 const benefits = [
   {
@@ -104,27 +105,18 @@ interface Tool {
   radarTrust?: number;
 }
 
-const latestTools: Tool[] = [
-  {
-    _id: "1",
-    name: "ChatGPT",
-    url: "chat.openai.com",
-    shortDescription: "Advanced language model for natural conversations and content creation",
-    averageRating: 4.8,
-    reviewCount: 1250,
-    radarTrust: 9.2,
-  },
-  {
-    _id: "2",
-    name: "Midjourney",
-    url: "midjourney.com",
-    shortDescription: "AI-powered image generation from text descriptions",
-    averageRating: 4.6,
-    reviewCount: 890,
-    radarTrust: 8.9,
-  },
-  // Add more sample tools as needed
-];
+// Add an interface for Website
+interface Website {
+  id: string;
+  name: string;
+  url: string;
+  description?: string;
+  shortDescription?: string;
+  logo?: string;
+  averageRating?: number;
+  reviewCount?: number;
+  radarTrust?: number;
+}
 
 function useCountUp(
   end: number,
@@ -179,6 +171,60 @@ function GrowthIndicator({
 
 export default function BusinessPage() {
   const router = useRouter();
+  const [latestTools, setLatestTools] = useState<Tool[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const getWebsites = async () => {
+      try {
+        const websites = await fetchLatestWebsites(2);
+
+        // Transform websites to match Tool interface
+        const toolsData = websites.map((website) => ({
+          _id: website._id.toString(),
+          name: website.name,
+          url: website.url,
+          shortDescription:
+            website.shortDescription || website.description?.substring(0, 100),
+          logo: website.logo,
+          averageRating: website.averageRating || 0,
+          reviewCount: website.reviewCount || 0,
+          radarTrust: website.radarTrust || 0,
+        }));
+
+        setLatestTools(toolsData);
+      } catch (error) {
+        console.error("Failed to fetch websites:", error);
+        // Use fallback data
+        setLatestTools([
+          {
+            _id: "1",
+            name: "ChatGPT",
+            url: "chat.openai.com",
+            shortDescription:
+              "Advanced language model for natural conversations and content creation",
+            averageRating: 4.8,
+            reviewCount: 1250,
+            radarTrust: 9.2,
+          },
+          {
+            _id: "2",
+            name: "Midjourney",
+            url: "midjourney.com",
+            shortDescription:
+              "AI-powered image generation from text descriptions",
+            averageRating: 4.6,
+            reviewCount: 890,
+            radarTrust: 8.9,
+          },
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getWebsites();
+  }, []);
 
   return (
     <div className="min-h-screen">
@@ -300,10 +346,8 @@ export default function BusinessPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center space-y-8">
             {/* <h2 className="text-4xl md:text-5xl font-bold">Find your AI tool</h2> */}
-            <p className="text-lg">
-            Help Users Find You – Claim Your AI Tool
-            </p>
-            
+            <p className="text-lg">Help Users Find You – Claim Your AI Tool</p>
+
             <div className="relative max-w-xl mx-auto">
               <div className="relative">
                 <Input
@@ -311,7 +355,7 @@ export default function BusinessPage() {
                   placeholder="Enter your website URL"
                   className="h-14 pl-5 pr-36 text-lg"
                 />
-                <Button 
+                <Button
                   className="absolute right-2 top-2 h-10 px-8 text-base"
                   onClick={() => router.push("/business/register")}
                 >
@@ -337,7 +381,9 @@ export default function BusinessPage() {
               <span className="text-primary">Grow faster</span>
             </h2>
             <p className="text-xl text-muted-foreground">
-              Take control of your AI tool&apos;s presence on AI-Radar. Engage with users, respond to feedback, and showcase your innovation to thousands of potential customers.
+              Take control of your AI tool&apos;s presence on AI-Radar. Engage
+              with users, respond to feedback, and showcase your innovation to
+              thousands of potential customers.
             </p>
           </div>
 
@@ -348,7 +394,8 @@ export default function BusinessPage() {
               </div>
               <h3 className="text-xl font-semibold mb-3">Verified Profile</h3>
               <p className="text-muted-foreground">
-                Get a verified badge, customize your listing, and maintain accurate information about your AI tool.
+                Get a verified badge, customize your listing, and maintain
+                accurate information about your AI tool.
               </p>
             </div>
 
@@ -358,7 +405,8 @@ export default function BusinessPage() {
               </div>
               <h3 className="text-xl font-semibold mb-3">Review Management</h3>
               <p className="text-muted-foreground">
-                Respond to reviews, gather feedback, and build trust with transparent communication with your users.
+                Respond to reviews, gather feedback, and build trust with
+                transparent communication with your users.
               </p>
             </div>
 
@@ -368,7 +416,8 @@ export default function BusinessPage() {
               </div>
               <h3 className="text-xl font-semibold mb-3">Growth Analytics</h3>
               <p className="text-muted-foreground">
-                Access detailed insights about your performance, user engagement, and market position.
+                Access detailed insights about your performance, user
+                engagement, and market position.
               </p>
             </div>
           </div>
@@ -382,7 +431,7 @@ export default function BusinessPage() {
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
               Why Join AI-Radar?
             </h2>
-            
+
             <div className="grid md:grid-cols-3 gap-8 md:gap-12">
               <div className="text-center space-y-4">
                 <div className="inline-flex items-center justify-center w-32 h-20 rounded-2xl bg-primary/10 mb-2">
@@ -390,7 +439,8 @@ export default function BusinessPage() {
                 </div>
                 <h3 className="text-xl font-semibold">Monthly Visitors</h3>
                 <p className="text-muted-foreground">
-                  Gain exposure to thousands of professionals searching for AI solutions
+                  Gain exposure to thousands of professionals searching for AI
+                  solutions
                 </p>
               </div>
 
@@ -400,7 +450,8 @@ export default function BusinessPage() {
                 </div>
                 <h3 className="text-xl font-semibold">Increased Engagement</h3>
                 <p className="text-muted-foreground">
-                  Listed AI tools see a significant boost in user interaction and conversions
+                  Listed AI tools see a significant boost in user interaction
+                  and conversions
                 </p>
               </div>
 
@@ -410,7 +461,8 @@ export default function BusinessPage() {
                 </div>
                 <h3 className="text-xl font-semibold">AI Companies</h3>
                 <p className="text-muted-foreground">
-                  Join a growing network of AI businesses leveraging AI-Radar for visibility
+                  Join a growing network of AI businesses leveraging AI-Radar
+                  for visibility
                 </p>
               </div>
             </div>
@@ -459,11 +511,16 @@ export default function BusinessPage() {
             </h2>
             <div className="grid md:grid-cols-2 gap-8">
               {latestTools.map((tool) => (
-                <Card key={tool._id} className="p-6 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors border-zinc-700/50">
+                <Card
+                  key={tool._id}
+                  className="p-6 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors border-zinc-700/50"
+                >
                   <div className="flex flex-col sm:flex-row items-start gap-4">
                     <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center overflow-hidden">
                       <div className="w-6 h-6 bg-zinc-700 rounded-full flex items-center justify-center">
-                        <span className="text-xs text-zinc-400">{tool.name.charAt(0)}</span>
+                        <span className="text-xs text-zinc-400">
+                          {tool.name.charAt(0)}
+                        </span>
                       </div>
                     </div>
                     <div className="flex-1 min-w-0 space-y-3">
@@ -497,16 +554,18 @@ export default function BusinessPage() {
                           </div>
                         </div>
                       </div>
-                      
+
                       {tool.shortDescription && (
                         <p className="text-sm text-zinc-400 line-clamp-2">
                           {tool.shortDescription}
                         </p>
                       )}
-                      
+
                       <div className="flex items-center">
                         <Button
-                          onClick={() => window.open(`https://${tool.url}`, '_blank')}
+                          onClick={() =>
+                            window.open(`https://${tool.url}`, "_blank")
+                          }
                           className="sm:ml-auto inline-flex items-center justify-center px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md transition-colors text-sm"
                         >
                           Visit Website
