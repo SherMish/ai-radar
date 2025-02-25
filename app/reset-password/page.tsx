@@ -33,7 +33,7 @@ export default function ResetPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const token = searchParams?.get("token");
 
   const form = useForm<ResetPasswordValues>({
     resolver: zodResolver(resetPasswordSchema),

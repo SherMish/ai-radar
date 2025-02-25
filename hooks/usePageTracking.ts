@@ -11,7 +11,7 @@ export function usePageTracking() {
 
   useEffect(() => {
     if (pathname) {
-      const url = pathname + searchParams.toString();
+      const url = pathname + (searchParams?.toString() ?? '');
       // Track in Google Analytics
       pageview(url);
       

@@ -31,8 +31,8 @@ export function Header() {
     setShowMobileSearch(false);
   };
 
-  const showSearch = pathname !== '/' && pathname !== '/business';
-  const showBusinessCTA = !pathname.includes('/business');
+  const showSearch = pathname?.includes('/') !== true && pathname?.includes('/business') !== true;
+  const showBusinessCTA = pathname?.includes('/business') !== true;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -51,7 +51,7 @@ export function Header() {
                   width={150}
                   height={28}
                 />
-                {pathname.includes('/business') && (
+                {pathname?.includes('/business') && (
                   <span className="text-sm font-medium text-muted-foreground border-border/50 mt-[11px]">
                     Business
                   </span>

@@ -27,7 +27,7 @@ const categories = [
 
 export default function NewReviewPage() {
   const searchParams = useSearchParams();
-  const urlParam = searchParams.get("url") || "";
+  const urlParam = searchParams?.get("url") ?? "";
 
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);

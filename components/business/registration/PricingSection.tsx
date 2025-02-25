@@ -8,7 +8,7 @@ export function PricingSection() {
 
   const handleProSubscription = async () => {
     setLoading(true);
-    const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY);
+    const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY as string);
     // Implement Stripe checkout
     setLoading(false);
   };

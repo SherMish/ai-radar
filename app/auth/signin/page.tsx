@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 export default function SignIn() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const callbackUrl = searchParams?.get("callbackUrl") ?? "/";
 
   const handleGoogleSignIn = () => {
     signIn("google", {
