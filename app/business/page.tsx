@@ -22,6 +22,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/autoplay";
+import { formatPricingModel } from "@/lib/utils/formatting";
 
 const benefits = [
   {
@@ -107,6 +108,7 @@ interface Tool {
   averageRating: number;
   reviewCount: number;
   radarTrust?: number;
+  businessModel?: string;
 }
 
 // Add an interface for Website
@@ -194,6 +196,7 @@ export default function BusinessPage() {
           averageRating: website.averageRating || 0,
           reviewCount: website.reviewCount || 0,
           radarTrust: website.radarTrust || 0,
+          businessModel: formatPricingModel(website.pricingModel || 'Free'),
         }));
 
         setLatestTools(toolsData);
@@ -210,6 +213,7 @@ export default function BusinessPage() {
             averageRating: 4.8,
             reviewCount: 1250,
             radarTrust: 9.2,
+            businessModel: "SaaS",
           },
           {
             _id: "2",
@@ -220,6 +224,7 @@ export default function BusinessPage() {
             averageRating: 4.6,
             reviewCount: 890,
             radarTrust: 8.9,
+            businessModel: "SaaS",
           },
         ]);
       } finally {
@@ -458,7 +463,10 @@ export default function BusinessPage() {
               >
                 {latestTools.map((tool) => (
                   <SwiperSlide key={tool._id}>
-                    <Card className="p-4 bg-zinc-900/50 border-zinc-700/50 h-[230px] flex flex-col">
+                    <Card 
+                      className="p-4 bg-zinc-900/50 border-zinc-700/50 h-[230px] flex flex-col cursor-pointer hover:bg-zinc-800/50 transition-colors"
+                      onClick={() => router.push(`/tool/${tool.url}`)}
+                    >
                       <div className="flex items-center gap-3">
                         <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center overflow-hidden">
                           {tool.logo ? (
@@ -477,24 +485,45 @@ export default function BusinessPage() {
                             </div>
                           )}
                         </div>
-                        <div>
-                          <h3 className="text-base font-semibold text-zinc-50">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-base font-semibold text-zinc-50 truncate">
                             {tool.name}
                           </h3>
                           <p className="text-xs text-zinc-400 truncate">
                             {tool.url}
                           </p>
                         </div>
+                        
+                        {/* Move RadarTrust to more prominent position */}
+                        {tool.radarTrust && (
+                          <div className="flex items-center px-2 py-1 bg-primary/10 rounded-lg border border-primary/20">
+                            <span className="text-xs font-medium text-primary mr-1">
+                              {tool.radarTrust}
+                            </span>
+                            <RadarIcon className="w-3 h-3 text-primary" />
+                            <span className="text-[10px] font-medium text-primary ml-1">RadarTrust™</span>
+                          </div>
+                        )}
                       </div>
 
                       {tool.shortDescription && (
-                        <p className="text-sm text-zinc-400 line-clamp-3 mt-3">
-                          {tool.shortDescription}
-                        </p>
+                        <div className="mt-3 space-y-1">
+                          <p className="text-sm text-zinc-400 line-clamp-2">
+                            {tool.shortDescription}
+                          </p>
+                          {/* Show business model with proper formatting */}
+                          {tool.businessModel && (
+                            <div className="flex items-center">
+                              <span className="text-xs text-zinc-500 bg-zinc-800/50 px-2 py-0.5 rounded-full">
+                                {formatPricingModel(tool.businessModel)}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       )}
 
                       <div className="mt-auto pt-3">
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center">
                           {tool.reviewCount > 0 ? (
                             <div className="flex items-center gap-2">
                               <div className="flex items-center">
@@ -510,23 +539,13 @@ export default function BusinessPage() {
                                 ))}
                               </div>
                               <span className="text-xs text-zinc-400">
-                                {tool.averageRating.toFixed(1)} (
-                                {tool.reviewCount})
+                                {tool.averageRating.toFixed(1)} ({tool.reviewCount})
                               </span>
                             </div>
                           ) : (
                             <span className="text-xs text-zinc-500">
                               No reviews yet
                             </span>
-                          )}
-
-                          {tool.radarTrust && (
-                            <div className="flex items-center gap-1 text-primary">
-                              <RadarIcon className="w-3 h-3" />
-                              <span className="text-xs font-medium">
-                                {tool.radarTrust}
-                              </span>
-                            </div>
                           )}
                         </div>
                       </div>
