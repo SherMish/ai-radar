@@ -107,11 +107,19 @@ export const authOptions: NextAuthOptions = {
           const dbUser = await User.findOne({ email: session.user.email });
           
           if (dbUser) {
-            session.user.id = dbUser._id.toString();
-            session.user.role = dbUser.role;
-            session.user.websites = dbUser.websites;
-            session.user.isWebsiteOwner = dbUser.isWebsiteOwner;
-            session.user.isVerifiedWebsiteOwner = dbUser.isVerifiedWebsiteOwner;
+            // Ensure we're copying all relevant fields
+            session.user = {
+              ...session.user,
+              id: dbUser._id.toString(),
+              role: dbUser.role,
+              websites: dbUser.websites,
+              isWebsiteOwner: dbUser.isWebsiteOwner,
+              isVerifiedWebsiteOwner: dbUser.isVerifiedWebsiteOwner
+            };
+            
+            // Also update the token
+            token.role = dbUser.role;
+            token.websites = dbUser.websites;
           }
         } catch (error) {
           console.error("Error in session callback:", error);

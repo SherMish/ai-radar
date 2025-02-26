@@ -20,9 +20,9 @@ export default function BusinessRegistration() {
   const searchParams = useSearchParams();
   const [step, setStep] = useState(() => {
     // Initialize step based on URL params
-    const token = searchParams?.get('token');
-    const stepParam = searchParams?.get('step');
-    if (token && stepParam === '4') {
+    const token = searchParams?.get("token");
+    const stepParam = searchParams?.get("step");
+    if (token && stepParam === "4") {
       return 4;
     }
     return 1;
@@ -36,19 +36,22 @@ export default function BusinessRegistration() {
     role: "",
     agreedToTerms: false,
   });
-  const [verifiedWebsiteUrl, setVerifiedWebsiteUrl] = useState<string | null>(null);
+  const [verifiedWebsiteUrl, setVerifiedWebsiteUrl] = useState<string | null>(
+    null
+  );
 
   // Redirect to dashboard if user is already linked to a business
   useEffect(() => {
-    if (session?.user?.businessId) { //can use isWebsiteOwner
+    if (session?.user?.businessId) {
+      //can use isWebsiteOwner
       window.location.href = "/business/dashboard";
     }
   }, [session]);
 
   useEffect(() => {
     const verifyToken = async () => {
-      const token = searchParams?.get('token');
-      console.log('Token from URL:', token);
+      const token = searchParams?.get("token");
+      console.log("Token from URL:", token);
       if (token && step === 4) {
         try {
           const result = await verifyDomainAction(token);
@@ -58,11 +61,14 @@ export default function BusinessRegistration() {
             description: "Your domain ownership has been verified.",
           });
         } catch (error) {
-          console.error('Verification error:', error);
+          console.error("Verification error:", error);
           toast({
             variant: "destructive",
             title: "Error",
-            description: error instanceof Error ? error.message : "Failed to verify domain ownership.",
+            description:
+              error instanceof Error
+                ? error.message
+                : "Failed to verify domain ownership.",
           });
           setStep(3);
         }
@@ -192,7 +198,7 @@ export default function BusinessRegistration() {
 
             {/* Step 4: Pricing */}
             {session && step === 4 && (
-              <PricingSection 
+              <PricingSection
                 websiteUrl={verifiedWebsiteUrl || formData.websiteUrl}
               />
             )}

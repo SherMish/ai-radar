@@ -8,7 +8,7 @@ import { CheckCircle2, AlertCircle, ArrowRight } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { LoadingModal } from "@/components/ui/loading-modal";
 import { toast } from "@/components/ui/use-toast";
-import { signOut } from "next-auth/react";
+import { signOut, signIn, useSession } from "next-auth/react";
 
 const freeFeatures = [
   "Verified business profile",
@@ -29,6 +29,7 @@ export function PricingSection({ websiteUrl }: { websiteUrl: string }) {
   const [isAnnual, setIsAnnual] = useState(true);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { update: updateSession } = useSession();
 
   const monthlyPrice = 249;
   const annualDiscount = 0.37; // 37% off
@@ -114,10 +115,10 @@ export function PricingSection({ websiteUrl }: { websiteUrl: string }) {
           phone: savedData.phoneNumber,
           workRole: savedData.role,
           workEmail: savedData.workEmail,
-          role: 'business_owner',
+          role: "business_owner",
           isWebsiteOwner: true,
           isVerifiedWebsiteOwner: true,
-          relatedWebsite: cleanUrl
+          relatedWebsite: cleanUrl,
         }),
       });
 
@@ -125,7 +126,7 @@ export function PricingSection({ websiteUrl }: { websiteUrl: string }) {
       console.log("User update response:", userUpdateResult);
 
       if (!userUpdateRes.ok) {
-        throw new Error(userUpdateResult.error || 'Failed to update user');
+        throw new Error(userUpdateResult.error || "Failed to update user");
       }
 
       // Then update website
@@ -144,43 +145,30 @@ export function PricingSection({ websiteUrl }: { websiteUrl: string }) {
       const websiteData = await websiteUpdateRes.json();
       console.log("Website update response:", websiteData);
 
-      // Update user with website ID
+      // First update the user in the database with website ID
       const websiteUpdateUserRes = await fetch("/api/user/update", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           websites: websiteData._id,
-          role: 'business_owner'  // Ensure role is set again here
+          role: "business_owner",
         }),
       });
-
-      console.log("Website ID update response:", await websiteUpdateUserRes.json());
 
       if (!websiteUpdateUserRes.ok) {
-        console.error("Failed to update user with website ID");
+        throw new Error("Failed to update user with website ID");
       }
 
-      // After successful website and user updates, cleanup verification
-      const cleanupRes = await fetch("/api/user/update", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          verification: null
-        }),
-      });
-
-      if (!cleanupRes.ok) {
-        console.error("Failed to cleanup verification data");
-      }
+      // Force session update
+      await updateSession();
 
       // Clear registration data
       localStorage.removeItem("businessRegistration");
 
-      // Sign out and back in to refresh the session
-      await signOut({ redirect: false });
-      
-      // Redirect to dashboard
-      router.push("/business/dashboard");
+      // Wait for session to update and then redirect
+      setTimeout(() => {
+        router.push("/business/dashboard");
+      }, 1000);
     } catch (error) {
       console.error("Error:", error);
       toast({
@@ -188,7 +176,6 @@ export function PricingSection({ websiteUrl }: { websiteUrl: string }) {
         title: "Error",
         description: "Something went wrong. Please try again later.",
       });
-      router.push("/business/dashboard");
     } finally {
       setLoading(false);
     }

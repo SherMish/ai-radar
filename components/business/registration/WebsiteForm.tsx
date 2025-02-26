@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -12,33 +12,36 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import { checkWebsiteExists } from '@/app/actions/website';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ExternalLink } from 'lucide-react';
-import Link from 'next/link';
-import { WebsiteType } from '@/lib/models/Website';
-import { useSession } from 'next-auth/react';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { checkWebsiteExists } from "@/app/actions/website";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ExternalLink } from "lucide-react";
+import Link from "next/link";
+import { WebsiteType } from "@/lib/models/Website";
+import { useSession } from "next-auth/react";
 
 const formSchema = z.object({
-  websiteUrl: z.string()
-    .min(1, 'Website URL is required')
-    .transform(val => {
-      if (!val.startsWith('http://') && !val.startsWith('https://')) {
+  websiteUrl: z
+    .string()
+    .min(1, "Website URL is required")
+    .transform((val) => {
+      if (!val.startsWith("http://") && !val.startsWith("https://")) {
         return `https://${val}`;
       }
       return val;
     })
-    .pipe(z.string().url('Please enter a valid URL')),
-  businessName: z.string().min(2, 'Business name must be at least 2 characters'),
-  fullName: z.string().min(2, 'Full name must be at least 2 characters'),
-  phoneNumber: z.string().min(10, 'Please enter a valid phone number'),
-  role: z.string().min(2, 'Please specify your role'),
-  agreedToTerms: z.boolean().refine(val => val === true, {
-    message: "You must agree to the terms and conditions"
-  })
+    .pipe(z.string().url("Please enter a valid URL")),
+  businessName: z
+    .string()
+    .min(2, "Business name must be at least 2 characters"),
+  fullName: z.string().min(2, "Full name must be at least 2 characters"),
+  phoneNumber: z.string().min(10, "Please enter a valid phone number"),
+  role: z.string().min(2, "Please specify your role"),
+  agreedToTerms: z.boolean().refine((val) => val === true, {
+    message: "You must agree to the terms and conditions",
+  }),
 });
 
 interface FormData {
@@ -57,20 +60,26 @@ interface WebsiteFormProps {
   onComplete: () => void;
 }
 
-export function WebsiteRegistrationForm({ formData, setFormData, onComplete }: WebsiteFormProps) {
+export function WebsiteRegistrationForm({
+  formData,
+  setFormData,
+  onComplete,
+}: WebsiteFormProps) {
   const [loading, setLoading] = useState(false);
-  const [existingWebsite, setExistingWebsite] = useState<WebsiteType | null>(null);
+  const [existingWebsite, setExistingWebsite] = useState<WebsiteType | null>(
+    null
+  );
   const { data: sessionData } = useSession();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: formData,
-    mode: "onBlur"
+    mode: "onBlur",
   });
 
   useEffect(() => {
     const checkWebsite = async () => {
-      const url = form.getValues('websiteUrl');
+      const url = form.getValues("websiteUrl");
       if (!url) return;
 
       setLoading(true);
@@ -78,10 +87,10 @@ export function WebsiteRegistrationForm({ formData, setFormData, onComplete }: W
         const website = await checkWebsiteExists(url);
         setExistingWebsite(website);
         if (website?.name) {
-          form.setValue('businessName', website.name);
+          form.setValue("businessName", website.name);
         }
       } catch (error) {
-        console.error('Error checking website:', error);
+        console.error("Error checking website:", error);
       }
       setLoading(false);
     };
@@ -90,7 +99,7 @@ export function WebsiteRegistrationForm({ formData, setFormData, onComplete }: W
   }, [formData.websiteUrl]);
 
   const handleUrlBlur = async () => {
-    const url = form.getValues('websiteUrl');
+    const url = form.getValues("websiteUrl");
     if (!url || form.formState.errors.websiteUrl) return;
 
     setLoading(true);
@@ -98,10 +107,10 @@ export function WebsiteRegistrationForm({ formData, setFormData, onComplete }: W
       const website = await checkWebsiteExists(url);
       setExistingWebsite(website);
       if (website?.name) {
-        form.setValue('businessName', website.name);
+        form.setValue("businessName", website.name);
       }
     } catch (error) {
-      form.setError('websiteUrl', { message: 'Error checking website' });
+      form.setError("websiteUrl", { message: "Error checking website" });
     }
     setLoading(false);
   };
@@ -110,8 +119,9 @@ export function WebsiteRegistrationForm({ formData, setFormData, onComplete }: W
     const existingWebsite = await checkWebsiteExists(data.websiteUrl);
 
     if (existingWebsite?.isVerified) {
-      form.setError('websiteUrl', {
-        message: "This website has already been verified. Please contact the website admin to request access."
+      form.setError("websiteUrl", {
+        message:
+          "This website has already been verified. Please contact the website admin to request access.",
       });
       return;
     }
@@ -120,18 +130,18 @@ export function WebsiteRegistrationForm({ formData, setFormData, onComplete }: W
     const formData = {
       ...data,
       step: 3,
-      email: data.email // Use email directly from form data
+      email: data.email, // Use email directly from form data
     };
-    console.log('Saving form data to localStorage:', formData);
-    localStorage.setItem('businessRegistration', JSON.stringify(formData));
-    
+    console.log("Saving form data to localStorage:", formData);
+    localStorage.setItem("businessRegistration", JSON.stringify(formData));
+
     setFormData(data);
     onComplete();
   };
 
   // Add useEffect to load saved data on mount
   useEffect(() => {
-    const savedData = localStorage.getItem('businessRegistration');
+    const savedData = localStorage.getItem("businessRegistration");
     if (savedData) {
       const parsed = JSON.parse(savedData);
       form.reset(parsed);
@@ -163,14 +173,16 @@ export function WebsiteRegistrationForm({ formData, setFormData, onComplete }: W
                 {existingWebsite && !existingWebsite.isVerified && (
                   <Alert className="bg-muted/50 border-muted text-muted-foreground text-sm">
                     <AlertDescription className="flex items-center gap-1">
-                      <span className="opacity-75">Note:</span> This tool is already in our database.{' '}
-                      <Link 
+                      <span className="opacity-75">Note:</span> This tool is
+                      already in our database.{" "}
+                      <Link
                         href={`/tool/${existingWebsite.url}`}
                         className="text-primary/75 hover:text-primary hover:underline inline-flex items-center gap-1"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        View tool&apos;s page <ExternalLink className="h-3 w-3" />
+                        View tool&apos;s page{" "}
+                        <ExternalLink className="h-3 w-3" />
                       </Link>
                     </AlertDescription>
                   </Alert>
@@ -215,7 +227,11 @@ export function WebsiteRegistrationForm({ formData, setFormData, onComplete }: W
                 <FormItem>
                   <FormLabel>Phone Number</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="+1 (555) 000-0000" type="tel" />
+                    <Input
+                      {...field}
+                      placeholder="+1 (555) 000-0000"
+                      type="tel"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -250,9 +266,9 @@ export function WebsiteRegistrationForm({ formData, setFormData, onComplete }: W
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormLabel>
-                    I agree to the{' '}
-                    <Link 
-                      href="/terms" 
+                    I agree to the{" "}
+                    <Link
+                      href="/terms"
                       className="text-primary hover:underline"
                       target="_blank"
                     >
@@ -267,8 +283,8 @@ export function WebsiteRegistrationForm({ formData, setFormData, onComplete }: W
         </div>
 
         <div className="flex justify-end">
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             disabled={loading || Object.keys(form.formState.errors).length > 0}
           >
             {loading ? "Checking..." : "Continue"}
@@ -277,4 +293,4 @@ export function WebsiteRegistrationForm({ formData, setFormData, onComplete }: W
       </form>
     </Form>
   );
-} 
+}
