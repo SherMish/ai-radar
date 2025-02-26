@@ -52,7 +52,7 @@ export async function sendVerificationEmail(email: string, websiteUrl: string) {
             Verify Domain
           </a>
           <p style="color: #666;">If the button doesn't work, copy and paste this link:</p>
-          <p style="color: #666; word-break: break-all;">${process.env.NEXT_PUBLIC_APP_URL}/api/business/verify/${verificationToken}</p>
+          <p style="color: #666; word-break: break-all;">${process.env.NEXT_PUBLIC_APP_URL}/business/register?token=${verificationToken}&step=4"</p>
         </div>
       `
     });
