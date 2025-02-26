@@ -14,7 +14,9 @@ const nextConfig = {
     domains: ['res.cloudinary.com'],
   },
   experimental: {
-    serverActions: true,
+    serverActions: {
+      timeout: 30, // 30 seconds
+    },
   },
 };
 

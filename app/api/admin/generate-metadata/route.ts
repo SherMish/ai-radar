@@ -3,6 +3,8 @@ import categoriesData from "@/lib/data/categories.json";
 
 const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY;
 
+export const maxDuration = 30; // 30 seconds timeout
+
 export async function POST(request: Request) {
   if (process.env.IS_PRODUCTION === "true") {
     return new NextResponse("Not authorized", { status: 401 });
