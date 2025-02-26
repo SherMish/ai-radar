@@ -71,18 +71,29 @@ export async function sendVerificationEmail(email: string, websiteUrl: string) {
 export async function verifyDomain(token: string) {
   try {
     await connectDB();
+    console.log('Verifying token:', token);
 
-    // Find user with this verification token
+    // Find user with this verification token or who was already verified with this token
     const user = await User.findOne({
-      'verification.token': token,
-      'verification.expires': { $gt: new Date() }
+      $or: [
+        { 'verification.token': token, 'verification.expires': { $gt: new Date() } },
+        { isVerifiedWebsiteOwner: true, isWebsiteOwner: true }
+      ]
     });
 
+    console.log('Found user:', user ? 'Yes' : 'No');
+    
     if (!user) {
       throw new Error('Invalid or expired verification token');
     }
 
+    // If user is already verified, return success
+    if (user.isVerifiedWebsiteOwner && !user.verification) {
+      return { success: true };
+    }
+
     const websiteUrl = user.verification.websiteUrl;
+    console.log('Website URL:', websiteUrl);
 
     // Clean the URL to match storage format
     const cleanUrl = websiteUrl
@@ -90,35 +101,41 @@ export async function verifyDomain(token: string) {
       .replace(/^(?:https?:\/\/)?(?:www\.)?/i, "")
       .split('/')[0]
       .split(':')[0];
+    
+    console.log('Clean URL:', cleanUrl);
 
-    // Update or create the website
-    const website = await Website.findOneAndUpdate(
-      { url: cleanUrl },
-      { 
+    // Update website and user only if not already verified
+    if (!user.isVerifiedWebsiteOwner) {
+      const website = await Website.findOneAndUpdate(
+        { url: cleanUrl },
+        { 
+          $set: {
+            url: cleanUrl,
+            isVerified: true,
+            owner: user._id,
+            verifiedAt: new Date()
+          }
+        },
+        { upsert: true, new: true }
+      );
+
+      await User.findByIdAndUpdate(user._id, {
         $set: {
-          url: cleanUrl,
-          isVerified: true,
-          owner: user._id,
-          verifiedAt: new Date()
+          isWebsiteOwner: true,
+          isVerifiedWebsiteOwner: true,
+        },
+        $unset: {
+          verification: 1
         }
-      },
-      { upsert: true, new: true }
-    );
-
-    // Update the user
-    await User.findByIdAndUpdate(user._id, {
-      $set: {
-        isWebsiteOwner: true,
-        isVerifiedWebsiteOwner: true,
-      },
-      $unset: {
-        verification: 1
-      }
-    });
+      });
+    }
 
     return { success: true };
   } catch (error) {
     console.error('Error verifying domain:', error);
+    if (error instanceof Error) {
+      throw new Error(`Verification failed: ${error.message}`);
+    }
     throw new Error('Failed to verify domain');
   }
 } 

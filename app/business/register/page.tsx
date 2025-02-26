@@ -47,6 +47,7 @@ export default function BusinessRegistration() {
   useEffect(() => {
     const verifyToken = async () => {
       const token = searchParams?.get('token');
+      console.log('Token from URL:', token);
       if (token && step === 4) {
         try {
           await verifyDomainAction(token);
@@ -55,10 +56,11 @@ export default function BusinessRegistration() {
             description: "Your domain ownership has been verified.",
           });
         } catch (error) {
+          console.error('Verification error:', error);
           toast({
             variant: "destructive",
             title: "Error",
-            description: "Failed to verify domain ownership.",
+            description: error instanceof Error ? error.message : "Failed to verify domain ownership.",
           });
           setStep(3);
         }
