@@ -46,13 +46,13 @@ export async function sendVerificationEmail(email: string, websiteUrl: string) {
           <h2>Verify Your Domain Ownership</h2>
           <p>Click the button below to verify your domain ownership for ${websiteUrl}:</p>
           <a 
-            href="${process.env.NEXT_PUBLIC_URL}/business/register?token=${verificationToken}&step=4"
+            href="${process.env.NEXT_PUBLIC_APP_URL}/api/business/verify/${verificationToken}"
             style="display: inline-block; background-color: #0070f3; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin: 16px 0;"
           >
             Verify Domain
           </a>
           <p style="color: #666;">If the button doesn't work, copy and paste this link:</p>
-          <p style="color: #666; word-break: break-all;">${process.env.NEXT_PUBLIC_URL}/business/register?token=${verificationToken}&step=4</p>
+          <p style="color: #666; word-break: break-all;">${process.env.NEXT_PUBLIC_APP_URL}/api/business/verify/${verificationToken}</p>
         </div>
       `
     });

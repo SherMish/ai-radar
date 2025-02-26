@@ -67,7 +67,7 @@ export function DomainVerificationForm({
               type="text"
               value={email.split("@")[0]}
               onChange={(e) => setEmail(`${e.target.value}@${domain}`)}
-              placeholder="your.name"
+              placeholder="exmple"
               className="flex-1"
               disabled={loading || attempts >= 3}
             />
