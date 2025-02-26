@@ -53,7 +53,7 @@ FORMAT:
           content: `Analyze the AI tool at ${url} using real-time web search. 
 
 1) **User Reviews Score ("userReviewsScore" [0-100])**
-   - Check **G2, Trustpilot, Product Hunt, Reddit, Twitter, etc.**
+   - Check **first, theresanaiforthat.com, later, G2, Trustpilot,  Product Hunt, Reddit, Twitter, etc.**
    - Count the number of reviews (higher = better).
    - Convert star ratings to a percentage.
    - Identify common praise/complaints.
