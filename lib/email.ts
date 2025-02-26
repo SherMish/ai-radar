@@ -16,16 +16,21 @@ export async function sendEmail({
   console.log("Sending email to:", to);
   console.log("Subject:", subject);
   console.log("HTML:", html);
-  console.log("API Key:", process.env.RESEND_API_KEY?.slice(0, 5) + "...");
 
-  return resend.emails.send({
-    from: "noreply@ai-radar.com",
-    to,
-    subject,
-    html,
-    text,
-    react: null
-  });
+  // Add timeout to email sending like in forgot-password route
+  return Promise.race([
+    resend.emails.send({
+      from: "noreply@ai-radar.co", // Match the working from address
+      to,
+      subject,
+      html,
+      text,
+      react: null
+    }),
+    new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Email sending timeout')), 5000)
+    )
+  ]);
 }
 
 export async function sendVerificationEmail(
