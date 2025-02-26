@@ -12,6 +12,8 @@ import { useLoginModal } from "@/hooks/use-login-modal";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2 } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
+import { verifyDomain as verifyDomainAction } from "@/app/actions/verification";
 
 export default function BusinessRegistration() {
   const { data: session, status } = useSession();
@@ -33,6 +35,30 @@ export default function BusinessRegistration() {
       window.location.href = "/business/dashboard";
     }
   }, [session]);
+
+  useEffect(() => {
+    const verifyToken = async () => {
+      const token = searchParams?.get('token');
+      if (token && step === 4) {
+        try {
+          await verifyDomainAction(token);
+          toast({
+            title: "Success",
+            description: "Your domain ownership has been verified.",
+          });
+        } catch (error) {
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to verify domain ownership.",
+          });
+          setStep(3);
+        }
+      }
+    };
+
+    verifyToken();
+  }, [searchParams, step]);
 
   if (status === "loading") {
     return <LoadingSpinner />;

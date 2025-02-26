@@ -3,7 +3,7 @@ import { sendEmail } from '@/lib/email';
 import { generateToken } from '@/lib/utils';
 import connectDB from '@/lib/mongodb';
 import User from '@/lib/models/User';
-
+//PROBABLY YOU CAN DELETE THIS FILE
 export async function POST(req: Request) {
   const { email, websiteUrl } = await req.json();
 
