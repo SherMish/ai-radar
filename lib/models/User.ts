@@ -15,6 +15,18 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  phone: {
+    type: String,
+    default: null,
+  },
+  workRole: {
+    type: String,
+    default: null,
+  },
+  workEmail: {
+    type: String,
+    default: null,
+  },
   image: String,
   emailVerified: Date,
   googleId: {
@@ -24,7 +36,7 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['user', 'admin'],
+    enum: ['user', 'admin', 'businessOwner', 'businessUser'],
     default: 'user',
   },
   isWebsiteOwner: {

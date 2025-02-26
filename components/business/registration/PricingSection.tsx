@@ -1,10 +1,13 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CheckCircle2, AlertCircle, ArrowRight } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { LoadingModal } from "@/components/ui/loading-modal";
+import { toast } from "@/components/ui/use-toast";
 
 const freeFeatures = [
   "Verified business profile",
@@ -21,9 +24,10 @@ const proOnlyFeatures = [
   "Early access to new features",
 ];
 
-export function PricingSection() {
+export function PricingSection({ websiteUrl }: { websiteUrl: string }) {
   const [isAnnual, setIsAnnual] = useState(true);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const monthlyPrice = 249;
   const annualDiscount = 0.37; // 37% off
@@ -38,8 +42,57 @@ export function PricingSection() {
     setLoading(false);
   };
 
+  const handleFreePlan = async () => {
+    setLoading(true);
+    
+    try {
+      // Check if website already has radarTrust score
+      const response = await fetch(`/api/website/check?url=${encodeURIComponent(websiteUrl)}`);
+      const website = await response.json();
+
+      if (!website.radarTrust) {
+        // Generate metadata if not exists
+        const metadataResponse = await fetch("/api/admin/generate-metadata", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: websiteUrl }),
+        });
+
+        if (!metadataResponse.ok) {
+          console.error("Failed to generate metadata");
+        } else {
+          const metadata = await metadataResponse.json();
+          
+          // Update website with metadata
+          await fetch("/api/website/update", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              url: websiteUrl,
+              metadata
+            }),
+          });
+        }
+      }
+
+      // Redirect to dashboard regardless of metadata generation result
+      router.push("/business/dashboard");
+    } catch (error) {
+      console.error("Error:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Something went wrong. Please try again later.",
+      });
+      // Still redirect to dashboard
+      router.push("/business/dashboard");
+    }
+  };
+
   return (
     <div className="space-y-8">
+      <LoadingModal open={loading} />
+
       {/* Success Message */}
       <Alert className="bg-success/10 border-success/20 text-success">
         <CheckCircle2 className="h-4 w-4" />
@@ -101,7 +154,12 @@ export function PricingSection() {
                 </li>
               ))}
             </ul>
-            <Button variant="outline" className="w-full" onClick={() => {}}>
+            <Button 
+              variant="outline" 
+              className="w-full" 
+              onClick={handleFreePlan}
+              disabled={loading}
+            >
               Start with Free
             </Button>
           </div>
