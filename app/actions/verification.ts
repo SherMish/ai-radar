@@ -80,22 +80,26 @@ export async function verifyDomain(token: string) {
 
     const websiteUrl = user.verification.websiteUrl;
 
-    // Update the website
+    // Clean the URL to match storage format
+    const cleanUrl = websiteUrl
+      .toLowerCase()
+      .replace(/^(?:https?:\/\/)?(?:www\.)?/i, "")
+      .split('/')[0]
+      .split(':')[0];
+
+    // Update or create the website
     const website = await Website.findOneAndUpdate(
-      { url: websiteUrl },
+      { url: cleanUrl },
       { 
         $set: {
+          url: cleanUrl,
           isVerified: true,
           owner: user._id,
           verifiedAt: new Date()
         }
       },
-      { new: true }
+      { upsert: true, new: true }
     );
-
-    if (!website) {
-      throw new Error('Website not found');
-    }
 
     // Update the user
     await User.findByIdAndUpdate(user._id, {

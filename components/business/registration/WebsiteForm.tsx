@@ -104,11 +104,12 @@ export function WebsiteRegistrationForm({ formData, setFormData, onComplete }: W
   };
 
   const onSubmit = async (data: FormData) => {
-    if (existingWebsite?.owner) {
-      form.setError('websiteUrl', {
-        message: 'This website is already registered'
-      });
-      return;
+    const existingWebsite = await checkWebsiteExists(data.websiteUrl);
+
+    if (existingWebsite?.isVerified) {
+      return {
+        error: "This website has already been verified. Please contact admin@ai-radar.com to request access."
+      };
     }
 
     setFormData(data);
