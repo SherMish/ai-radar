@@ -21,7 +21,7 @@ export function useBusinessGuard() {
       return;
     }
 
-    if (!session.user.businessId) {
+    if (!session.user.websites) {
       router.push('/business/register');
       return;
     }
@@ -29,13 +29,19 @@ export function useBusinessGuard() {
     // Fetch website details
     const fetchWebsite = async () => {
       try {
-        const res = await fetch(`/api/website/get?id=${session.user.businessId}`);
+        const res = await fetch(`/api/website/get?id=${session.user.websites}`);
         if (res.ok) {
           const data = await res.json();
           setWebsite(data);
+        } else if (res.status === 404) {
+          // If website not found but user has websites ID, they're probably in creation process
+          // Check again after a delay
+          setTimeout(fetchWebsite, 2000);
         }
       } catch (error) {
         console.error('Error fetching website:', error);
+        // Retry on error after delay
+        setTimeout(fetchWebsite, 2000);
       }
     };
 
