@@ -6,12 +6,12 @@ import Website from "@/lib/models/Website";
 
 export async function POST(request: Request) {
   try {
+    await connectDB();
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    await connectDB();
     const { url, metadata, ...updateData } = await request.json();
     console.log('Received website update data:', { url, metadata, ...updateData });
 
@@ -44,10 +44,7 @@ export async function POST(request: Request) {
     console.log('Updated/Created website:', website);
     return NextResponse.json(website);
   } catch (error) {
-    console.error("Error updating website:", error);
-    return NextResponse.json({ 
-      error: "Failed to update website",
-      details: error instanceof Error ? error.message : String(error)
-    }, { status: 500 });
+    console.error('Error in website update:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 } 
