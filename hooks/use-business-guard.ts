@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { WebsiteType } from '@/lib/models/Website';
 
 export function useBusinessGuard() {
-  const { data: session, status } = useSession();
+  const { data: session, status, update: updateSession } = useSession();
   const router = useRouter();
   const [website, setWebsite] = useState<WebsiteType | null>(null);
 
@@ -35,11 +35,10 @@ export function useBusinessGuard() {
         if (res.ok) {
           const data = await res.json();
           setWebsite(data);
-          return; // Successfully got website, stop retrying
+          return;
         } 
         
         if (res.status === 404) {
-          // Check if website is in creation process
           const websiteRes = await fetch(`/api/website/update`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -54,11 +53,8 @@ export function useBusinessGuard() {
           if (websiteRes.ok) {
             const data = await websiteRes.json();
             setWebsite(data);
-            // Force session refresh after website creation
-            await fetch('/api/auth/session', { 
-              method: 'POST',
-              credentials: 'include'
-            });
+            // Update session using NextAuth's update function
+            await updateSession();
             return;
           }
         }
@@ -72,7 +68,7 @@ export function useBusinessGuard() {
     };
 
     fetchWebsite();
-  }, [session, status, router]);
+  }, [session, status, router, updateSession]);
 
   return {
     isLoading: status === 'loading' || !website,
