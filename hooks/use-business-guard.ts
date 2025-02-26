@@ -47,17 +47,22 @@ export function useBusinessGuard() {
               url: session.user.relatedWebsite,
               owner: session.user.id,
               isVerified: true 
-            })
+            }),
+            credentials: 'include'
           });
 
           if (websiteRes.ok) {
             const data = await websiteRes.json();
             setWebsite(data);
-            return; // Successfully created website, stop retrying
+            // Force session refresh after website creation
+            await fetch('/api/auth/session', { 
+              method: 'POST',
+              credentials: 'include'
+            });
+            return;
           }
         }
 
-        // If we get here, retry after delay
         console.log('Website not ready, retrying...');
         setTimeout(fetchWebsite, 2000);
       } catch (error) {
