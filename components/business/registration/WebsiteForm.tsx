@@ -107,9 +107,10 @@ export function WebsiteRegistrationForm({ formData, setFormData, onComplete }: W
     const existingWebsite = await checkWebsiteExists(data.websiteUrl);
 
     if (existingWebsite?.isVerified) {
-      return {
-        error: "This website has already been verified. Please contact admin@ai-radar.com to request access."
-      };
+      form.setError('websiteUrl', {
+        message: "This website has already been verified. Please contact the website admin to request access."
+      });
+      return;
     }
 
     setFormData(data);
@@ -138,7 +139,7 @@ export function WebsiteRegistrationForm({ formData, setFormData, onComplete }: W
                   />
                 </FormControl>
                 <FormMessage />
-                {existingWebsite && !existingWebsite.owner && (
+                {existingWebsite && !existingWebsite.isVerified && (
                   <Alert className="bg-muted/50 border-muted text-muted-foreground text-sm">
                     <AlertDescription className="flex items-center gap-1">
                       <span className="opacity-75">Note:</span> This tool is already in our database.{' '}
