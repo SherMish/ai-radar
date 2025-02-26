@@ -4,14 +4,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import User from '@/lib/models/User';
 import connectDB from '@/lib/mongodb';
-import type { User } from "next-auth";
 
-interface ExtendedUser extends User {
-  role?: string;
-  websites?: string;
-  isWebsiteOwner?: boolean;
-  isVerifiedWebsiteOwner?: boolean;
-}
 
 export const authOptions: NextAuthOptions = {
   providers: [

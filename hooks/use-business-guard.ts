@@ -21,7 +21,7 @@ export function useBusinessGuard() {
       return;
     }
 
-    if (!session.user.websites) {
+    if (!session.user.businessId) {
       router.push('/business/register');
       return;
     }
@@ -29,7 +29,7 @@ export function useBusinessGuard() {
     // Fetch website details
     const fetchWebsite = async () => {
       try {
-        const res = await fetch(`/api/website/get?id=${session.user.websites}`);
+        const res = await fetch(`/api/website/get?id=${session.user.businessId}`);
         if (res.ok) {
           const data = await res.json();
           setWebsite(data);

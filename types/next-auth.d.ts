@@ -12,6 +12,7 @@ declare module 'next-auth' {
       name?: string | null;
       email?: string | null;
       image?: string | null;
+      websites?: string;
     } & DefaultSession['user']
   }
 
@@ -21,5 +22,6 @@ declare module 'next-auth' {
     isWebsiteOwner: boolean;
     isVerifiedWebsiteOwner: boolean;
     businessId?: string;
+    websites?: string;
   }
 } 
