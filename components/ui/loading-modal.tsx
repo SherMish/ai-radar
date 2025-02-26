@@ -18,7 +18,7 @@ export function LoadingModal({ open }: LoadingModalProps) {
         <DialogHeader>
           <DialogTitle>Setting up your dashboard</DialogTitle>
           <DialogDescription>
-            We're analyzing your AI tool and preparing your dashboard. This may take a few minutes. Please don't close this window.
+            We&apos;re analyzing your AI tool and preparing your dashboard. This may take a few minutes. Please don&apos;t close this window.
           </DialogDescription>
         </DialogHeader>
         <div className="flex justify-center py-6">
