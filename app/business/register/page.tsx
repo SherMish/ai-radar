@@ -36,6 +36,7 @@ export default function BusinessRegistration() {
     role: "",
     agreedToTerms: false,
   });
+  const [verifiedWebsiteUrl, setVerifiedWebsiteUrl] = useState<string | null>(null);
 
   // Redirect to dashboard if user is already linked to a business
   useEffect(() => {
@@ -50,7 +51,8 @@ export default function BusinessRegistration() {
       console.log('Token from URL:', token);
       if (token && step === 4) {
         try {
-          await verifyDomainAction(token);
+          const result = await verifyDomainAction(token);
+          setVerifiedWebsiteUrl(result.websiteUrl);
           toast({
             title: "Success",
             description: "Your domain ownership has been verified.",
@@ -189,7 +191,11 @@ export default function BusinessRegistration() {
             )}
 
             {/* Step 4: Pricing */}
-            {session && step === 4 && <PricingSection />}
+            {session && step === 4 && (
+              <PricingSection 
+                websiteUrl={verifiedWebsiteUrl || formData.websiteUrl}
+              />
+            )}
           </CardContent>
         </Card>
       </div>

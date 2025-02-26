@@ -73,23 +73,16 @@ export async function verifyDomain(token: string) {
     await connectDB();
     console.log('Verifying token:', token);
 
-    // Find user with this verification token or who was already verified with this token
+    // Find user with this verification token
     const user = await User.findOne({
-      $or: [
-        { 'verification.token': token, 'verification.expires': { $gt: new Date() } },
-        { isVerifiedWebsiteOwner: true, isWebsiteOwner: true }
-      ]
+      'verification.token': token,
+      'verification.expires': { $gt: new Date() }
     });
 
     console.log('Found user:', user ? 'Yes' : 'No');
     
     if (!user) {
       throw new Error('Invalid or expired verification token');
-    }
-
-    // If user is already verified, return success
-    if (user.isVerifiedWebsiteOwner && !user.verification) {
-      return { success: true };
     }
 
     const websiteUrl = user.verification.websiteUrl;
@@ -130,7 +123,7 @@ export async function verifyDomain(token: string) {
       });
     }
 
-    return { success: true };
+    return { success: true, websiteUrl };
   } catch (error) {
     console.error('Error verifying domain:', error);
     if (error instanceof Error) {

@@ -39,6 +39,10 @@ const UserSchema = new mongoose.Schema({
     enum: ['user', 'admin', 'businessOwner', 'businessUser'],
     default: 'user',
   },
+  relatedWebsite: {
+    type: String,
+    default: null,
+  },
   isWebsiteOwner: {
     type: Boolean,
     default: false,

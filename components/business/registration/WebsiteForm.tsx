@@ -113,9 +113,24 @@ export function WebsiteRegistrationForm({ formData, setFormData, onComplete }: W
       return;
     }
 
+    // Save form data to localStorage
+    localStorage.setItem('businessRegistration', JSON.stringify({
+      ...data,
+      step: 3
+    }));
+    
     setFormData(data);
     onComplete();
   };
+
+  // Add useEffect to load saved data on mount
+  useEffect(() => {
+    const savedData = localStorage.getItem('businessRegistration');
+    if (savedData) {
+      const parsed = JSON.parse(savedData);
+      form.reset(parsed);
+    }
+  }, []);
 
   return (
     <Form {...form}>

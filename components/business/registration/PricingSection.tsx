@@ -43,39 +43,105 @@ export function PricingSection({ websiteUrl }: { websiteUrl: string }) {
   };
 
   const handleFreePlan = async () => {
-    setLoading(true);
-    
-    try {
-      // Check if website already has radarTrust score
-      const response = await fetch(`/api/website/check?url=${encodeURIComponent(websiteUrl)}`);
-      const website = await response.json();
+    if (!websiteUrl) {
+      console.error("No website URL provided");
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Website URL is missing. Please try again.",
+      });
+      return;
+    }
 
-      if (!website.radarTrust) {
-        // Generate metadata if not exists
+    setLoading(true);
+    console.log("Starting free plan registration for:", websiteUrl);
+
+    try {
+      // Get saved registration data
+      const savedData = JSON.parse(
+        localStorage.getItem("businessRegistration") || "{}"
+      );
+      console.log("Saved registration data:", savedData);
+
+      // Check if website exists
+      const cleanUrl = websiteUrl
+        .toLowerCase()
+        .replace(/^(?:https?:\/\/)?(?:www\.)?/i, "")
+        .split("/")[0]
+        .split(":")[0];
+      console.log("Clean URL:", cleanUrl);
+
+      const response = await fetch(
+        `/api/website/check?url=${encodeURIComponent(cleanUrl)}`
+      );
+      const existingWebsite = await response.json();
+      console.log("Existing website:", existingWebsite);
+
+      // Generate metadata if needed
+      let metadata = null;
+      if (!existingWebsite.radarTrust) {
+        console.log("Generating metadata...");
         const metadataResponse = await fetch("/api/admin/generate-metadata", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ url: websiteUrl }),
         });
 
-        if (!metadataResponse.ok) {
-          console.error("Failed to generate metadata");
+        if (metadataResponse.ok) {
+          metadata = await metadataResponse.json();
+          console.log("Generated metadata:", metadata);
         } else {
-          const metadata = await metadataResponse.json();
-          
-          // Update website with metadata
-          await fetch("/api/website/update", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              url: websiteUrl,
-              metadata
-            }),
-          });
+          console.error(
+            "Failed to generate metadata:",
+            await metadataResponse.text()
+          );
         }
       }
 
-      // Redirect to dashboard regardless of metadata generation result
+      // Get session for user ID
+      const sessionRes = await fetch("/api/auth/session");
+      const session = await sessionRes.json();
+      const userId = session?.user?.id;
+      console.log("User ID:", userId);
+
+      // Update user profile first
+      const userUpdateRes = await fetch("/api/user/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: savedData.fullName,
+          phone: savedData.phoneNumber,
+          workRole: savedData.role,
+          workEmail: savedData.email,
+          role: "businessOwner",
+          isWebsiteOwner: true,
+          isVerifiedWebsiteOwner: true,
+          relatedWebsite: cleanUrl,
+        }),
+      });
+      console.log("User update response:", await userUpdateRes.json());
+
+      // Then update website
+      const websiteUpdateRes = await fetch("/api/website/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          url: cleanUrl,
+          name: savedData.businessName,
+          owner: userId,
+          isVerified: true,
+          ...(metadata || {}),
+        }),
+      });
+      console.log("Website update response:", await websiteUpdateRes.json());
+
+      // Clear registration data
+      localStorage.removeItem("businessRegistration");
+
+      // Update session to reflect new role
+      await fetch("/api/auth/session", { method: "POST" });
+
+      // Redirect to dashboard
       router.push("/business/dashboard");
     } catch (error) {
       console.error("Error:", error);
@@ -84,8 +150,9 @@ export function PricingSection({ websiteUrl }: { websiteUrl: string }) {
         title: "Error",
         description: "Something went wrong. Please try again later.",
       });
-      // Still redirect to dashboard
       router.push("/business/dashboard");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -154,9 +221,9 @@ export function PricingSection({ websiteUrl }: { websiteUrl: string }) {
                 </li>
               ))}
             </ul>
-            <Button 
-              variant="outline" 
-              className="w-full" 
+            <Button
+              variant="outline"
+              className="w-full"
               onClick={handleFreePlan}
               disabled={loading}
             >
