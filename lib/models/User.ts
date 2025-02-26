@@ -34,9 +34,14 @@ const UserSchema = new mongoose.Schema({
     sparse: true,
     unique: true,
   },
+  websites: { // include ids of websites
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Website',
+    default: null,
+  },
   role: {
     type: String,
-    enum: ['user', 'admin', 'businessOwner', 'businessUser'],
+    enum: ['user', 'admin', 'business_owner', 'business_user'],
     default: 'user',
   },
   relatedWebsite: {

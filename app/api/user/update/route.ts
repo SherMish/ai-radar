@@ -13,6 +13,7 @@ export async function POST(request: Request) {
 
     await connectDB();
     const updateData = await request.json();
+    console.log('Updating user with data:', updateData);
 
     // First, ensure the user exists with default values
     await User.findOneAndUpdate(
@@ -38,7 +39,16 @@ export async function POST(request: Request) {
       { email: session.user.email },
       { 
         $set: {
-          ...updateData,
+          ...(updateData.name && { name: updateData.name }),
+          ...(updateData.phone && { phone: updateData.phone }),
+          ...(updateData.workRole && { workRole: updateData.workRole }),
+          ...(updateData.workEmail && { workEmail: updateData.workEmail }),
+          ...(updateData.role && { role: updateData.role }),
+          ...(updateData.isWebsiteOwner !== undefined && { isWebsiteOwner: updateData.isWebsiteOwner }),
+          ...(updateData.isVerifiedWebsiteOwner !== undefined && { isVerifiedWebsiteOwner: updateData.isVerifiedWebsiteOwner }),
+          ...(updateData.relatedWebsite && { relatedWebsite: updateData.relatedWebsite }),
+          ...(updateData.websites && { websites: updateData.websites }),
+          ...(updateData.verification === null && { verification: null }),
           updatedAt: new Date()
         }
       },
@@ -53,9 +63,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    console.log('Updated user:', updatedUser);
     return NextResponse.json({ success: true, user: updatedUser });
   } catch (error) {
     console.error("Error updating user:", error);
-    return NextResponse.json({ error: "Failed to update user" }, { status: 500 });
+    return NextResponse.json({ 
+      error: "Failed to update user",
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 });
   }
 } 

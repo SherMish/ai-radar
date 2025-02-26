@@ -35,6 +35,13 @@ export function DomainVerificationForm({
 
     setLoading(true);
     try {
+      // Save the work email to localStorage by updating the existing data
+      const savedData = JSON.parse(localStorage.getItem('businessRegistration') || '{}');
+      localStorage.setItem('businessRegistration', JSON.stringify({
+        ...savedData,
+        workEmail: email
+      }));
+
       await sendVerificationEmail(email, websiteUrl);
       setAttempts((prev) => prev + 1);
       setEmailSent(true);

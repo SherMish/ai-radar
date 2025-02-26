@@ -8,6 +8,7 @@ import { CheckCircle2, AlertCircle, ArrowRight } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { LoadingModal } from "@/components/ui/loading-modal";
 import { toast } from "@/components/ui/use-toast";
+import { signOut } from "next-auth/react";
 
 const freeFeatures = [
   "Verified business profile",
@@ -112,14 +113,20 @@ export function PricingSection({ websiteUrl }: { websiteUrl: string }) {
           name: savedData.fullName,
           phone: savedData.phoneNumber,
           workRole: savedData.role,
-          workEmail: savedData.email,
-          role: "businessOwner",
+          workEmail: savedData.workEmail,
+          role: 'business_owner',
           isWebsiteOwner: true,
           isVerifiedWebsiteOwner: true,
-          relatedWebsite: cleanUrl,
+          relatedWebsite: cleanUrl
         }),
       });
-      console.log("User update response:", await userUpdateRes.json());
+
+      const userUpdateResult = await userUpdateRes.json();
+      console.log("User update response:", userUpdateResult);
+
+      if (!userUpdateRes.ok) {
+        throw new Error(userUpdateResult.error || 'Failed to update user');
+      }
 
       // Then update website
       const websiteUpdateRes = await fetch("/api/website/update", {
@@ -133,14 +140,42 @@ export function PricingSection({ websiteUrl }: { websiteUrl: string }) {
           ...(metadata || {}),
         }),
       });
-      console.log("Website update response:", await websiteUpdateRes.json());
+
+      const websiteData = await websiteUpdateRes.json();
+      console.log("Website update response:", websiteData);
+
+      // Update user with website ID
+      const websiteUpdateUserRes = await fetch("/api/user/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          websites: websiteData._id // Add website ID to user's websites field
+        }),
+      });
+
+      if (!websiteUpdateUserRes.ok) {
+        console.error("Failed to update user with website ID");
+      }
+
+      // After successful website and user updates, cleanup verification
+      const cleanupRes = await fetch("/api/user/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          verification: null
+        }),
+      });
+
+      if (!cleanupRes.ok) {
+        console.error("Failed to cleanup verification data");
+      }
 
       // Clear registration data
       localStorage.removeItem("businessRegistration");
 
-      // Update session to reflect new role
-      await fetch("/api/auth/session", { method: "POST" });
-
+      // Sign out and back in to refresh the session
+      await signOut({ redirect: false });
+      
       // Redirect to dashboard
       router.push("/business/dashboard");
     } catch (error) {

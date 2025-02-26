@@ -23,23 +23,30 @@ export async function fetchLatestWebsites(limit: number = 2) {
 }
 
 export async function checkWebsiteExists(url: string): Promise<WebsiteType | null> {
-  await connectDB();
-  
-  // Clean the URL to match our storage format
-  const cleanUrl = url
-    .toLowerCase()
-    .replace(/^(?:https?:\/\/)?(?:www\.)?/i, "")
-    .split('/')[0]
-    .split(':')[0];
+  try {
+    await connectDB();
 
-  const website = await Website.findOne({ url: cleanUrl }).lean();
-  if (website) {
+    const cleanUrl = url
+      .toLowerCase()
+      .replace(/^(?:https?:\/\/)?(?:www\.)?/i, "")
+      .split("/")[0]
+      .split(":")[0];
+
+    const website = await Website.findOne({ url: cleanUrl });
+
+    if (!website) {
+      return null;
+    }
+
+    // Safely convert ObjectIds to strings, handling optional/nullable fields
     return {
-      ...website,
+      ...website.toObject(),
       _id: website._id.toString(),
-      createdBy: website.createdBy.toString(),
-      owner: website.owner?.toString(),
+      createdBy: website.createdBy?.toString() || null, // Make optional
+      owner: website.owner?.toString() || null, // Make optional
     } as WebsiteType;
+  } catch (error) {
+    console.error('Error checking website:', error);
+    throw error;
   }
-  return null;
 } 

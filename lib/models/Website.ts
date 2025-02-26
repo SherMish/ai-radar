@@ -8,19 +8,18 @@ export interface WebsiteType {
   url: string;
   description?: string;
   shortDescription?: string;
-  category: string;
   logo?: string;
-  pricingModel?: PricingModel;
-  hasFreeTrialPeriod?: boolean;
-  hasAPI?: boolean;
-  launchYear?: number;
-  createdBy?: string;
-  owner?: string;
-  reviewCount?: number;
-  averageRating?: number;
+  category?: string;
+  pricingModel?: string;
+  createdBy?: string | null;
+  owner?: string | null;
   isVerified?: boolean;
-  isActive?: boolean;
+  verifiedAt?: Date;
   radarTrust?: number;
+  userReviewsScore?: number;
+  featureRobustnessScore?: number;
+  marketAdoptionScore?: number;
+  pricingAccessibilityScore?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }

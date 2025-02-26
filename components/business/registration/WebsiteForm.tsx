@@ -20,6 +20,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { WebsiteType } from '@/lib/models/Website';
+import { useSession } from 'next-auth/react';
 
 const formSchema = z.object({
   websiteUrl: z.string()
@@ -47,6 +48,7 @@ interface FormData {
   phoneNumber: string;
   role: string;
   agreedToTerms: boolean;
+  email?: string;
 }
 
 interface WebsiteFormProps {
@@ -58,6 +60,7 @@ interface WebsiteFormProps {
 export function WebsiteRegistrationForm({ formData, setFormData, onComplete }: WebsiteFormProps) {
   const [loading, setLoading] = useState(false);
   const [existingWebsite, setExistingWebsite] = useState<WebsiteType | null>(null);
+  const { data: sessionData } = useSession();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -114,10 +117,13 @@ export function WebsiteRegistrationForm({ formData, setFormData, onComplete }: W
     }
 
     // Save form data to localStorage
-    localStorage.setItem('businessRegistration', JSON.stringify({
+    const formData = {
       ...data,
-      step: 3
-    }));
+      step: 3,
+      email: data.email // Use email directly from form data
+    };
+    console.log('Saving form data to localStorage:', formData);
+    localStorage.setItem('businessRegistration', JSON.stringify(formData));
     
     setFormData(data);
     onComplete();
