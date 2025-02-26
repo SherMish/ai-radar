@@ -149,9 +149,12 @@ export function PricingSection({ websiteUrl }: { websiteUrl: string }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          websites: websiteData._id // Add website ID to user's websites field
+          websites: websiteData._id,
+          role: 'business_owner'  // Ensure role is set again here
         }),
       });
+
+      console.log("Website ID update response:", await websiteUpdateUserRes.json());
 
       if (!websiteUpdateUserRes.ok) {
         console.error("Failed to update user with website ID");

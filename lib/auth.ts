@@ -4,6 +4,14 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import User from '@/lib/models/User';
 import connectDB from '@/lib/mongodb';
+import type { User } from "next-auth";
+
+interface ExtendedUser extends User {
+  role?: string;
+  websites?: string;
+  isWebsiteOwner?: boolean;
+  isVerifiedWebsiteOwner?: boolean;
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -97,9 +105,16 @@ export const authOptions: NextAuthOptions = {
         try {
           await connectDB();
           const dbUser = await User.findOne({ email: session.user.email });
+          console.log('Session callback - DB User:', {
+            role: dbUser?.role,
+            websites: dbUser?.websites,
+            email: dbUser?.email
+          });
+          
           if (dbUser) {
             session.user.id = dbUser._id.toString();
             session.user.role = dbUser.role;
+            session.user.websites = dbUser.websites;
             session.user.isWebsiteOwner = dbUser.isWebsiteOwner;
             session.user.isVerifiedWebsiteOwner = dbUser.isVerifiedWebsiteOwner;
           }
@@ -107,11 +122,28 @@ export const authOptions: NextAuthOptions = {
           console.error("Error in session callback:", error);
         }
       }
+      // Copy token data to session
+      session.user.role = token.role;
+      session.user.websites = token.websites;
       return session;
     },
-    async jwt({ token, user, account }) {
-      if (user) {
-        token.id = user.id;
+    async jwt({ token, user, account, trigger, session }) {
+      if (trigger === "update" && session) {
+        // Update token data if session is updated
+        return { ...token, ...session.user };
+      }
+
+      if (account?.type === "oauth" && user) {
+        try {
+          await connectDB();
+          const dbUser = await User.findOne({ email: user.email });
+          if (dbUser) {
+            token.role = dbUser.role;
+            token.websites = dbUser.websites;
+          }
+        } catch (error) {
+          console.error("Error in jwt callback:", error);
+        }
       }
       return token;
     }
