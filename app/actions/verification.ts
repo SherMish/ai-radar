@@ -25,17 +25,20 @@ export async function sendVerificationEmail(email: string, websiteUrl: string) {
       { email: session.user.email },
       { 
         $set: {
-          'verification.token': verificationToken,
-          'verification.expires': expires,
-          'verification.websiteUrl': websiteUrl
+          verification: {
+            token: verificationToken,
+            expires: expires,
+            websiteUrl: websiteUrl
+          }
         }
       },
-      { new: true }
+      { new: true, upsert: true }
     );
 
     if (!user) {
       throw new Error('User not found');
     }
+    console.log(`/business/register?token=${verificationToken}&step=4"`)
 
     // Send verification email
     await sendEmail({

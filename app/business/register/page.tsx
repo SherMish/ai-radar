@@ -18,7 +18,15 @@ import { verifyDomain as verifyDomainAction } from "@/app/actions/verification";
 export default function BusinessRegistration() {
   const { data: session, status } = useSession();
   const searchParams = useSearchParams();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(() => {
+    // Initialize step based on URL params
+    const token = searchParams?.get('token');
+    const stepParam = searchParams?.get('step');
+    if (token && stepParam === '4') {
+      return 4;
+    }
+    return 1;
+  });
   const loginModal = useLoginModal();
   const [formData, setFormData] = useState({
     websiteUrl: searchParams?.get("url") ?? "",

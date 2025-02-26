@@ -52,10 +52,19 @@ const UserSchema = new mongoose.Schema({
     default: null,
   },
   lastLoginAt: Date,
-  verification: {
-    token: String,
-    expires: Date,
-    websiteUrl: String
+  verification: { 
+    token: {
+      type: String,
+      default: null
+    },
+    expires: {
+      type: Date,
+      default: null
+    },
+    websiteUrl: {
+      type: String,
+      default: null
+    }
   },
 }, {
   timestamps: true,
