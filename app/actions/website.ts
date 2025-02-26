@@ -5,6 +5,9 @@ import connectDB from '@/lib/mongodb';
 import { WebsiteType } from '@/lib/models/Website';
 
 export async function fetchLatestWebsites(limit: number = 2) {
+
+  await connectDB();
+  
   try {
     const websites = await Website.find()
     .sort({ createdAt: -1 })
