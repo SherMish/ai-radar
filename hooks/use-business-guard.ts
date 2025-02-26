@@ -53,13 +53,18 @@ export function useBusinessGuard() {
           if (websiteRes.ok) {
             const data = await websiteRes.json();
             setWebsite(data);
-            // Update session using NextAuth's update function
+            // Wait for session update to complete before continuing
             await updateSession();
-            return;
+            // Verify session was updated correctly
+            const sessionRes = await fetch('/api/auth/session');
+            const updatedSession = await sessionRes.json();
+            if (updatedSession?.user?.websites === data._id) {
+              return;
+            }
           }
         }
 
-        console.log('Website not ready, retrying...');
+        console.log('Website not ready or session mismatch, retrying...');
         setTimeout(fetchWebsite, 2000);
       } catch (error) {
         console.error('Error fetching website:', error);
