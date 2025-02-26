@@ -31,16 +31,35 @@ export function useBusinessGuard() {
       try {
         console.log('Fetching website for ID:', session.user.websites);
         const res = await fetch(`/api/website/get?id=${session.user.websites}`);
+        
         if (res.ok) {
           const data = await res.json();
           setWebsite(data);
-        } else if (res.status === 404) {
-          console.log('Website not found, retrying...');
-          setTimeout(fetchWebsite, 2000);
-        } else {
-          console.error('Error response:', res.status, await res.text());
-          setTimeout(fetchWebsite, 2000);
+          return; // Successfully got website, stop retrying
+        } 
+        
+        if (res.status === 404) {
+          // Check if website is in creation process
+          const websiteRes = await fetch(`/api/website/update`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              url: session.user.relatedWebsite,
+              owner: session.user.id,
+              isVerified: true 
+            })
+          });
+
+          if (websiteRes.ok) {
+            const data = await websiteRes.json();
+            setWebsite(data);
+            return; // Successfully created website, stop retrying
+          }
         }
+
+        // If we get here, retry after delay
+        console.log('Website not ready, retrying...');
+        setTimeout(fetchWebsite, 2000);
       } catch (error) {
         console.error('Error fetching website:', error);
         setTimeout(fetchWebsite, 2000);
