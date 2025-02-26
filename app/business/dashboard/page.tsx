@@ -35,6 +35,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Image from 'next/image'
+import { useBusinessGuard } from '@/hooks/use-business-guard';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 type Feature = {
   id: string;
@@ -76,7 +78,8 @@ const mockMetrics = {
   },
 };
 
-export default function DashboardPage() {
+export default function BusinessDashboard() {
+  const { isLoading, website, user } = useBusinessGuard();
   const [activeTab, setActiveTab] = useState("analytics");
   const [logo, setLogo] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string>("");
@@ -94,6 +97,10 @@ export default function DashboardPage() {
   ]);
   const [newFeature, setNewFeature] = useState({ title: "", description: "" });
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -164,6 +171,15 @@ export default function DashboardPage() {
       <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 via-purple-500/5 to-pink-500/5" />
       
       <div className="relative container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-foreground/90">
+            {website?.url || 'Loading...'}
+          </h1>
+          <p className="text-muted-foreground">
+            Business Dashboard
+          </p>
+        </div>
+
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Navigation */}
           <aside className="lg:w-64 flex-shrink-0">

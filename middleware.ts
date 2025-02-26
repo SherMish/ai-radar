@@ -4,11 +4,9 @@ import type { NextRequest } from 'next/server';
 
 interface CustomToken {
   role?: string;
-  websites?: string | null;
+  websites?: string;
   name?: string;
   email?: string;
-  picture?: string;
-  sub?: string;
 }
 
 export async function middleware(request: NextRequest) {
@@ -47,12 +45,31 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Protect business dashboard routes
+  if (request.nextUrl.pathname.startsWith('/business/dashboard')) {
+    if (!token) {
+      // Redirect to login if not authenticated
+      return NextResponse.redirect(new URL('/auth/signin', request.url));
+    }
+
+    if (token.role !== 'business_owner') {
+      // Redirect to home if not a business owner
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+
+    if (!token.websites) {
+      // Redirect to registration if no website is associated
+      return NextResponse.redirect(new URL('/business/register', request.url));
+    }
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
   matcher: [
     '/business',
-    '/business/((?!dashboard|api|register).*)'
+    '/business/((?!dashboard|api|register).*)',
+    '/business/dashboard/:path*'
   ]
 }; 

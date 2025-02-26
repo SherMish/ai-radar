@@ -105,11 +105,6 @@ export const authOptions: NextAuthOptions = {
         try {
           await connectDB();
           const dbUser = await User.findOne({ email: session.user.email });
-          console.log('Session callback - DB User:', {
-            role: dbUser?.role,
-            websites: dbUser?.websites,
-            email: dbUser?.email
-          });
           
           if (dbUser) {
             session.user.id = dbUser._id.toString();
@@ -122,9 +117,6 @@ export const authOptions: NextAuthOptions = {
           console.error("Error in session callback:", error);
         }
       }
-      // Copy token data to session
-      session.user.role = token.role;
-      session.user.websites = token.websites;
       return session;
     },
     async jwt({ token, user, account, trigger, session }) {
