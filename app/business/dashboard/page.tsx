@@ -50,11 +50,9 @@ export default function DashboardPage() {
   return (
     <div className="container mx-auto px-4 py-8 min-h-screen">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] bg-clip-text text-transparent">
-          {website?.name}
-        </h1>
+        
         <p className="text-gray-400">
-          Welcome back! Here's your tool's performance overview.
+          Welcome back, {user?.name?.split(" ")[0]}!
         </p>
       </div>
 
@@ -125,41 +123,8 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      {/* Charts with dark theme */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <Card className="p-6 bg-black/50 backdrop-blur supports-[backdrop-filter]:bg-black/30 border border-white/[0.08]">
-          <h3 className="text-lg font-semibold mb-4 text-gray-200">
-            Traffic Overview
-          </h3>
-          <LineChart
-            data={chartdata}
-            index="date"
-            categories={["Page Views", "Unique Visitors"]}
-            colors={["#3b82f6", "#10b981"]}
-            yAxisWidth={40}
-            className="h-72"
-          />
-        </Card>
-
-        <Card className="p-6 bg-black/50 backdrop-blur supports-[backdrop-filter]:bg-black/30 border border-white/[0.08]">
-          <h3 className="text-lg font-semibold mb-4 text-gray-200">
-            Review Distribution
-          </h3>
-          <BarChart
-            data={[
-              { rating: "5 ⭐", count: 45 },
-              { rating: "4 ⭐", count: 32 },
-              { rating: "3 ⭐", count: 12 },
-              { rating: "2 ⭐", count: 8 },
-              { rating: "1 ⭐", count: 3 },
-            ]}
-            index="rating"
-            categories={["count"]}
-            colors={["blue"]}
-            className="h-72"
-          />
-        </Card>
-      </div>
+      
+      
     </div>
   );
 }

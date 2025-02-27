@@ -18,19 +18,14 @@ const menuItems = [
     icon: LayoutDashboard,
   },
   {
-    title: "Analytics",
-    href: "/business/dashboard/analytics",
-    icon: BarChart2,
-  },
-  {
     title: "Reviews",
     href: "/business/dashboard/reviews",
     icon: MessageSquare,
   },
   {
-    title: "Customers",
-    href: "/business/dashboard/customers",
-    icon: Users,
+    title: "Tool Page",
+    href: "/business/dashboard/tool",
+    icon: Settings,
   },
   {
     title: "Settings",
