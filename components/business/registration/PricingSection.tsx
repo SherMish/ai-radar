@@ -135,15 +135,23 @@ export function PricingSection({ websiteUrl }: { websiteUrl: string }) {
 
       if (!userUpdateRes.ok) throw new Error("Failed to update user");
 
-      // Force session update with a short delay
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Force session update and wait for it
       await updateSession();
 
-      // Clear registration data
-      localStorage.removeItem("businessRegistration");
+      // Add a small delay to ensure session is properly propagated
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Redirect user
-      setTimeout(() => router.push("/business/dashboard"), 500);
+      // Verify session before redirect
+      const verifySessionRes = await fetch("/api/auth/session");
+      const updatedSession = await verifySessionRes.json();
+      console.log("Updated session:", updatedSession);
+      if (!updatedSession?.user?.websites) {
+        throw new Error("Session update failed");
+      }
+
+      // Clear registration data and redirect
+      localStorage.removeItem("businessRegistration");
+      router.push("/business/dashboard");
     } catch (error) {
       console.error("Error:", error);
       toast({

@@ -10,13 +10,17 @@ interface CustomToken {
 }
 
 export async function middleware(request: NextRequest) {
-  const token = await getToken({ req: request });
-  console.log('Middleware token:', token); // Debug log
+  // Add secret and secure cookie options
+  const token = await getToken({ 
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+    secureCookie: process.env.NODE_ENV === 'production'
+  });
 
   // For /business route (not dashboard)
   if (request.nextUrl.pathname === '/business') {
-    if (token?.role === 'business_owner') {
-      console.log('Redirecting to dashboard from /business');
+    // Check both role and websites to ensure complete setup
+    if (token?.role === 'business_owner' && token?.websites) {
       return NextResponse.redirect(new URL('/business/dashboard', request.url));
     }
     return NextResponse.next();
@@ -25,13 +29,12 @@ export async function middleware(request: NextRequest) {
   // For dashboard routes
   if (request.nextUrl.pathname.startsWith('/business/dashboard')) {
     if (!token) {
-      console.log('No token, redirecting to signin');
       return NextResponse.redirect(new URL('/auth/signin', request.url));
     }
 
-    if (token.role !== 'business_owner') {
-      console.log('Not a business owner, redirecting to home');
-      return NextResponse.redirect(new URL('/', request.url));
+    // Check both role and websites
+    if (token.role !== 'business_owner' || !token.websites) {
+      return NextResponse.redirect(new URL('/business/register', request.url));
     }
   }
 
