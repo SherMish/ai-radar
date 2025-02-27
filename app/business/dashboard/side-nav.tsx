@@ -46,7 +46,7 @@ export function SideNav() {
     <nav className="w-64 border-r border-white/[0.08] bg-black/50 backdrop-blur supports-[backdrop-filter]:bg-black/30">
       <div className="flex flex-col h-full">
         <div className="p-6">
-          <h2 className="text-lg font-semibold bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">
+          <h2 className="text-lg font-semibold bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] bg-clip-text text-transparent">
             AI Radar
           </h2>
         </div>
@@ -60,11 +60,16 @@ export function SideNav() {
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:bg-white/[0.06]",
                   pathname === item.href
-                    ? "bg-white/10 text-blue-400 font-medium"
+                    ? "bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] text-white font-medium shadow-lg shadow-purple-500/20"
                     : "text-gray-400 hover:text-gray-200"
                 )}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className={cn(
+                  "w-4 h-4",
+                  pathname === item.href
+                    ? "text-white"
+                    : "text-gray-400"
+                )} />
                 {item.title}
               </Link>
             );

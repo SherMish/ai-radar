@@ -50,7 +50,7 @@ export default function DashboardPage() {
   return (
     <div className="container mx-auto px-4 py-8 min-h-screen">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">
+        <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] bg-clip-text text-transparent">
           {website?.name}
         </h1>
         <p className="text-gray-400">
