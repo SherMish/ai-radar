@@ -63,26 +63,28 @@ export function PricingSection({ websiteUrl }: { websiteUrl: string }) {
       const savedData = JSON.parse(
         localStorage.getItem("businessRegistration") || "{}"
       );
-      console.log("Saved registration data:", savedData);
 
-      // Check if website exists
-      const cleanUrl = websiteUrl
+      // Normalize and clean URL
+      let cleanUrl = websiteUrl
         .toLowerCase()
-        .replace(/^(?:https?:\/\/)?(?:www\.)?/i, "")
-        .split("/")[0]
-        .split(":")[0];
-      console.log("Clean URL:", cleanUrl);
+        .replace(/^(https?:\/\/)?(www\.)?/i, "")
+        .split("/")[0];
 
-      const response = await fetch(
-        `/api/website/check?url=${encodeURIComponent(cleanUrl)}`
-      );
-      const existingWebsite = await response.json();
-      console.log("Existing website:", existingWebsite);
+      // Fetch session and check website in parallel
+      const [sessionRes, websiteRes] = await Promise.all([
+        fetch("/api/auth/session"),
+        fetch(`/api/website/check?url=${encodeURIComponent(cleanUrl)}`),
+      ]);
 
-      // Generate metadata if needed
+      const session = await sessionRes.json();
+      const existingWebsite = await websiteRes.json();
+
+      const userId = session?.user?.id;
+      if (!userId) throw new Error("User not authenticated");
+
+      // Generate metadata only if needed
       let metadata = null;
       if (!existingWebsite.radarTrust) {
-        console.log("Generating metadata...");
         const metadataResponse = await fetch("/api/admin/generate-metadata", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -91,22 +93,30 @@ export function PricingSection({ websiteUrl }: { websiteUrl: string }) {
 
         if (metadataResponse.ok) {
           metadata = await metadataResponse.json();
-          console.log("Generated metadata:", metadata);
-        } else {
-          console.error(
-            "Failed to generate metadata:",
-            await metadataResponse.text()
-          );
         }
       }
 
-      // Get session for user ID
-      const sessionRes = await fetch("/api/auth/session");
-      const session = await sessionRes.json();
-      const userId = session?.user?.id;
-      console.log("User ID:", userId);
+      // If website doesn't exist or metadata was generated, update/create it
+      let websiteId = existingWebsite?._id; // Use existing website ID if available
+      if (!websiteId || metadata) {
+        const websiteUpdateRes = await fetch("/api/website/update", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            url: cleanUrl,
+            name: savedData.businessName,
+            owner: userId,
+            isVerified: true,
+            ...(metadata || {}),
+          }),
+        });
 
-      // Update user profile first
+        if (!websiteUpdateRes.ok) throw new Error("Failed to update website");
+        const newWebsiteData = await websiteUpdateRes.json();
+        websiteId = newWebsiteData._id;
+      }
+
+      // Update user profile with the website ID
       const userUpdateRes = await fetch("/api/user/update", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -119,62 +129,30 @@ export function PricingSection({ websiteUrl }: { websiteUrl: string }) {
           isWebsiteOwner: true,
           isVerifiedWebsiteOwner: true,
           relatedWebsite: cleanUrl,
+          websites: [websiteId], // Ensuring array format for multiple websites
         }),
       });
 
-      const userUpdateResult = await userUpdateRes.json();
-      console.log("User update response:", userUpdateResult);
+      if (!userUpdateRes.ok) throw new Error("Failed to update user");
 
-      if (!userUpdateRes.ok) {
-        throw new Error(userUpdateResult.error || "Failed to update user");
-      }
-
-      // Then update website
-      const websiteUpdateRes = await fetch("/api/website/update", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          url: cleanUrl,
-          name: savedData.businessName,
-          owner: userId,
-          isVerified: true,
-          ...(metadata || {}),
-        }),
-      });
-
-      const websiteData = await websiteUpdateRes.json();
-      console.log("Website update response:", websiteData);
-
-      // First update the user in the database with website ID
-      const websiteUpdateUserRes = await fetch("/api/user/update", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          websites: websiteData._id,
-          role: "business_owner",
-        }),
-      });
-
-      if (!websiteUpdateUserRes.ok) {
-        throw new Error("Failed to update user with website ID");
-      }
-
-      // Force session update
+      // Force session update with a short delay
+      await new Promise((resolve) => setTimeout(resolve, 500));
       await updateSession();
 
       // Clear registration data
       localStorage.removeItem("businessRegistration");
 
-      // Wait for session to update and then redirect
-      setTimeout(() => {
-        router.push("/business/dashboard");
-      }, 1000);
+      // Redirect user
+      setTimeout(() => router.push("/business/dashboard"), 500);
     } catch (error) {
       console.error("Error:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Something went wrong. Please try again later.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Something went wrong. Please try again.",
       });
     } finally {
       setLoading(false);
