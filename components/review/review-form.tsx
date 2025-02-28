@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import { Star, Upload, Eye, AlertCircle, Loader2 } from "lucide-react";
@@ -51,6 +51,9 @@ const CHAR_LIMITS = {
   title: 100,
 };
 
+const STORAGE_KEY_REVIEW = "pending_review_data";
+const STORAGE_KEY_TOOL = "pending_tool_data";
+
 export default function ReviewForm({ isNewTool = false, initialUrl = "" }: ReviewFormProps) {
   const router = useRouter();
   const { data: session } = useSession();
@@ -72,6 +75,40 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+
+  // Load saved form data on mount
+  useEffect(() => {
+    const storageKey = isNewTool ? STORAGE_KEY_TOOL : STORAGE_KEY_REVIEW;
+    const savedData = localStorage.getItem(storageKey);
+    if (savedData) {
+      try {
+        const parsedData = JSON.parse(savedData);
+        setReviewData(prev => ({
+          ...prev,
+          ...parsedData,
+          url: initialUrl || parsedData.url // Keep initialUrl if provided
+        }));
+      } catch (error) {
+        console.error("Error parsing saved form data:", error);
+      }
+    }
+  }, [isNewTool, initialUrl]);
+
+  // Save form data when fields change
+  const handleFieldChange = (field: keyof ReviewData, value: any) => {
+    const updatedData = { ...reviewData, [field]: value };
+    setReviewData(updatedData);
+    
+    // Save to localStorage
+    const storageKey = isNewTool ? STORAGE_KEY_TOOL : STORAGE_KEY_REVIEW;
+    localStorage.setItem(storageKey, JSON.stringify(updatedData));
+  };
+
+  // Clear saved data after successful submission
+  const clearSavedData = () => {
+    const storageKey = isNewTool ? STORAGE_KEY_TOOL : STORAGE_KEY_REVIEW;
+    localStorage.removeItem(storageKey);
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -127,8 +164,8 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
     } else if (reviewData.title.length > CHAR_LIMITS.title) {
       errors.title = `Title must be ${CHAR_LIMITS.title} characters or less`;
     }
-    if (reviewData.content.length < 25) {
-      errors.content = "Review must be at least 25 characters long";
+    if (reviewData.content.length < 10) {
+      errors.content = "Review must be at least 10 characters long";
     }
 
     setFormErrors(errors);
@@ -149,6 +186,7 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
   };
 
   const handleSubmit = async () => {
+    if (!validateForm()) return;
     if (!session?.user) {
       loginModal.onOpen();
       return;
@@ -210,10 +248,10 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
           reviewLength: reviewData.content.length,
         });
 
-        // Show success message
+        // Clear saved data only after successful submission
+        clearSavedData();
         setShowSuccessDialog(true);
         
-        // Redirect after 3 seconds
         setTimeout(() => {
           router.push(`/tool/${encodeURIComponent(reviewData.toolURL)}`);
         }, 5000);
@@ -250,10 +288,10 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
           reviewLength: reviewData.content.length,
         });
 
-        // Show success message
+        // Clear saved data only after successful submission
+        clearSavedData();
         setShowSuccessDialog(true);
         
-        // Redirect after 3 seconds
         setTimeout(() => {
           router.push(`/tool/${encodeURIComponent(initialUrl)}`);
         }, 5000);
@@ -332,7 +370,8 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
                   type="url"
                   required
                   value={reviewData.toolURL}
-                  onChange={(e) => setReviewData({ ...reviewData, toolURL: e.target.value })}
+                  onChange={(e) => handleFieldChange('toolURL', e.target.value)}
+                  onBlur={(e) => handleFieldChange('toolURL', e.target.value)}
                   placeholder="https://example.com"
                   className="bg-background/50"
                 />
@@ -349,7 +388,8 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
                   name="toolName"
                   required
                   value={reviewData.toolName}
-                  onChange={(e) => setReviewData({ ...reviewData, toolName: e.target.value })}
+                  onChange={(e) => handleFieldChange('toolName', e.target.value)}
+                  onBlur={(e) => handleFieldChange('toolName', e.target.value)}
                   placeholder="Enter the tool&apos;s name"
                   className="bg-background/50"
                 />
@@ -363,7 +403,7 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
                 <Select 
                   name="category" 
                   required
-                  onValueChange={(value) => setReviewData(prev => ({ ...prev, relatedCategory: value }))}
+                  onValueChange={(value) => handleFieldChange('relatedCategory', value)}
                 >
                   <SelectTrigger className={formErrors.category ? "border-destructive" : ""}>
                     <SelectValue placeholder="Select a category" />
@@ -394,7 +434,7 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
                   className="p-1"
                   onMouseEnter={() => setHoveredRating(index)}
                   onMouseLeave={() => setHoveredRating(0)}
-                  onClick={() => setReviewData({ ...reviewData, rating: index })}
+                  onClick={() => handleFieldChange('rating', index)}
                 >
                   <Star
                     className={`w-8 h-8 ${
@@ -416,7 +456,8 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
             <label className="text-sm font-medium">Review Title</label>
             <Input
               value={reviewData.title}
-              onChange={(e) => setReviewData({ ...reviewData, title: e.target.value })}
+              onChange={(e) => handleFieldChange('title', e.target.value)}
+              onBlur={(e) => handleFieldChange('title', e.target.value)}
               placeholder="Summarize your experience"
               className={`bg-background/50 ${formErrors.title ? 'border-red-500' : ''}`}
               maxLength={CHAR_LIMITS.title}
@@ -434,7 +475,8 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
             <label className="text-sm font-medium">Your Review</label>
             <Textarea
               value={reviewData.content}
-              onChange={(e) => setReviewData({ ...reviewData, content: e.target.value })}
+              onChange={(e) => handleFieldChange('content', e.target.value)}
+              onBlur={(e) => handleFieldChange('content', e.target.value)}
               placeholder="Share your experience with this tool..."
               className="h-32 bg-background/50"
             />

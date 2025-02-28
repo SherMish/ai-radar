@@ -10,7 +10,7 @@ const ReviewSchema = new mongoose.Schema({
   body: {
     type: String,
     required: [true, 'Review body is required'],
-    minlength: [25, 'Review must be at least 25 characters long'],
+    minlength: [10, 'Review must be at least 10 characters long'],
     trim: true,
   },
   relatedUser: {
