@@ -76,7 +76,7 @@ export default function ReviewsPage() {
                   <p className="text-gray-200 mb-4">{review.body}</p>
                   <div className="flex items-center gap-4 text-sm text-gray-400">
                     <span>{new Date(review.createdAt).toLocaleDateString()}</span>
-                    {review.helpfulCount > 0 && (
+                    {review.helpfulCount && review.helpfulCount > 0 && (
                       <span>
                         {review.helpfulCount} {review.helpfulCount === 1 ? 'person' : 'people'} found this helpful
                       </span>
