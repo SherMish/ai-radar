@@ -10,7 +10,7 @@ export default async function MyReviewsPage() {
   const session = await getServerSession(authOptions);
   
   if (!session?.user) {
-    redirect('/auth/signin');
+    redirect('/');
   }
 
   try {

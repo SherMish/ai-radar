@@ -29,7 +29,7 @@ export async function middleware(request: NextRequest) {
   // For dashboard routes
   if (request.nextUrl.pathname.startsWith('/business/dashboard')) {
     if (!token) {
-      return NextResponse.redirect(new URL('/auth/signin', request.url));
+      return NextResponse.redirect(new URL('/business', request.url));
     }
 
     // Check both role and websites
