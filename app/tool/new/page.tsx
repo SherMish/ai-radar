@@ -36,7 +36,10 @@ interface FormErrors {
   category?: string;
   shortDescription?: string;
   description?: string;
+  logo?: string;
 }
+
+const STORAGE_KEY = "pending_tool_data";
 
 export default function NewTool() {
   const router = useRouter();
@@ -54,6 +57,31 @@ export default function NewTool() {
     logo: undefined as string | undefined,
   });
   const [errors, setErrors] = useState<FormErrors>({});
+
+  // Load saved form data on mount
+  useEffect(() => {
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    if (savedData) {
+      try {
+        const parsedData = JSON.parse(savedData);
+        setFormData(parsedData);
+      } catch (error) {
+        console.error("Error parsing saved form data:", error);
+      }
+    }
+  }, []);
+
+  // Save form data when fields change
+  const handleFieldChange = (field: keyof typeof formData, value: string | undefined) => {
+    const updatedData = { ...formData, [field]: value };
+    setFormData(updatedData);
+    
+    if (errors[field]) {
+      setErrors({ ...errors, [field]: undefined });
+    }
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData));
+  };
 
   // Store form data in state when login modal is opened
   const [pendingSubmission, setPendingSubmission] = useState<null | typeof formData>(null);
@@ -112,6 +140,9 @@ export default function NewTool() {
         description: "Website added successfully",
       });
 
+      console.log('before delete local storage')
+      // Clear saved data after successful submission
+      localStorage.removeItem(STORAGE_KEY);
       router.push(`/tool/${encodeURIComponent(data.url)}`);
     } catch (error) {
       console.error("Website creation error:", error);
@@ -206,12 +237,8 @@ export default function NewTool() {
                 type="text"
                 placeholder="https://example.com"
                 value={formData.url}
-                onChange={(e) => {
-                  setFormData({ ...formData, url: e.target.value });
-                  if (errors.url) {
-                    setErrors({ ...errors, url: undefined });
-                  }
-                }}
+                onChange={(e) => handleFieldChange('url', e.target.value)}
+                onBlur={(e) => handleFieldChange('url', e.target.value)}
                 className={`w-full ${errors.url ? "border-red-500" : ""}`}
                 maxLength={CHAR_LIMITS.url}
               />
@@ -232,12 +259,8 @@ export default function NewTool() {
                 type="text"
                 placeholder="Enter tool name"
                 value={formData.name}
-                onChange={(e) => {
-                  setFormData({ ...formData, name: e.target.value });
-                  if (errors.name) {
-                    setErrors({ ...errors, name: undefined });
-                  }
-                }}
+                onChange={(e) => handleFieldChange('name', e.target.value)}
+                onBlur={(e) => handleFieldChange('name', e.target.value)}
                 className={`w-full ${errors.name ? "border-red-500" : ""}`}
                 maxLength={CHAR_LIMITS.name}
               />
@@ -255,12 +278,7 @@ export default function NewTool() {
               </label>
               <Select
                 value={formData.category}
-                onValueChange={(value) => {
-                  setFormData({ ...formData, category: value });
-                  if (errors.category) {
-                    setErrors({ ...errors, category: undefined });
-                  }
-                }}
+                onValueChange={(value) => handleFieldChange('category', value)}
               >
                 <SelectTrigger className={`w-full ${errors.category ? "border-red-500" : ""}`}>
                   <SelectValue placeholder="Select a category" />
@@ -287,7 +305,8 @@ export default function NewTool() {
                 rows={4}
                 placeholder="Enter a detailed description of the tool"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) => handleFieldChange('description', e.target.value)}
+                onBlur={(e) => handleFieldChange('description', e.target.value)}
                 className={`w-full rounded-md border bg-background px-3 py-2 text-sm ${
                   errors.description ? "border-red-500" : ""
                 }`}
@@ -310,12 +329,8 @@ export default function NewTool() {
                 type="text"
                 placeholder="Brief description of the tool"
                 value={formData.shortDescription}
-                onChange={(e) => {
-                  setFormData({ ...formData, shortDescription: e.target.value });
-                  if (errors.shortDescription) {
-                    setErrors({ ...errors, shortDescription: undefined });
-                  }
-                }}
+                onChange={(e) => handleFieldChange('shortDescription', e.target.value)}
+                onBlur={(e) => handleFieldChange('shortDescription', e.target.value)}
                 className={errors.shortDescription ? "border-red-500" : ""}
                 maxLength={CHAR_LIMITS.shortDescription}
               />
@@ -335,8 +350,8 @@ export default function NewTool() {
                   Logo (Optional)
                 </label>
                 <UploadImage
-                  onUpload={(url) => setFormData({ ...formData, logo: url })}
-                  onClear={() => setFormData({ ...formData, logo: undefined })}
+                  onUpload={(url) => handleFieldChange('logo', url)}
+                  onClear={() => handleFieldChange('logo', undefined)}
                   uploadedUrl={formData.logo}
                 />
               </div>
