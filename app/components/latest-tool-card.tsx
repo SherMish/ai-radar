@@ -37,7 +37,7 @@ export function LatestToolCard({ website, index }: LatestToolCardProps) {
       transition={{ duration: 0.5, delay: 0.2 + (index * 0.1) }}
     >
       <Link href={`/tool/${encodeURIComponent(website.url)}`}>
-        <Card className="p-6 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors border-zinc-700/50">
+        <Card className=" h-[178px] p-6 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors border-zinc-700/50">
           <div className="flex flex-col sm:flex-row items-start gap-4">
             <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center overflow-hidden">
               {website.logo ? (
@@ -59,9 +59,9 @@ export function LatestToolCard({ website, index }: LatestToolCardProps) {
                 <h2 className="text-lg font-semibold text-zinc-50">
                   {website.name}
                 </h2>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col gap-2">
                   {website.reviewCount > 0 && (
-                    <>
+                    <div className="flex items-center gap-3">
                       <div className="flex items-center">
                         {[...Array(5)].map((_, i) => (
                           <Star
@@ -77,19 +77,16 @@ export function LatestToolCard({ website, index }: LatestToolCardProps) {
                       <span className="text-sm text-zinc-400">
                         {website.averageRating.toFixed(1)}
                       </span>
-                    </>
+                    </div>
                   )}
                   {website.radarTrust && (
-                    <>
-                      {website.reviewCount > 0 && <div className="w-px h-4 bg-zinc-700" />}
-                      <div className="flex items-center gap-1 text-primary">
-                        <RadarIcon className="w-4 h-4" />
-                        <span className="text-sm font-medium">
-                          {website.radarTrust.toFixed(1)}
-                          <span className="ml-1">RadarTrust™</span>
-                        </span>
-                      </div>
-                    </>
+                    <div className="flex items-center gap-1 text-primary">
+                      <RadarIcon className="w-4 h-4" />
+                      <span className="text-sm font-medium">
+                        {website.radarTrust.toFixed(1)}
+                        <span className="ml-1">RadarTrust™</span>
+                      </span>
+                    </div>
                   )}
                 </div>
               </div>

@@ -1,3 +1,6 @@
+export const revalidate = 100; // Update every 10 seconds
+
+
 import { useState, useRef, useEffect } from "react";
 import {
   Search,
