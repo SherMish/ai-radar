@@ -20,6 +20,10 @@ export interface WebsiteType {
   featureRobustnessScore?: number;
   marketAdoptionScore?: number;
   pricingAccessibilityScore?: number;
+  hasAPI?: boolean;
+  hasFreeTrialPeriod?: boolean;
+  launchYear?: number;
+  isActive?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
