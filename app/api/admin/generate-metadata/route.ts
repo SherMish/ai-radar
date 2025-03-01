@@ -60,6 +60,7 @@ FORMAT:
    - Convert star ratings to a percentage.
    - Identify common praise/complaints.
    - Weight trusted platforms higher (G2 > random Reddit threads).
+   - If there are no reviews, return 90.
    - Normalize to a **0-100 scale**, where 100 represents excellent feedback.
 
 2) **Feature Robustness Score ("featureRobustnessScore" [0-100])**
@@ -97,7 +98,7 @@ FORMAT:
 }`,
         },
       ],
-      max_tokens: 1500,
+      max_tokens: 2500,
       temperature: 0.6,
       top_p: 0.9,
       search_domain_filter: null,

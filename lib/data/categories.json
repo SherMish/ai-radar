@@ -104,8 +104,8 @@
     },
     {
       "id": "translation",
-      "name": "Translation",
-      "description": "Language translation and localization",
+      "name": "Languages",
+      "description": "Languages, translation and localization",
       "icon": "Globe"
     },
     {
@@ -119,6 +119,18 @@
       "name": "SEO",
       "description": "AI-powered SEO optimization tools",
       "icon": "SearchIcon"
+    },
+    {
+      "id": "social-media",
+      "name": "Social Media",
+      "description": "AI-powered social media tools",
+      "icon": "MessageSquare"
+    },
+    {
+      "id": "legal",
+      "name": "Legal",
+      "description": "AI-powered legal tools",
+      "icon": "FileText"
     }
   ]
 } 

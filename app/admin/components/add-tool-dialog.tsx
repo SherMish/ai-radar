@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
-import { toast } from "react-hot-toast";
 import { WebsiteType } from "@/lib/types/website";
 import { EditToolDialog } from './edit-tool-dialog';
 
@@ -21,6 +20,7 @@ export function AddToolDialog({ open, onOpenChange, onToolAdded }: AddToolDialog
     url: '',
     name: ''
   });
+  const [formError, setFormError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [newWebsite, setNewWebsite] = useState<WebsiteType | null>(null);
   const [generatedData, setGeneratedData] = useState<Partial<WebsiteType> | null>(null);
@@ -39,6 +39,8 @@ export function AddToolDialog({ open, onOpenChange, onToolAdded }: AddToolDialog
   const handleSubmit = async () => {
     if (!formData.url || !formData.name) return;
     setIsLoading(true);
+    setFormError(null); // Clear previous errors
+    
     try {
       const response = await fetch('/api/admin/websites', {
         method: 'POST',
@@ -49,9 +51,9 @@ export function AddToolDialog({ open, onOpenChange, onToolAdded }: AddToolDialog
       const data = await response.json();
       if (!response.ok) {
         if (data.error === 'Website already exists') {
-          toast.error('This website is already in the database');
+          setFormError('This website is already in the database');
         } else {
-          throw new Error(data.error || 'Failed to create website');
+          setFormError(data.error || 'Failed to create website');
         }
         return;
       }
@@ -70,7 +72,7 @@ export function AddToolDialog({ open, onOpenChange, onToolAdded }: AddToolDialog
       onOpenChange(false);
     } catch (error) {
       console.error('Error adding website:', error);
-      toast.error('Failed to add website');
+      setFormError('Failed to add website. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -84,6 +86,11 @@ export function AddToolDialog({ open, onOpenChange, onToolAdded }: AddToolDialog
             <DialogTitle>Add New Tool</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
+            {formError && (
+              <p className="text-sm text-red-500 mb-4">
+                ❌ {formError}
+              </p>
+            )}
             <div className="space-y-2">
               <Label>Tool Name</Label>
               <Input
