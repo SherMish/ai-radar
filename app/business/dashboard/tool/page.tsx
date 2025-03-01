@@ -139,7 +139,7 @@ export default function ToolPage() {
         <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] bg-clip-text text-transparent">
           Edit Tool
         </h1>
-        <p className="text-gray-400">Update your tool&apos;s information</p>
+        <p className="text-gray-400">Keep your AI tool&apos;s profile up to date with the latest details, ensuring potential users have accurate information</p>
       </div>
 
       <Card className="p-6 bg-black/50 backdrop-blur border border-white/[0.08]">
@@ -155,25 +155,51 @@ export default function ToolPage() {
             />
           </div>
 
-          <div className="grid gap-2">
-            <label className="text-sm font-medium">Tool Name</label>
-            <Input
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              placeholder="Enter tool name"
-              maxLength={CHAR_LIMITS.name}
-              className={`bg-background/50 ${
-                formErrors.name ? "border-red-500" : ""
-              }`}
-            />
-            {formErrors.name && (
-              <p className="text-sm text-red-500">{formErrors.name}</p>
-            )}
-            <p className="text-xs text-gray-500">
-              {formData.name.length} / {CHAR_LIMITS.name}
-            </p>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid gap-2 md:col-span-1">
+              <label className="text-sm font-medium">Tool Name</label>
+              <Input
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                placeholder="Enter tool name"
+                maxLength={CHAR_LIMITS.name}
+                className={`bg-background/50 ${
+                  formErrors.name ? "border-red-500" : ""
+                }`}
+              />
+              {formErrors.name && (
+                <p className="text-sm text-red-500">{formErrors.name}</p>
+              )}
+              <p className="text-xs text-gray-500">
+                {formData.name.length} / {CHAR_LIMITS.name}
+              </p>
+            </div>
+
+            <div className="grid gap-2 md:col-span-3">
+              <label className="text-sm font-medium">Short Description</label>
+              <Input
+                value={formData.shortDescription}
+                onChange={(e) =>
+                  setFormData({ ...formData, shortDescription: e.target.value })
+                }
+                placeholder="Brief description of your tool"
+                maxLength={CHAR_LIMITS.shortDescription}
+                className={`bg-background/50 ${
+                  formErrors.shortDescription ? "border-red-500" : ""
+                }`}
+              />
+              {formErrors.shortDescription && (
+                <p className="text-sm text-red-500">
+                  {formErrors.shortDescription}
+                </p>
+              )}
+              <p className="text-xs text-gray-500">
+                {formData.shortDescription.length} /{" "}
+                {CHAR_LIMITS.shortDescription}
+              </p>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -210,30 +236,6 @@ export default function ToolPage() {
                 </SelectContent>
               </Select>
             </div>
-          </div>
-
-          <div className="grid gap-2">
-            <label className="text-sm font-medium">Short Description</label>
-            <Input
-              value={formData.shortDescription}
-              onChange={(e) =>
-                setFormData({ ...formData, shortDescription: e.target.value })
-              }
-              placeholder="Brief description of your tool"
-              maxLength={CHAR_LIMITS.shortDescription}
-              className={`bg-background/50 ${
-                formErrors.shortDescription ? "border-red-500" : ""
-              }`}
-            />
-            {formErrors.shortDescription && (
-              <p className="text-sm text-red-500">
-                {formErrors.shortDescription}
-              </p>
-            )}
-            <p className="text-xs text-gray-500">
-              {formData.shortDescription.length} /{" "}
-              {CHAR_LIMITS.shortDescription}
-            </p>
           </div>
 
           <div className="grid gap-2">
