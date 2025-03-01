@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "react-hot-toast";
 import categoriesData from "@/lib/data/categories.json";
 import { ImageUpload } from "@/components/image-upload";
 import { Switch } from "@/components/ui/switch";
@@ -46,7 +46,6 @@ interface FormErrors {
 
 export default function ToolPage() {
   const { isLoading, website } = useBusinessGuard();
-  const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: "",
@@ -61,6 +60,7 @@ export default function ToolPage() {
     launchYear: null,
   });
   const [formErrors, setFormErrors] = useState<FormErrors>({});
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     if (website) {
@@ -83,7 +83,7 @@ export default function ToolPage() {
     try {
       // Validate fields
       const newErrors: FormErrors = {};
-      
+
       if (!formData.name.trim()) {
         newErrors.name = "Tool name is required";
       }
@@ -97,39 +97,35 @@ export default function ToolPage() {
       setFormErrors(newErrors);
 
       if (Object.keys(newErrors).length > 0) {
-        toast({
-          variant: "destructive",
-          title: "Validation Error",
-          description: "Please fill in all required fields",
-        });
+        toast.error("Please fill in all required fields");
         return;
       }
 
       setIsSaving(true);
       const response = await fetch(`/api/admin/websites/${website?._id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
-      
+
       const data = await response.json();
-      
+
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to update');
+        throw new Error(data.error || "Failed to update");
       }
-      
-      toast({
-        title: "Success! 🎉",
-        description: "Your tool information has been updated successfully.",
-      });
+
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 10000); // Hide after 10 seconds
       setFormErrors({});
     } catch (error) {
-      console.error('Error updating website:', error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to update tool. Please try again.",
-      });
+      console.error("Error updating website:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to update tool. Please try again."
+      );
     } finally {
       setIsSaving(false);
     }
@@ -148,17 +144,16 @@ export default function ToolPage() {
 
       <Card className="p-6 bg-black/50 backdrop-blur border border-white/[0.08]">
         <div className="space-y-6">
-
-            <div className="grid gap-2">
-                <label className="text-sm font-medium">Logo</label>
-                <ImageUpload
-                value={formData.logo || ""}
-                onChange={(url) =>
-                    setFormData((prev) => ({ ...prev, logo: url }))
-                }
-                onRemove={() => setFormData((prev) => ({ ...prev, logo: "" }))}
-                />
-            </div>
+          <div className="grid gap-2">
+            <label className="text-sm font-medium">Logo</label>
+            <ImageUpload
+              value={formData.logo || ""}
+              onChange={(url) =>
+                setFormData((prev) => ({ ...prev, logo: url }))
+              }
+              onRemove={() => setFormData((prev) => ({ ...prev, logo: "" }))}
+            />
+          </div>
 
           <div className="grid gap-2">
             <label className="text-sm font-medium">Tool Name</label>
@@ -169,7 +164,9 @@ export default function ToolPage() {
               }
               placeholder="Enter tool name"
               maxLength={CHAR_LIMITS.name}
-              className={`bg-background/50 ${formErrors.name ? "border-red-500" : ""}`}
+              className={`bg-background/50 ${
+                formErrors.name ? "border-red-500" : ""
+              }`}
             />
             {formErrors.name && (
               <p className="text-sm text-red-500">{formErrors.name}</p>
@@ -182,7 +179,7 @@ export default function ToolPage() {
           <div className="grid gap-2">
             <label className="text-sm font-medium">URL</label>
             <Input
-            disabled={true}
+              disabled={true}
               value={formData.url}
               onChange={(e) =>
                 setFormData({ ...formData, url: e.target.value })
@@ -222,10 +219,14 @@ export default function ToolPage() {
               }
               placeholder="Brief description of your tool"
               maxLength={CHAR_LIMITS.shortDescription}
-              className={`bg-background/50 ${formErrors.shortDescription ? "border-red-500" : ""}`}
+              className={`bg-background/50 ${
+                formErrors.shortDescription ? "border-red-500" : ""
+              }`}
             />
             {formErrors.shortDescription && (
-              <p className="text-sm text-red-500">{formErrors.shortDescription}</p>
+              <p className="text-sm text-red-500">
+                {formErrors.shortDescription}
+              </p>
             )}
             <p className="text-xs text-gray-500">
               {formData.shortDescription.length} /{" "}
@@ -254,79 +255,92 @@ export default function ToolPage() {
             </p>
           </div>
 
-          <div className="grid gap-2">
-            <label className="text-sm font-medium">Pricing Model</label>
-            <Select
-              value={formData.pricingModel}
-              onValueChange={(value) =>
-                setFormData((prev) => ({ ...prev, pricingModel: value }))
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select pricing model" />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.values(PricingModel).map((model) => (
-                  <SelectItem key={model} value={model}>
-                    {model.charAt(0).toUpperCase() +
-                      model.slice(1).replace("_", " ")}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid gap-2">
+              <label className="text-sm font-medium">Pricing Model</label>
+              <Select
+                value={formData.pricingModel}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, pricingModel: value }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select pricing model" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.values(PricingModel).map((model) => (
+                    <SelectItem key={model} value={model}>
+                      {model.charAt(0).toUpperCase() +
+                        model.slice(1).replace("_", " ")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-2">
+              <label className="text-sm font-medium">Launch Year</label>
+              <Input
+                type="number"
+                value={formData.launchYear?.toString() || ""}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    launchYear: e.target.value ? parseInt(e.target.value) : null,
+                  }))
+                }
+                min={2000}
+                max={new Date().getFullYear()}
+                className="bg-background/50"
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <label className="text-sm font-medium">Has Free Trial</label>
+              <div className="h-10 flex items-center">
+                <Switch
+                  checked={formData.hasFreeTrialPeriod}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      hasFreeTrialPeriod: checked,
+                    }))
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-2">
+              <label className="text-sm font-medium">Has API</label>
+              <div className="h-10 flex items-center">
+                <Switch
+                  checked={formData.hasAPI}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      hasAPI: checked,
+                    }))
+                  }
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="grid gap-2">
-            <label className="text-sm font-medium">Launch Year</label>
-            <Input
-              type="number"
-              value={formData.launchYear?.toString() || ""}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  launchYear: e.target.value ? parseInt(e.target.value) : null,
-                }))
-              }
-              min={2000}
-              max={new Date().getFullYear()}
-              className="bg-background/50"
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <label className="text-sm font-medium">Has Free Trial</label>
-            <Switch
-              checked={formData.hasFreeTrialPeriod}
-              onCheckedChange={(checked) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  hasFreeTrialPeriod: checked,
-                }))
-              }
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <label className="text-sm font-medium">Has API</label>
-            <Switch
-              checked={formData.hasAPI}
-              onCheckedChange={(checked) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  hasAPI: checked,
-                }))
-              }
-            />
-          </div>
-
-          <div className="flex justify-end">
-            <Button
-              onClick={handleSave}
-              disabled={isSaving}
-              className="gradient-button"
-            >
-              {isSaving ? "Saving..." : "Save Changes"}
-            </Button>
+          <div className="flex flex-col gap-4">
+            {showSuccess && (
+              <p className="text-sm text-green-500">
+                ✅ Your tool information has been updated successfully!
+              </p>
+            )}
+            <div className="flex justify-end">
+              <Button
+                onClick={handleSave}
+                disabled={isSaving}
+                className="gradient-button"
+              >
+                {isSaving ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
           </div>
         </div>
       </Card>
