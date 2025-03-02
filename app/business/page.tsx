@@ -179,6 +179,7 @@ export default function BusinessPage() {
   const router = useRouter();
   const [latestTools, setLatestTools] = useState<Tool[]>([]);
   const [loading, setLoading] = useState(true);
+  const [websiteUrl, setWebsiteUrl] = useState("");
 
   useEffect(() => {
     const getWebsites = async () => {
@@ -234,6 +235,19 @@ export default function BusinessPage() {
 
     getWebsites();
   }, []);
+
+  const handleUrlSubmit = () => {
+    if (websiteUrl) {
+      // Store URL in localStorage with the correct key and format
+      localStorage.setItem(
+        "businessRegistration", 
+        JSON.stringify({ websiteUrl: websiteUrl })
+      );
+      
+      // Redirect to registration page
+      router.push(`/business/register`);
+    }
+  };
 
   return (
     <div className="min-h-screen">
@@ -354,7 +368,6 @@ export default function BusinessPage() {
       <section className="relative py-16 bg-secondary/50 backdrop-blur-sm">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center space-y-8">
-            {/* <h2 className="text-4xl md:text-5xl font-bold">Find your AI tool</h2> */}
             <p className="text-lg">Help Users Find You – Claim Your AI Tool</p>
 
             <div className="relative max-w-xl mx-auto">
@@ -363,10 +376,17 @@ export default function BusinessPage() {
                   type="url"
                   placeholder="Enter your website URL"
                   className="h-14 pl-5 pr-36 text-lg"
+                  value={websiteUrl}
+                  onChange={(e) => setWebsiteUrl(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleUrlSubmit();
+                    }
+                  }}
                 />
                 <Button
                   className="absolute right-2 top-2 h-10 px-8 text-base"
-                  onClick={() => router.push("/business/register")}
+                  onClick={handleUrlSubmit}
                 >
                   Claim
                 </Button>
