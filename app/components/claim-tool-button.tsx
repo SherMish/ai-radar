@@ -20,9 +20,8 @@ export function ClaimToolButton({ websiteUrl }: { websiteUrl: string }) {
       onClick={handleClaim}
       variant="ghost"
       size="sm"
-      className="text-muted-foreground hover:text-foreground"
+      className="text-muted-foreground hover:text-foreground mr-0 ml-0 px-[2px]"
     >
-      <ShieldCheck className="w-4 h-4 mr-2" />
       Claim Ownership
     </Button>
   );

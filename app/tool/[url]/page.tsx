@@ -322,7 +322,7 @@ export default async function ToolPage({ params }: PageProps) {
 
         <div className="relative container max-w-6xl mx-auto sm:px-4 py-8">
           <div className="rounded-lg border border-border/50 bg-secondary/50 backdrop-blur-sm">
-            <div className="p-6 space-y-8">
+            <div className="p-6 space-y-5">
               {/* Full width sections */}
               <div>
                 {/* Header */}
@@ -509,6 +509,13 @@ export default async function ToolPage({ params }: PageProps) {
                   </div>
                 </div>
               </div>
+              {/* Claim ownership section */}
+              {!website.isVerified && (
+                      <div className="flex items-center text-muted-foreground text-sm">
+                        <p className="mr-1">Are you the owner of this tool?</p>
+                        <ClaimToolButton websiteUrl={website.url} />
+                      </div>
+                    )}
 
               {/* Two column layout for remaining content */}
               <div className="grid grid-cols-1 lg:grid-cols-[1fr,300px] gap-6">
@@ -640,13 +647,7 @@ export default async function ToolPage({ params }: PageProps) {
                     </div>
                   </div>
                 )}
-                {/* Claim ownership section */}
-                {!website.isVerified && (
-                      <div className="flex items-center text-muted-foreground text-sm">
-                        <p className="mr-1">Are you the owner of this tool?</p>
-                        <ClaimToolButton websiteUrl={website.url} />
-                      </div>
-                    )}
+                
               </div>
             </div>
           </div>
