@@ -43,6 +43,7 @@ import { PricingModel } from "@/lib/types/website";
 import { WebsiteCard } from "@/components/website-card";
 import { SuggestedToolCard } from "@/components/suggested-tool-card";
 import { RadarTrustInfo } from "@/components/radar-trust-info";
+import { ClaimToolButton } from "@/app/components/claim-tool-button";
 
 interface WebsiteDoc {
   _id: Types.ObjectId;
@@ -639,6 +640,13 @@ export default async function ToolPage({ params }: PageProps) {
                     </div>
                   </div>
                 )}
+                {/* Claim ownership section */}
+                {!website.isVerified && (
+                      <div className="flex items-center text-muted-foreground text-sm">
+                        <p className="mr-3">Are you the owner of this tool?</p>
+                        <ClaimToolButton websiteUrl={website.url} />
+                      </div>
+                    )}
               </div>
             </div>
           </div>
