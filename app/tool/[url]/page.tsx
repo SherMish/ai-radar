@@ -5,12 +5,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import {
   Star,
-  ThumbsUp,
-  Flag,
-  Globe,
-  Users,
   Calendar,
-  Check,
   ShieldCheck,
   ShieldAlert,
   ExternalLink,
@@ -44,6 +39,9 @@ import { WebsiteCard } from "@/components/website-card";
 import { SuggestedToolCard } from "@/components/suggested-tool-card";
 import { RadarTrustInfo } from "@/components/radar-trust-info";
 import { ClaimToolButton } from "@/app/components/claim-tool-button";
+import { trackEvent } from "@/lib/analytics";
+import { VisitToolButtonDesktop, VisitToolButtonMobile } from "@/app/components/VisitToolButton";
+import { TrackPageVisit } from "@/app/components/TrackPageVisit";
 
 interface WebsiteDoc {
   _id: Types.ObjectId;
@@ -317,6 +315,8 @@ export default async function ToolPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      {/* Tracking component */}
+      <TrackPageVisit websiteId={website._id.toString()} />
       <div className="min-h-screen bg-background relative">
         <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,#3b82f615,transparent_70%),radial-gradient(ellipse_at_bottom,#6366f115,transparent_70%)] pointer-events-none" />
 
@@ -383,41 +383,15 @@ export default async function ToolPage({ params }: PageProps) {
                             )}
                           </div>
                           <div className="hidden lg:flex flex-row gap-3">
-                            <a
-                              href={
-                                website.url.startsWith("http")
-                                  ? website.url
-                                  : `https://${website.url}?utm_source=ai-radar&utm_medium=marketplace&utm_campaign=ai-radar`
-                              }
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md transition-colors h-[40px]"
-                            >
-                              <ExternalLink className="w-5 h-5" />
-                              <span className="font-medium">Visit</span>
-                              <span className="text-zinc-400">
-                                {website.url}
-                              </span>
-                            </a>
-                            <WriteReviewButton url={params.url} />
+
+                          <VisitToolButtonMobile websiteId={website._id.toString()} url={website.url} />
+                          <WriteReviewButton url={params.url} />
                           </div>
                         </div>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3 lg:hidden">
-                      <a
-                        href={
-                          website.url.startsWith("http")
-                            ? website.url
-                            : `https://${website.url}?utm_source=ai-radar&utm_medium=marketplace&utm_campaign=ai-radar`
-                        }
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md transition-colors h-[40px]"
-                      >
-                        <ExternalLink className="w-5 h-5" />
-                        <span className="font-medium">Visit</span>
-                      </a>
+                      <VisitToolButtonDesktop websiteId={website._id.toString()} url={website.url} />
                       <WriteReviewButton url={params.url} />
                     </div>
                   </div>
@@ -446,7 +420,9 @@ export default async function ToolPage({ params }: PageProps) {
                             />
                           ))}
                         </div>
-                        <div className={`text-sm font-medium ${ratingStatus.color} mb-1`}>
+                        <div
+                          className={`text-sm font-medium ${ratingStatus.color} mb-1`}
+                        >
                           {ratingStatus.label}
                         </div>
                         <div className="text-sm text-zinc-400">
@@ -469,7 +445,9 @@ export default async function ToolPage({ params }: PageProps) {
                         <div className="flex flex-col items-center justify-center text-center md:w-48">
                           <div className="text-5xl font-bold mb-2">
                             {website.radarTrust.toFixed(1)}
-                            <span className="text-2xl text-muted-foreground">/10</span>
+                            <span className="text-2xl text-muted-foreground">
+                              /10
+                            </span>
                           </div>
                           <div className="flex items-center gap-1 mb-2">
                             <RadarIcon className="w-6 h-6 text-primary" />
@@ -511,11 +489,11 @@ export default async function ToolPage({ params }: PageProps) {
               </div>
               {/* Claim ownership section */}
               {!website.isVerified && (
-                      <div className="flex items-center text-muted-foreground text-sm">
-                        <p className="mr-1">Are you the owner of this tool?</p>
-                        <ClaimToolButton websiteUrl={website.url} />
-                      </div>
-                    )}
+                <div className="flex items-center text-muted-foreground text-sm">
+                  <p className="mr-1">Are you the owner of this tool?</p>
+                  <ClaimToolButton websiteUrl={website.url} />
+                </div>
+              )}
 
               {/* Two column layout for remaining content */}
               <div className="grid grid-cols-1 lg:grid-cols-[1fr,300px] gap-6">
@@ -647,7 +625,6 @@ export default async function ToolPage({ params }: PageProps) {
                     </div>
                   </div>
                 )}
-                
               </div>
             </div>
           </div>
