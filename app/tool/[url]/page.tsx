@@ -357,9 +357,9 @@ export default async function ToolPage({ params }: PageProps) {
                                 <Tooltip>
                                   <TooltipTrigger>
                                     {website.isVerified ? (
-                                      <ShieldCheck className="w-5 h-5 text-emerald-500 fill-emerald-500/10" />
+                                      <ShieldCheck className="w-5 h-5 text-white fill-blue-500 cursor-default" />
                                     ) : (
-                                      <ShieldAlert className="w-5 h-5 text-muted-foreground" />
+                                      <ShieldAlert className="w-5 h-5 text-muted-foreground cursor-default" />
                                     )}
                                   </TooltipTrigger>
                                   <TooltipContent>
@@ -643,7 +643,7 @@ export default async function ToolPage({ params }: PageProps) {
                 {/* Claim ownership section */}
                 {!website.isVerified && (
                       <div className="flex items-center text-muted-foreground text-sm">
-                        <p className="mr-3">Are you the owner of this tool?</p>
+                        <p className="mr-1">Are you the owner of this tool?</p>
                         <ClaimToolButton websiteUrl={website.url} />
                       </div>
                     )}
