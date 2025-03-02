@@ -29,6 +29,7 @@ export function AdminDashboard() {
   const [totalBlogs, setTotalBlogs] = useState(0);
   const [isLoadingTools, setIsLoadingTools] = useState(true);
   const [isLoadingBlogs, setIsLoadingBlogs] = useState(true);
+  const [allWebsites, setAllWebsites] = useState<WebsiteType[]>([]);
 
   useEffect(() => {
     if (process.env.NEXT_PUBLIC_IS_PRODUCTION !== "true" && 
@@ -71,8 +72,36 @@ export function AdminDashboard() {
     }
   };
 
+  const fetchAllWebsites = async () => {
+    try {
+      const response = await fetch(`/api/admin/websites?limit=1000`);
+      const data = await response.json();
+      setAllWebsites(data.websites);
+    } catch (error) {
+      console.error("Error fetching all websites:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (searchQuery) {
+      fetchAllWebsites();
+    } else {
+      fetchWebsites();
+    }
+  }, [searchQuery]);
+
   const maxToolsPages = Math.ceil(totalTools / ITEMS_PER_PAGE);
   const maxBlogsPages = Math.ceil(totalBlogs / ITEMS_PER_PAGE);
+
+  const displayedWebsites = searchQuery ? allWebsites.filter((website) => {
+    const searchLower = searchQuery.toLowerCase();
+    return (
+      website.name.toLowerCase().includes(searchLower) ||
+      website.url.toLowerCase().includes(searchLower) ||
+      website.description?.toLowerCase().includes(searchLower) ||
+      website.shortDescription?.toLowerCase().includes(searchLower)
+    );
+  }) : websites;
 
   return (
     <div className="space-y-6">
@@ -106,14 +135,17 @@ export function AdminDashboard() {
         </div>
       </div>
 
+      <div className="flex items-center justify-between">
+        <Input
+          placeholder="Search tools..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="max-w-sm"
+        />
+      </div>
+
       {activeTab === 'tools' ? (
         <>
-          <Input
-            placeholder="Search tools..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="max-w-sm"
-          />
           {isLoadingTools ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground">Loading tools...</p>
@@ -125,7 +157,7 @@ export function AdminDashboard() {
           ) : (
             <>
               <div className="grid gap-4">
-                {websites.map((website) => (
+                {displayedWebsites.map((website) => (
                   <WebsiteCard
                     key={website._id}
                     website={website}
@@ -133,27 +165,29 @@ export function AdminDashboard() {
                   />
                 ))}
               </div>
-              <div className="flex justify-center gap-2 mt-4">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setToolsPage(p => Math.max(1, p - 1))}
-                  disabled={toolsPage === 1}
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
-                <span className="py-2 px-3 text-sm">
-                  Page {toolsPage} of {maxToolsPages}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setToolsPage(p => Math.min(maxToolsPages, p + 1))}
-                  disabled={toolsPage === maxToolsPages}
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
+              {!searchQuery && (
+                <div className="flex justify-center gap-2 mt-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setToolsPage(p => Math.max(1, p - 1))}
+                    disabled={toolsPage === 1}
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </Button>
+                  <span className="py-2 px-3 text-sm">
+                    Page {toolsPage} of {maxToolsPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setToolsPage(p => Math.min(maxToolsPages, p + 1))}
+                    disabled={toolsPage === maxToolsPages}
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </div>
+              )}
             </>
           )}
         </>
