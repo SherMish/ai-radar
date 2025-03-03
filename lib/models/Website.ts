@@ -14,6 +14,8 @@ export interface WebsiteType {
   createdBy?: string | null;
   owner?: string | null;
   isVerified?: boolean;
+  reviewCount?: number;
+  averageRating?: number;
   verifiedAt?: Date;
   radarTrust?: number;
   userReviewsScore?: number;
