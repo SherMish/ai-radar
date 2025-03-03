@@ -23,12 +23,7 @@ type Feature = {
   title: string;
   description: string;
 };
-const chartdata = [
-  { date: "Jan 23", "Page Views": 890, "Unique Visitors": 338 },
-  { date: "Feb 23", "Page Views": 967, "Unique Visitors": 437 },
-  { date: "Mar 23", "Page Views": 1402, "Unique Visitors": 728 },
-  // ... more data
-];
+
 
 // Add this function to fetch analytics
 const fetchTotalViews = async (websiteId: string) => {
@@ -93,8 +88,8 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await fetch(`/api/websites/${website?._id}/reviews`);
-        const data = await res.json();
+        const response = await fetch(`/api/reviews/get?websiteId=${website?._id}`);
+        const data = await response.json();
         setReviews(data);
       } catch (error) {
         console.error("Error fetching reviews:", error);
