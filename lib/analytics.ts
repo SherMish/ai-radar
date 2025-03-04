@@ -38,10 +38,10 @@ export function trackEvent(
   properties: TrackingEventProperties = {}
 ) {
   // Only track if we have consent
-  if (!hasAnalyticsConsent()) {
-    console.log('Analytics tracking disabled - no consent');
-    return;
-  }
+  // if (!hasAnalyticsConsent()) {
+  //   console.log('Analytics tracking disabled - no consent');
+  //   return;
+  // }
 
   // Only track in production
   if (!IS_PRODUCTION) {

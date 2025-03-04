@@ -9,11 +9,11 @@ export function AnalyticsProvider() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const consent = localStorage.getItem("cookie-consent");
-    if (!consent) return;
+    // const consent = localStorage.getItem("cookie-consent");
+    // if (!consent) return;
 
-    const settings = JSON.parse(consent);
-    if (!settings.analytics) return;
+    // const settings = JSON.parse(consent);
+    // if (!settings.analytics) return;
 
     // Only track page views if analytics consent is given
     trackEvent(AnalyticsEvents.PAGE_VIEW, {
