@@ -1,4 +1,4 @@
-export const revalidate = 100; // Update every 10 seconds
+export const revalidate = 200; // Update every 10 seconds
 
 
 import { useState, useRef, useEffect } from "react";
