@@ -18,6 +18,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import categoriesJson from "@/lib/data/categories.json";
 import { UploadImage } from "@/components/upload-image";
+import Link from "next/link";
 
 // Get the categories array from the JSON structure
 const categories = categoriesJson.categories;
@@ -310,6 +311,14 @@ export default function NewTool() {
             </Button>
           </div>
         </form>
+        <div className="mt-4 text-center">
+          <p className="text-sm text-muted-foreground">
+          Own an AI Tool? {' '}
+            <Link href="/business/register" className="text-primary underline">
+              Get Verified & Reach More Users!
+            </Link>
+          </p>
+        </div>
       </Card>
     </ReviewLayout>
   );
