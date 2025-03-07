@@ -531,8 +531,8 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
                 </ul>
               </div>
 
-              {reviewData.proof && (
-                <p className="text-sm text-muted-foreground">
+              {reviewData.proof && ( 
+                <p className="text-sm text-green-500"> 
                   File uploaded successfully
                 </p>
               )}
