@@ -540,19 +540,10 @@ export default function ReviewForm({ isNewTool = false, initialUrl = "" }: Revie
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-4">
-            <Button
-              variant="outline"
-              onClick={handlePreviewSubmit}
-              className="flex-1"
-              disabled={isSubmitting}
-            >
-              <Eye className="w-4 h-4 mr-2" />
-              Preview
-            </Button>
+          <div className="flex justify-center">
             <Button
               onClick={handleSubmit}
-              className="flex-1 gradient-button"
+              className="gradient-button  w-[50%]"
               disabled={isSubmitting}
             >
               {isSubmitting ? (
