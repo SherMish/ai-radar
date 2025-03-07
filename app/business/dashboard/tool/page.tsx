@@ -38,6 +38,7 @@ interface FormData {
   hasFreeTrialPeriod: boolean;
   hasAPI: boolean;
   launchYear: number | null;
+  radarTrust?: number;
 }
 
 interface FormErrors {
@@ -55,6 +56,7 @@ interface GeneratedData {
   launchYear?: number;
   hasFreeTrialPeriod?: boolean;
   hasAPI?: boolean;
+  radarTrust?: number;
 }
 
 export default function ToolPage() {
@@ -71,6 +73,7 @@ export default function ToolPage() {
     hasFreeTrialPeriod: false,
     hasAPI: false,
     launchYear: null,
+    radarTrust: undefined,
   });
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [showSuccess, setShowSuccess] = useState(false);
@@ -92,6 +95,7 @@ export default function ToolPage() {
         hasFreeTrialPeriod: website.hasFreeTrialPeriod || false,
         hasAPI: website.hasAPI || false,
         launchYear: website.launchYear || null,
+        radarTrust: website.radarTrust || undefined,
       });
     }
   }, [website]);
@@ -172,6 +176,7 @@ export default function ToolPage() {
         launchYear: data.launchYear ? parseInt(data.launchYear) : undefined,
         hasFreeTrialPeriod: data.hasFreeTrialPeriod,
         hasAPI: data.hasAPI,
+        radarTrust: data.radarTrust ? parseFloat(data.radarTrust) : undefined,
       };
       setGeneratedData(formattedData);
       setShowAlert(true);
@@ -199,6 +204,7 @@ export default function ToolPage() {
         hasAPI: typeof generatedData.hasAPI === 'boolean' 
           ? generatedData.hasAPI 
           : prev.hasAPI,
+        radarTrust: generatedData.radarTrust || prev.radarTrust,
       }));
     }
     setShowAlert(false);
@@ -468,6 +474,7 @@ export default function ToolPage() {
                     {generatedData?.hasAPI !== undefined && (
                       <p><strong>Has API:</strong> {generatedData.hasAPI ? 'Yes' : 'No'}</p>
                     )}
+                    
                   </div>
                 </>
               )}
