@@ -295,66 +295,9 @@ export default function NewTool() {
               )}
             </div>
 
-            <div className="grid gap-2">
-              <label htmlFor="description" className="text-sm font-medium">
-                Description (Optional)
-              </label>
-              <textarea
-                id="description"
-                rows={4}
-                placeholder="Enter a detailed description of the tool"
-                value={formData.description}
-                onChange={(e) => handleFieldChange('description', e.target.value)}
-                onBlur={(e) => handleFieldChange('description', e.target.value)}
-                className={`w-full rounded-md border bg-background px-3 py-2 text-sm ${
-                  errors.description ? "border-red-500" : ""
-                }`}
-                maxLength={CHAR_LIMITS.description}
-              />
-              <p className="text-xs text-gray-500">
-                {formData.description.length} / {CHAR_LIMITS.description}
-              </p>
-              {errors.description && (
-                <p className="text-sm text-red-500">{errors.description}</p>
-              )}
-            </div>
 
-            <div className="grid gap-2">
-              <label htmlFor="shortDescription" className="text-sm font-medium">
-                Short Description (Optional)
-              </label>
-              <Input
-                id="shortDescription"
-                type="text"
-                placeholder="Brief description of the tool"
-                value={formData.shortDescription}
-                onChange={(e) => handleFieldChange('shortDescription', e.target.value)}
-                onBlur={(e) => handleFieldChange('shortDescription', e.target.value)}
-                className={errors.shortDescription ? "border-red-500" : ""}
-                maxLength={CHAR_LIMITS.shortDescription}
-              />
-              <p className="text-xs text-gray-500">
-                {formData.shortDescription.length} / {CHAR_LIMITS.shortDescription}
-              </p>
-              {errors.shortDescription && (
-                <p className="text-sm text-red-500">
-                  {errors.shortDescription}
-                </p>
-              )}
-            </div>
 
-            {process.env.NEXT_PUBLIC_IS_PRODUCTION === 'false' && (
-              <div className="grid gap-2">
-                <label className="text-sm font-medium">
-                  Logo (Optional)
-                </label>
-                <UploadImage
-                  onUpload={(url) => handleFieldChange('logo', url)}
-                  onClear={() => handleFieldChange('logo', undefined)}
-                  uploadedUrl={formData.logo}
-                />
-              </div>
-            )}
+
           </div>
 
           <div className="flex justify-end space-x-4">
