@@ -111,7 +111,7 @@ const WebsiteSchema = new Schema({
     type: Number,
     min: 1,
     max: 10,
-    default: 8.0
+    default: null
   },
   radarTrustExplanation: {
     type: String,

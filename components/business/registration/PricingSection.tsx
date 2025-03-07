@@ -98,23 +98,24 @@ export function PricingSection({ websiteUrl }: { websiteUrl: string }) {
 
       // If website doesn't exist or metadata was generated, update/create it
       let websiteId = existingWebsite?._id; // Use existing website ID if available
-      if (!websiteId || metadata) {
-        const websiteUpdateRes = await fetch("/api/website/update", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            url: cleanUrl,
-            name: savedData.businessName,
-            owner: userId,
-            isVerified: true,
-            ...(metadata || {}),
-          }),
-        });
+      // if (!websiteId || metadata) {
+      const websiteUpdateRes = await fetch("/api/website/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          url: cleanUrl,
+          name: savedData.businessName,
+          owner: userId,
+          isVerified: true,
+          category: "general-ai",
+          ...(metadata || {}),
+        }),
+      });
 
-        if (!websiteUpdateRes.ok) throw new Error("Failed to update website");
-        const newWebsiteData = await websiteUpdateRes.json();
-        websiteId = newWebsiteData._id;
-      }
+      if (!websiteUpdateRes.ok) throw new Error("Failed to update website");
+      const newWebsiteData = await websiteUpdateRes.json();
+      websiteId = newWebsiteData._id;
+      // }
 
       // Update user profile with the website ID
       const userUpdateRes = await fetch("/api/user/update", {
