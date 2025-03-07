@@ -48,35 +48,34 @@ export default function NewTool() {
   const { toast } = useToast();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    url: "",
-    name: "",
-    category: "",
-    description: "",
-    shortDescription: "",
-    logo: undefined as string | undefined,
-  });
-  const [errors, setErrors] = useState<FormErrors>({});
-
-  // Load saved form data on mount
-  useEffect(() => {
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    if (savedData) {
-      try {
-        const parsedData = JSON.parse(savedData);
-        setFormData(parsedData);
-      } catch (error) {
-        console.error("Error parsing saved form data:", error);
+  const [formData, setFormData] = useState(() => {
+    if (typeof window !== "undefined") {
+      const savedData = localStorage.getItem(STORAGE_KEY);
+      if (savedData) {
+        try {
+          return JSON.parse(savedData);
+        } catch (error) {
+          console.error("Error parsing saved form data:", error);
+        }
       }
     }
-  }, []);
+    return {
+      url: "",
+      name: "",
+      category: "",
+      description: "",
+      shortDescription: "",
+      logo: undefined,
+    };
+  });
+  const [errors, setErrors] = useState<FormErrors>({});
 
   // Save form data when fields change
   const handleFieldChange = (field: keyof typeof formData, value: string | undefined) => {
     const updatedData = { ...formData, [field]: value };
     setFormData(updatedData);
     
-    if (errors[field]) {
+    if (errors[field as keyof FormErrors]) {
       setErrors({ ...errors, [field]: undefined });
     }
 
