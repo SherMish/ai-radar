@@ -18,6 +18,8 @@ import categoriesData from "@/lib/data/categories.json";
 import { ImageUpload } from "@/components/image-upload";
 import { Switch } from "@/components/ui/switch";
 import { WebsiteType, PricingModel } from "@/lib/types/website";
+import { Wand2 } from "lucide-react";
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 
 const CHAR_LIMITS = {
   name: 50,
@@ -44,6 +46,17 @@ interface FormErrors {
   description?: string;
 }
 
+interface GeneratedData {
+  name?: string;
+  description?: string;
+  shortDescription?: string;
+  category?: string;
+  pricingModel?: PricingModel;
+  launchYear?: number;
+  hasFreeTrialPeriod?: boolean;
+  hasAPI?: boolean;
+}
+
 export default function ToolPage() {
   const { isLoading, website } = useBusinessGuard();
   const [isSaving, setIsSaving] = useState(false);
@@ -61,6 +74,10 @@ export default function ToolPage() {
   });
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [generatedData, setGeneratedData] = useState<GeneratedData | null>(null);
+  const [alertError, setAlertError] = useState<string | null>(null);
 
   useEffect(() => {
     if (website) {
@@ -131,223 +148,341 @@ export default function ToolPage() {
     }
   };
 
+  const handleGenerateAI = async () => {
+    setIsGenerating(true);
+    setAlertError(null);
+    try {
+      const response = await fetch("/api/admin/generate-metadata", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: website?.url }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Generation failed");
+      }
+
+      const data = await response.json();
+      const formattedData: GeneratedData = {
+        name: data.name,
+        description: data.description,
+        shortDescription: data.shortDescription,
+        category: data.category,
+        pricingModel: data.pricingModel as PricingModel,
+        launchYear: data.launchYear ? parseInt(data.launchYear) : undefined,
+        hasFreeTrialPeriod: data.hasFreeTrialPeriod,
+        hasAPI: data.hasAPI,
+      };
+      setGeneratedData(formattedData);
+      setShowAlert(true);
+    } catch (error) {
+      setAlertError("Our AI service is temporarily unavailable. Please try again later.");
+      setShowAlert(true);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleApplyGenerated = () => {
+    if (generatedData) {
+      setFormData(prev => ({
+        ...prev,
+        name: generatedData.name || prev.name,
+        description: generatedData.description || prev.description,
+        shortDescription: generatedData.shortDescription || prev.shortDescription,
+        category: generatedData.category || prev.category,
+        pricingModel: generatedData.pricingModel || prev.pricingModel,
+        launchYear: generatedData.launchYear || prev.launchYear,
+        hasFreeTrialPeriod: typeof generatedData.hasFreeTrialPeriod === 'boolean' 
+          ? generatedData.hasFreeTrialPeriod 
+          : prev.hasFreeTrialPeriod,
+        hasAPI: typeof generatedData.hasAPI === 'boolean' 
+          ? generatedData.hasAPI 
+          : prev.hasAPI,
+      }));
+    }
+    setShowAlert(false);
+  };
+
   if (isLoading) return <LoadingSpinner />;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] bg-clip-text text-transparent">
-          Edit Tool
-        </h1>
-        <p className="text-gray-400">Keep your AI tool&apos;s profile up to date with the latest details, ensuring potential users have accurate information</p>
-      </div>
+    <>
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-2xl font-bold">Tool Settings</h1>
+          {!website?.radarTrust && (
+            <Button
+              onClick={handleGenerateAI}
+              disabled={isGenerating}
+              className="flex items-center gap-2"
+            >
+              <Wand2 className="w-4 h-4" />
+              {isGenerating ? "Generating..." : "Generate with AI"}
+            </Button>
+          )}
+        </div>
 
-      <Card className="p-6 bg-black/50 backdrop-blur border border-white/[0.08]">
-        <div className="space-y-6">
-          <div className="grid gap-2">
-            <label className="text-sm font-medium">Logo</label>
-            <ImageUpload
-              value={formData.logo || ""}
-              onChange={(url) =>
-                setFormData((prev) => ({ ...prev, logo: url }))
-              }
-              onRemove={() => setFormData((prev) => ({ ...prev, logo: "" }))}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="grid gap-2 md:col-span-1">
-              <label className="text-sm font-medium">Tool Name</label>
-              <Input
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
+        <Card className="p-6 bg-black/50 backdrop-blur border border-white/[0.08]">
+          <div className="space-y-6">
+            <div className="grid gap-2">
+              <label className="text-sm font-medium">Logo</label>
+              <ImageUpload
+                value={formData.logo || ""}
+                onChange={(url) =>
+                  setFormData((prev) => ({ ...prev, logo: url }))
                 }
-                placeholder="Enter tool name"
-                maxLength={CHAR_LIMITS.name}
-                className={`bg-background/50 ${
-                  formErrors.name ? "border-red-500" : ""
-                }`}
+                onRemove={() => setFormData((prev) => ({ ...prev, logo: "" }))}
               />
-              {formErrors.name && (
-                <p className="text-sm text-red-500">{formErrors.name}</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="grid gap-2 md:col-span-1">
+                <label className="text-sm font-medium">Tool Name</label>
+                <Input
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  placeholder="Enter tool name"
+                  maxLength={CHAR_LIMITS.name}
+                  className={`bg-background/50 ${
+                    formErrors.name ? "border-red-500" : ""
+                  }`}
+                />
+                {formErrors.name && (
+                  <p className="text-sm text-red-500">{formErrors.name}</p>
+                )}
+                <p className="text-xs text-gray-500">
+                  {formData.name.length} / {CHAR_LIMITS.name}
+                </p>
+              </div>
+
+              <div className="grid gap-2 md:col-span-3">
+                <label className="text-sm font-medium">Short Description</label>
+                <Input
+                  value={formData.shortDescription}
+                  onChange={(e) =>
+                    setFormData({ ...formData, shortDescription: e.target.value })
+                  }
+                  placeholder="Brief description of your tool"
+                  maxLength={CHAR_LIMITS.shortDescription}
+                  className={`bg-background/50 ${
+                    formErrors.shortDescription ? "border-red-500" : ""
+                  }`}
+                />
+                {formErrors.shortDescription && (
+                  <p className="text-sm text-red-500">
+                    {formErrors.shortDescription}
+                  </p>
+                )}
+                <p className="text-xs text-gray-500">
+                  {formData.shortDescription.length} /{" "}
+                  {CHAR_LIMITS.shortDescription}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid gap-2">
+                <label className="text-sm font-medium">URL</label>
+                <Input
+                  disabled={true}
+                  value={formData.url}
+                  onChange={(e) =>
+                    setFormData({ ...formData, url: e.target.value })
+                  }
+                  placeholder="Enter tool URL"
+                  className="bg-background/50"
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <label className="text-sm font-medium">Category</label>
+                <Select
+                  value={formData.category}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, category: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categoriesData.categories.map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid gap-2">
+              <label className="text-sm font-medium">Description</label>
+              <textarea
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                placeholder="Detailed description of your tool"
+                className={`w-full h-32 rounded-md border bg-background/50 px-3 py-2 text-sm ${
+                  formErrors.description ? "border-red-500" : ""
+                }`}
+                maxLength={CHAR_LIMITS.description}
+              />
+              {formErrors.description && (
+                <p className="text-sm text-red-500">{formErrors.description}</p>
               )}
               <p className="text-xs text-gray-500">
-                {formData.name.length} / {CHAR_LIMITS.name}
+                {formData.description.length} / {CHAR_LIMITS.description}
               </p>
             </div>
 
-            <div className="grid gap-2 md:col-span-3">
-              <label className="text-sm font-medium">Short Description</label>
-              <Input
-                value={formData.shortDescription}
-                onChange={(e) =>
-                  setFormData({ ...formData, shortDescription: e.target.value })
-                }
-                placeholder="Brief description of your tool"
-                maxLength={CHAR_LIMITS.shortDescription}
-                className={`bg-background/50 ${
-                  formErrors.shortDescription ? "border-red-500" : ""
-                }`}
-              />
-              {formErrors.shortDescription && (
-                <p className="text-sm text-red-500">
-                  {formErrors.shortDescription}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid gap-2">
+                <label className="text-sm font-medium">Pricing Model</label>
+                <Select
+                  value={formData.pricingModel}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, pricingModel: value }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select pricing model" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.values(PricingModel).map((model) => (
+                      <SelectItem key={model} value={model}>
+                        {model.charAt(0).toUpperCase() +
+                          model.slice(1).replace("_", " ")}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid gap-2">
+                <label className="text-sm font-medium">Launch Year</label>
+                <Input
+                  type="number"
+                  value={formData.launchYear?.toString() || ""}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      launchYear: e.target.value ? parseInt(e.target.value) : null,
+                    }))
+                  }
+                  min={2000}
+                  max={new Date().getFullYear()}
+                  className="bg-background/50"
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <label className="text-sm font-medium">Has Free Trial</label>
+                <div className="h-10 flex items-center">
+                  <Switch
+                    checked={formData.hasFreeTrialPeriod}
+                    onCheckedChange={(checked) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        hasFreeTrialPeriod: checked,
+                      }))
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-2">
+                <label className="text-sm font-medium">Has API</label>
+                <div className="h-10 flex items-center">
+                  <Switch
+                    checked={formData.hasAPI}
+                    onCheckedChange={(checked) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        hasAPI: checked,
+                      }))
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              {showSuccess && (
+                <p className="text-sm text-green-500">
+                  ✅ Your tool information has been updated successfully!
                 </p>
               )}
-              <p className="text-xs text-gray-500">
-                {formData.shortDescription.length} /{" "}
-                {CHAR_LIMITS.shortDescription}
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="grid gap-2">
-              <label className="text-sm font-medium">URL</label>
-              <Input
-                disabled={true}
-                value={formData.url}
-                onChange={(e) =>
-                  setFormData({ ...formData, url: e.target.value })
-                }
-                placeholder="Enter tool URL"
-                className="bg-background/50"
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <label className="text-sm font-medium">Category</label>
-              <Select
-                value={formData.category}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, category: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categoriesData.categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="grid gap-2">
-            <label className="text-sm font-medium">Description</label>
-            <textarea
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              placeholder="Detailed description of your tool"
-              className={`w-full h-32 rounded-md border bg-background/50 px-3 py-2 text-sm ${
-                formErrors.description ? "border-red-500" : ""
-              }`}
-              maxLength={CHAR_LIMITS.description}
-            />
-            {formErrors.description && (
-              <p className="text-sm text-red-500">{formErrors.description}</p>
-            )}
-            <p className="text-xs text-gray-500">
-              {formData.description.length} / {CHAR_LIMITS.description}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="grid gap-2">
-              <label className="text-sm font-medium">Pricing Model</label>
-              <Select
-                value={formData.pricingModel}
-                onValueChange={(value) =>
-                  setFormData((prev) => ({ ...prev, pricingModel: value }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select pricing model" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.values(PricingModel).map((model) => (
-                    <SelectItem key={model} value={model}>
-                      {model.charAt(0).toUpperCase() +
-                        model.slice(1).replace("_", " ")}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="grid gap-2">
-              <label className="text-sm font-medium">Launch Year</label>
-              <Input
-                type="number"
-                value={formData.launchYear?.toString() || ""}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    launchYear: e.target.value ? parseInt(e.target.value) : null,
-                  }))
-                }
-                min={2000}
-                max={new Date().getFullYear()}
-                className="bg-background/50"
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <label className="text-sm font-medium">Has Free Trial</label>
-              <div className="h-10 flex items-center">
-                <Switch
-                  checked={formData.hasFreeTrialPeriod}
-                  onCheckedChange={(checked) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      hasFreeTrialPeriod: checked,
-                    }))
-                  }
-                />
-              </div>
-            </div>
-
-            <div className="grid gap-2">
-              <label className="text-sm font-medium">Has API</label>
-              <div className="h-10 flex items-center">
-                <Switch
-                  checked={formData.hasAPI}
-                  onCheckedChange={(checked) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      hasAPI: checked,
-                    }))
-                  }
-                />
+              <div className="flex justify-end">
+                <Button
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className="gradient-button"
+                >
+                  {isSaving ? "Saving..." : "Save Changes"}
+                </Button>
               </div>
             </div>
           </div>
+        </Card>
+      </div>
 
-          <div className="flex flex-col gap-4">
-            {showSuccess && (
-              <p className="text-sm text-green-500">
-                ✅ Your tool information has been updated successfully!
-              </p>
+      <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {alertError ? "Generation Failed" : "AI Generation Complete"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {alertError ? (
+                alertError
+              ) : (
+                <>
+                  AI has generated new content for your tool. Would you like to apply these changes?
+                  <div className="mt-4 space-y-2 text-sm">
+                    {generatedData?.name && (
+                      <p><strong>Name:</strong> {generatedData.name}</p>
+                    )}
+                    {generatedData?.shortDescription && (
+                      <p><strong>Short Description:</strong> {generatedData.shortDescription}</p>
+                    )}
+                    {generatedData?.description && (
+                      <p><strong>Description:</strong> {generatedData.description}</p>
+                    )}
+                    {generatedData?.category && (
+                      <p><strong>Category:</strong> {generatedData.category}</p>
+                    )}
+                    {generatedData?.pricingModel && (
+                      <p><strong>Pricing Model:</strong> {generatedData.pricingModel}</p>
+                    )}
+                    {generatedData?.launchYear && (
+                      <p><strong>Launch Year:</strong> {generatedData.launchYear}</p>
+                    )}
+                    {generatedData?.hasFreeTrialPeriod !== undefined && (
+                      <p><strong>Has Free Trial:</strong> {generatedData.hasFreeTrialPeriod ? 'Yes' : 'No'}</p>
+                    )}
+                    {generatedData?.hasAPI !== undefined && (
+                      <p><strong>Has API:</strong> {generatedData.hasAPI ? 'Yes' : 'No'}</p>
+                    )}
+                  </div>
+                </>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            {!alertError && (
+              <AlertDialogAction onClick={handleApplyGenerated}>
+                Apply Changes
+              </AlertDialogAction>
             )}
-            <div className="flex justify-end">
-              <Button
-                onClick={handleSave}
-                disabled={isSaving}
-                className="gradient-button"
-              >
-                {isSaving ? "Saving..." : "Save Changes"}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </Card>
-    </div>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
