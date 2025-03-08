@@ -104,14 +104,14 @@ export default function BusinessRegistration() {
         </div>
 
         {/* Progress Steps */}
-        <div className="mb-12 relative z-10">
+        <div className="mb-12 relative z-10 px-2">
           <div className="flex justify-between items-center">
             {steps.map((s, i) => (
               <div
                 key={s.title}
                 className={`flex-1 relative ${
                   i !== steps.length - 1
-                    ? 'after:content-[""] after:h-[2px] after:w-full after:bg-border after:absolute after:top-1/2 after:left-1/2 after:-z-10'
+                    ? 'after:content-[""] after:h-[2px] after:w-[calc(100%-10px)] after:bg-gradient-to-r after:from-transparent after:via-border after:to-transparent after:absolute after:top-1/2 after:left-[calc(50%+5px)] after:-z-10'
                     : ""
                 }`}
               >
@@ -125,23 +125,23 @@ export default function BusinessRegistration() {
                   }`}
                 >
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 
+                    className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 border
                     ${
                       i + 1 === step
-                        ? "bg-primary text-primary-foreground"
+                        ? "bg-primary text-primary-foreground border-primary/30 shadow-[0_0_10px_rgba(99,102,241,0.5)]"
                         : i + 1 < step
-                        ? "bg-success text-success-foreground"
-                        : "bg-muted"
+                        ? "bg-success text-success-foreground border-success/30"
+                        : "bg-muted border-muted-foreground/20"
                     }`}
                   >
                     {i + 1 < step ? (
                       <CheckCircle2 className="w-6 h-6" />
                     ) : (
-                      i + 1
+                      <span className="font-medium">{i + 1}</span>
                     )}
                   </div>
                   <div className="text-sm font-medium">{s.title}</div>
-                  <div className="text-xs text-muted-foreground">
+                  <div className="text-xs text-muted-foreground text-center px-1">
                     {s.description}
                   </div>
                 </div>
