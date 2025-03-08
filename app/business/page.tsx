@@ -132,7 +132,6 @@ function useCountUp(
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    throw new Error("Test Error in Production");
 
     let startTimestamp: number | null = null;
     const step = (timestamp: number) => {
