@@ -1,3 +1,5 @@
+export const revalidate = 100; // Revalidate every 100 seconds
+
 import { Metadata } from "next";
 import connectDB from "@/lib/mongodb";
 import BlogPostModel from "@/lib/models/BlogPost";
