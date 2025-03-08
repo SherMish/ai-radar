@@ -86,7 +86,10 @@ export default function BusinessRegistration() {
     { title: "Authentication", description: "Sign in or create an account" },
     { title: "Business Details", description: "Tell us about your business" },
     { title: "Verify Ownership", description: "Confirm your domain ownership" },
-    { title: "Set Your Preferences", description: "How you'd like your tool featured" },
+    {
+      title: "Set Your Preferences",
+      description: "How you'd like your tool featured",
+    },
   ];
 
   return (
