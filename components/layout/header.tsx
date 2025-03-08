@@ -31,8 +31,10 @@ export function Header() {
     setShowMobileSearch(false);
   };
 
-  const showSearch = pathname?.includes('/') !== true && pathname?.includes('/business') !== true;
-  const showBusinessCTA = pathname?.includes('/business') !== true;
+  const showSearch =
+    pathname !== "/" &&
+    pathname?.includes("/business") !== true;
+  const isRegularSite = pathname?.includes("/business") !== true;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -41,17 +43,12 @@ export function Header() {
           {/* Logo */}
           <div className="flex items-center flex-shrink-0">
             <Link
-              href="/"
+              href={pathname?.includes("/business") ? "/business" : "/"}
               className="flex items-center hover:opacity-90 transition-opacity"
             >
               <div className="flex items-center gap-2">
-                <Image
-                  src="/logo.svg"
-                  alt="AI-Radar"
-                  width={150}
-                  height={28}
-                />
-                {pathname?.includes('/business') && (
+                <Image src="/logo.svg" alt="AI-Radar" width={150} height={28} />
+                {pathname?.includes("/business") && (
                   <span className="text-sm font-medium text-muted-foreground border-border/50 mt-[11px]">
                     Business
                   </span>
@@ -68,18 +65,20 @@ export function Header() {
           )}
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center md:space-x-8">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="text-base font-medium text-muted-foreground transition-colors hover:text-foreground"
-              >
-                {item.name}
-              </Link>
-            ))}
 
-            {showBusinessCTA && (
+          <div className="hidden md:flex md:items-center md:space-x-8">
+            {isRegularSite &&
+              navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="text-base font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {item.name}
+                </Link>
+              ))}
+
+            {isRegularSite && (
               <Link
                 href="/business"
                 className="inline-flex items-center gap-1 px-4 py-2 text-sm font-semibold text-white bg-primary rounded-full hover:bg-primary/90 transition-colors"
@@ -146,33 +145,26 @@ export function Header() {
         {/* Mobile Search Bar */}
         {showSearch && showMobileSearch && (
           <div className="md:hidden py-2 px-1">
-            <SearchInput 
-              onSearch={handleSearch} 
-              variant="header" 
-            />
+            <SearchInput onSearch={handleSearch} variant="header" />
           </div>
         )}
 
         {/* Mobile Navigation */}
-        <div
-          className={cn(
-            "md:hidden",
-            isOpen ? "block" : "hidden"
-          )}
-        >
+        <div className={cn("md:hidden", isOpen ? "block" : "hidden")}>
           <div className="space-y-1 pb-3">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="block rounded-md px-3 py-4 text-base font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                {item.name}
-              </Link>
-            ))}
+            {isRegularSite &&
+              navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="block rounded-md px-3 py-4 text-base font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              ))}
 
-            {showBusinessCTA && (
+            {isRegularSite && (
               <Link
                 href="/business"
                 className="block rounded-md px-3 py-4 text-base font-medium text-primary hover:bg-muted/50 hover:text-primary/80 transition-colors"

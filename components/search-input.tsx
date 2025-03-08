@@ -17,10 +17,14 @@ interface Suggestion {
 interface SearchInputProps {
   className?: string;
   onSearch: (query: string) => void;
-  variant?: 'default' | 'header';
+  variant?: "default" | "header";
 }
 
-export function SearchInput({ className, onSearch, variant = 'default' }: SearchInputProps) {
+export function SearchInput({
+  className,
+  onSearch,
+  variant = "default",
+}: SearchInputProps) {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -39,13 +43,15 @@ export function SearchInput({ className, onSearch, variant = 'default' }: Search
       setIsLoading(true);
       searchTimeout.current = setTimeout(async () => {
         try {
-          const response = await fetch(`/api/websites/search?q=${encodeURIComponent(trimmedQuery)}`);
+          const response = await fetch(
+            `/api/websites/search?q=${encodeURIComponent(trimmedQuery)}`
+          );
           if (response.ok) {
             const data = await response.json();
             setSuggestions(data);
           }
         } catch (error) {
-          console.error('Search error:', error);
+          console.error("Search error:", error);
         } finally {
           setIsLoading(false);
         }
@@ -64,7 +70,10 @@ export function SearchInput({ className, onSearch, variant = 'default' }: Search
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target as Node)) {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(event.target as Node)
+      ) {
         setShowSuggestions(false);
       }
     }
@@ -90,18 +99,23 @@ export function SearchInput({ className, onSearch, variant = 'default' }: Search
 
   return (
     <div className="relative w-full" ref={suggestionsRef}>
-      <form onSubmit={handleSubmit} className={`relative w-full ${className || ''}`}>
-        <div className={cn(
-          "flex gap-2",
-          variant === 'default' ? "flex-col sm:flex-row" : "flex-row"
-        )}>
+      <form
+        onSubmit={handleSubmit}
+        className={`relative w-full ${className || ""}`}
+      >
+        <div
+          className={cn(
+            "flex gap-2",
+            variant === "default" ? "flex-col sm:flex-row" : "flex-row"
+          )}
+        >
           <div className="relative flex-1">
             <Input
               type="search"
               placeholder="Search for an AI tool by URL or name"
               className={cn(
                 "w-full bg-secondary/50 border-secondary-foreground/10 gradient-border",
-                variant === 'default' ? "h-12 pl-12 text-lg" : "h-10 pl-10"
+                variant === "default" ? "h-12 pl-12 text-lg" : "h-10 pl-10"
               )}
               value={query}
               onChange={(e) => {
@@ -111,17 +125,21 @@ export function SearchInput({ className, onSearch, variant = 'default' }: Search
               }}
               onFocus={() => setShowSuggestions(true)}
             />
-            <Search className={cn(
-              "absolute top-1/2 -translate-y-1/2 text-muted-foreground",
-              variant === 'default' ? "left-4 h-5 w-5" : "left-3 h-4 w-4"
-            )} />
+            <Search
+              className={cn(
+                "absolute top-1/2 -translate-y-1/2 text-muted-foreground",
+                variant === "default" ? "left-4 h-5 w-5" : "left-3 h-4 w-4"
+              )}
+            />
           </div>
-          <Button 
-            type="submit" 
-            size={variant === 'default' ? "lg" : "default"}
+          <Button
+            type="submit"
+            disabled={query.length < 2}
+            size={variant === "default" ? "lg" : "default"}
             className={cn(
-              "gradient-button",
-              variant === 'default' ? "h-12 w-full sm:w-[120px]" : "hidden sm:inline-flex"
+              variant === "default"
+                ? "h-12 w-full sm:w-[120px] gradient-button"
+                : "bg-transparent gradient-border hidden sm:inline-flex"
             )}
           >
             Search
@@ -137,29 +155,37 @@ export function SearchInput({ className, onSearch, variant = 'default' }: Search
             </div>
           ) : (
             <>
-              {suggestions.length > 0 && suggestions.map((suggestion, index) => (
-                <Link
-                  key={suggestion._id}
-                  href={`/tool/${encodeURIComponent(suggestion.url)}`}
-                  className={`flex items-center p-3 rounded-md transition-colors
-                    ${index === selectedIndex 
-                      ? 'bg-primary/10 text-primary' 
-                      : 'hover:bg-muted/50 hover:text-primary'
+              {suggestions.length > 0 &&
+                suggestions.map((suggestion, index) => (
+                  <Link
+                    key={suggestion._id}
+                    href={`/tool/${encodeURIComponent(suggestion.url)}`}
+                    className={`flex items-center p-3 rounded-md transition-colors
+                    ${
+                      index === selectedIndex
+                        ? "bg-primary/10 text-primary"
+                        : "hover:bg-muted/50 hover:text-primary"
                     }
                   `}
-                  onMouseEnter={() => setSelectedIndex(index)}
-                  onMouseLeave={() => setSelectedIndex(-1)}
-                  onClick={clearSearch}
-                >
-                  <div className="flex flex-col items-start">
-                    <div className="font-medium">{suggestion.name}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {suggestion.url}
+                    onMouseEnter={() => setSelectedIndex(index)}
+                    onMouseLeave={() => setSelectedIndex(-1)}
+                    onClick={clearSearch}
+                  >
+                    <div className="flex flex-col items-start">
+                      <div className="font-medium">{suggestion.name}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {suggestion.url}
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
-              <div className={suggestions.length > 0 ? "border-t border-border mt-2 pt-2" : ""}>
+                  </Link>
+                ))}
+              <div
+                className={
+                  suggestions.length > 0
+                    ? "border-t border-border mt-2 pt-2"
+                    : ""
+                }
+              >
                 <Link
                   href="/tool/new"
                   className="flex items-center p-3 rounded-md hover:bg-muted/50 hover:text-primary transition-colors text-primary"
@@ -176,4 +202,4 @@ export function SearchInput({ className, onSearch, variant = 'default' }: Search
       )}
     </div>
   );
-} 
+}
