@@ -5,7 +5,7 @@ import { useEffect } from "react";
 export function useErrorTracking() {
   useEffect(() => {
     const handleError = (event: ErrorEvent) => {
-      console.error("🚨 Client Error Captured:", event.error);
+      window.alert("🚨 Client Error Captured:" + event.error);
 
       fetch("/api/send-error", {
         method: "POST",
