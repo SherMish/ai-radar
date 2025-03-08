@@ -112,7 +112,7 @@ export function SearchInput({
           <div className="relative flex-1">
             <Input
               type="search"
-              placeholder="Search for an AI tool by URL or name"
+              placeholder="Search for an AI tool"
               className={cn(
                 "w-full bg-secondary/50 border-secondary-foreground/10 gradient-border",
                 variant === "default" ? "h-12 pl-12 text-lg" : "h-10 pl-10"
