@@ -182,7 +182,7 @@ export function PricingSection({ websiteUrl }: { websiteUrl: string }) {
       </Alert>
 
       {/* Billing Toggle */}
-      <div className="flex justify-center items-center gap-4">
+      {/* <div className="flex justify-center items-center gap-4">
         <span className={!isAnnual ? "font-semibold" : "text-muted-foreground"}>
           Monthly
         </span>
@@ -208,7 +208,7 @@ export function PricingSection({ websiteUrl }: { websiteUrl: string }) {
             Save 37%
           </span>
         </div>
-      </div>
+      </div> */}
 
       {/* Pricing Cards */}
       <div className="grid md:grid-cols-2 gap-8">
@@ -245,7 +245,7 @@ export function PricingSection({ websiteUrl }: { websiteUrl: string }) {
         </Card>
 
         {/* Pro Plan */}
-        <Card className="p-6 border-2 border-primary relative overflow-hidden">
+        {/* <Card className="p-6 border-2 border-primary relative overflow-hidden">
           <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-sm px-3 py-1 rounded-bl-lg">
             RECOMMENDED
           </div>
@@ -294,7 +294,7 @@ export function PricingSection({ websiteUrl }: { websiteUrl: string }) {
                 : "Get Pro Monthly"}
             </Button>
           </div>
-        </Card>
+        </Card> */}
       </div>
 
       {/* Trust Message */}

@@ -10,6 +10,7 @@ import {
   Settings,
   Users,
   ArrowRight,
+  FileText,
 } from "lucide-react";
 
 const menuItems = [
@@ -26,7 +27,7 @@ const menuItems = [
   {
     title: "Tool Page",
     href: "/business/dashboard/tool",
-    icon: Settings,
+    icon: FileText,
   },
   {
     title: "Settings",
@@ -71,7 +72,7 @@ export function SideNav() {
             );
           })}
         </div>
-        <div className="p-4 mx-3 mt-6 rounded-lg bg-gradient-to-r from-[#6366f1]/10 to-[#8b5cf6]/10 border border-purple-500/20">
+        {/* <div className="p-4 mx-3 mt-6 rounded-lg bg-gradient-to-r from-[#6366f1]/10 to-[#8b5cf6]/10 border border-purple-500/20">
           <h3 className="font-medium text-white mb-1">Upgrade to Pro</h3>
           <p className="text-sm text-gray-400 mb-3">Get advanced analytics and premium features</p>
           <Link
@@ -81,7 +82,7 @@ export function SideNav() {
             Upgrade Now
             <ArrowRight className="w-4 h-4" />
           </Link>
-        </div>
+        </div> */}
         <div className="flex-1" />
       </div>
     </nav>

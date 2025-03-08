@@ -46,7 +46,7 @@ export function LatestToolsContent() {
         <p className="text-muted-foreground text-lg">
           Want to feature your AI solution?{" "}
           <Link
-            href="/tool/new"
+            href="/business/register"
             className="text-primary hover:text-primary/90 hover:underline transition-colors"
           >
             List it today for free

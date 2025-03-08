@@ -85,7 +85,7 @@ FORMAT:
           Return JSON with:
 {
   "shortDescription": "10-word summary",
-  "description": "Generate a 100-word single-paragraph description of the given AI tool. Focus on its practical value for businesses and professionals. Clearly explain what it does, its core features, and how it helps users improve efficiency, decision-making, or workflow. Keep the tone clear, informative, and professional—avoid excessive jargon, exaggerated claims, or unnecessary complexity. Do not mention star ratings, quotes, or comparisons to other platforms. Avoid pricing details or subjective opinions. Ensure the description is structured, engaging, and easy to understand.",
+  "description": "Generate a 100-word single-paragraph description of the given AI tool. Focus on its practical value for businesses and professionals. Clearly explain what it does, its core features. Keep the tone clear, informative, and professional—avoid excessive jargon, exaggerated claims, or unnecessary complexity. Do not mention star ratings, quotes, or comparisons to other platforms. Avoid pricing details or subjective opinions. Ensure the description is structured, engaging, and easy to understand.",
   "pricingModel": "one of [free, freemium, subscription, pay_per_use, enterprise]",
   "hasFreeTrialPeriod": true/false,
   "hasAPI": true/false,
