@@ -13,6 +13,8 @@ import Script from "next/script";
 import { GA_TRACKING_ID } from "@/lib/gtag";
 import { AnalyticsProvider } from "@/components/providers/analytics-provider";
 import { CookieBanner } from "@/components/cookie-banner";
+import { useErrorTracking } from "@/hooks/useErrorTracking";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -38,6 +40,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const isProduction = process.env.NEXT_PUBLIC_IS_PRODUCTION === "true";
+  useErrorTracking(); // Enable global error tracking
+
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -75,6 +79,7 @@ export default async function RootLayout({
       <body className={inter.className}>
         <Providers>
           <AnalyticsProvider />
+          <ErrorBoundary>
           <div className="flex min-h-screen flex-col">
             <Header />
             <main className="flex-1">{children}</main>
@@ -83,6 +88,7 @@ export default async function RootLayout({
           <LoginModal />
           <Toaster />
           <CookieBanner />
+          </ErrorBoundary>
         </Providers>
       </body>
     </html>
