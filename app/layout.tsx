@@ -15,6 +15,7 @@ import { AnalyticsProvider } from "@/components/providers/analytics-provider";
 import { CookieBanner } from "@/components/cookie-banner";
 import { useErrorTracking } from "@/hooks/useErrorTracking";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { ErrorTrackingWrapper } from "./components/ErrorTrackingWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -40,7 +41,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const isProduction = process.env.NEXT_PUBLIC_IS_PRODUCTION === "true";
-  useErrorTracking(); // Enable global error tracking
 
 
   return (
@@ -77,6 +77,7 @@ export default async function RootLayout({
         )}
       </head>
       <body className={inter.className}>
+        <ErrorTrackingWrapper />
         <Providers>
           <AnalyticsProvider />
           <ErrorBoundary>
