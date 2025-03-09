@@ -20,7 +20,7 @@ function hasAnalyticsConsent(): boolean {
 
 // Only initialize Mixpanel if we have consent
 try {
-  if (IS_PRODUCTION && MIXPANEL_TOKEN && hasAnalyticsConsent()) {
+  if (IS_PRODUCTION && MIXPANEL_TOKEN) {
     mixpanel.init(MIXPANEL_TOKEN, {
       debug: false,
       track_pageview: true,
