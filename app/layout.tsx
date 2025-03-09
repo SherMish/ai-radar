@@ -60,7 +60,7 @@ export default async function RootLayout({
                     return false;
                   }
                 }
-                if (hasAnalyticsConsent()) {
+                if (true) { //hasAnalyticsConsent()
                   // Load GA script only if we have consent
                   const script = document.createElement('script');
                   script.src = 'https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}';
