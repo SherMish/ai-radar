@@ -13,17 +13,22 @@ function hasAnalyticsConsent(): boolean {
     const settings = JSON.parse(consent);
     return settings.analytics === true;
   } catch {
+    console.error('Error parsing analytics consent');
     return false;
   }
 }
 
 // Only initialize Mixpanel if we have consent
-if (IS_PRODUCTION && MIXPANEL_TOKEN && hasAnalyticsConsent()) {
-  mixpanel.init(MIXPANEL_TOKEN, {
-    debug: false,
+try {
+  if (IS_PRODUCTION && MIXPANEL_TOKEN && hasAnalyticsConsent()) {
+    mixpanel.init(MIXPANEL_TOKEN, {
+      debug: false,
     track_pageview: true,
     persistence: 'localStorage'
-  });
+    });
+  }
+} catch (error) {
+  console.error('Error initializing Mixpanel:', error);
 }
 
 type TrackingEventProperties = {
@@ -50,20 +55,28 @@ export function trackEvent(
   }
 
   // Track in Mixpanel
-  if (MIXPANEL_TOKEN) {
-    mixpanel.track(eventName, {
-      ...properties,
-      timestamp: new Date().toISOString(),
-    });
+  try {
+    if (MIXPANEL_TOKEN) {
+      mixpanel.track(eventName, {
+        ...properties,
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error('Error tracking event:', error);
   }
 
   // Track in Google Analytics
-  gtagEvent({
-    action: eventName,
-    category: properties.category || 'general',
-    label: properties.label || eventName,
-    value: properties.value,
-  });
+  try {
+    gtagEvent({
+      action: eventName,
+      category: properties.category || 'general',
+      label: properties.label || eventName,
+      value: properties.value,
+    });
+  } catch (error) {
+    console.error('Error tracking event:', error);
+  }
 }
 
 /**
@@ -75,12 +88,16 @@ export function identifyUser(userId: string, userProperties: TrackingEventProper
     return;
   }
 
-  if (MIXPANEL_TOKEN) {
-    mixpanel.identify(userId);
-    mixpanel.people.set({
+  try {
+    if (MIXPANEL_TOKEN) {
+      mixpanel.identify(userId);
+      mixpanel.people.set({
       ...userProperties,
-      $last_seen: new Date().toISOString(),
-    });
+        $last_seen: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error('Error identifying user:', error);
   }
 }
 
