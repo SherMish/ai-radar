@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import OpenAI from "openai";
 import categoriesData from "@/lib/data/categories.json";
 
 const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY;
@@ -12,7 +13,9 @@ export async function POST(request: Request) {
 
   if (!PERPLEXITY_API_KEY) {
     console.error("Perplexity API key is not set");
-    return new NextResponse("Perplexity API key is not configured", { status: 500 });
+    return new NextResponse("Perplexity API key is not configured", {
+      status: 500,
+    });
   }
 
   try {
@@ -44,10 +47,10 @@ FORMAT:
   "hasAPI": boolean,
   "launchYear": number or null,
   "category": "string (valid category ID)",
-  "userReviewsScore": number (0-100),
-  "featureRobustnessScore": number (0-100),
-  "marketAdoptionScore": number (0-100),
-  "pricingAccessibilityScore": number (0-100)
+  "userReviewsScore": number (0-100) positive only,
+  "featureRobustnessScore": number (0-100) positive only,
+  "marketAdoptionScore": number (0-100) positive only,
+  "pricingAccessibilityScore": number (0-100) positive only,
 }`,
         },
         {
@@ -119,48 +122,107 @@ FORMAT:
       body: JSON.stringify(payload),
     });
 
-    const data = await response.json();
-    if (!response.ok) {
-      console.error(`Perplexity API error: ${JSON.stringify(data)}`);
-      throw new Error(`Perplexity API error: ${data.error?.message ?? "Unknown error"}`);
+    console.log("🔍 Perplexity Response:", response);
+    if (response.status !== 200) {
+      console.error(`Perplexity API error: ${response.statusText}`);
+      return new NextResponse("Perplexity API error", { status: 500 });
     }
+    const data = await response.json();
 
     let content = data.choices[0].message.content;
     console.log("🔍 AI Response:", content);
-    content = content
-      // Remove thinking process
-      .replace(/<think>[\s\S]*?<\/think>/g, '')
-      // Remove json tags and code fences
-      .replace(/```json\n?|\n?```|json\n/g, '')
-      // Clean up any remaining whitespace
-      .trim();
+    // content = content
+    //   // Remove thinking process
+    //   .replace(/<think>[\s\S]*?<\/think>/g, '')
+    //   // Remove json tags and code fences
+    //   .replace(/```json\n?|\n?```|json\n/g, '')
+    //   // Clean up any remaining whitespace
+    //   .trim();
 
-    let jsonResponse;
-    try {
-      jsonResponse = JSON.parse(content);
-    } catch (parseError) {
-      console.error("Failed to parse AI response as JSON:", parseError);
-      console.error("Raw content:", data.choices[0].message.content);
-      throw new Error("Invalid response format from AI (JSON parse failed).");
-    }
+    // let jsonResponse;
+    // try {
+    //   jsonResponse = JSON.parse(content);
+    // } catch (parseError) {
+    //   console.error("Failed to parse AI response as JSON:", parseError);
+    //   console.error("Raw content:", data.choices[0].message.content);
+    //   throw new Error("Invalid response format from AI (JSON parse failed).");
+    // }
+    //do mock json
 
-    // Compute normalized radarTrust score
-    const { userReviewsScore, featureRobustnessScore, marketAdoptionScore, pricingAccessibilityScore } = jsonResponse;
-    const radarTrust = (
-      0.4 * userReviewsScore +
-      0.3 * featureRobustnessScore +
-      0.2 * marketAdoptionScore +
-      0.1 * pricingAccessibilityScore
-    ) / 10; // Scale to 0-10
+    const prompt = `return JSON response with the following fields:
+    shortDescription: 10-word summary,
+    description: Generate a 100-word single-paragraph description of the given AI tool. Focus on its practical value for businesses and professionals. Clearly explain what it does, its core features. Keep the tone clear, informative, and professional—avoid excessive jargon, exaggerated claims, or unnecessary complexity. Do not mention star ratings, quotes, or comparisons to other platforms. Avoid pricing details or subjective opinions. Ensure the description is structured, engaging, and easy to understand.",
+    pricingModel: "one of [free, freemium, subscription, pay_per_use, enterprise]",
+    hasFreeTrialPeriod: true/false,
+    hasAPI: true/false,
+    launchYear: number or null,
+    category: one ID from: ${JSON.stringify(categoryOptions)},
+    userReviewsScore: number (0-100) positive only (Rely on the numbers in the texts, not the final json),
+    featureRobustnessScore: number (0-100) positive only (Rely on the numbers in the texts, not the final json),
+    marketAdoptionScore: number (0-100) positive only (Rely on the numbers in the texts, not the final json),
+    pricingAccessibilityScore: number (0-100) positive only (Rely on the numbers in the texts, not the final json),
+    radarTrustExplanation: single string (Explain for each score briefly in one paragraph),
+    Get the data from here: ${content}.`;
 
-    jsonResponse.radarTrust = parseFloat(radarTrust.toFixed(1));
-    jsonResponse.radarTrustExplanation = `Based on weighted scoring: Reviews (${userReviewsScore}%), Features (${featureRobustnessScore}%), Market (${marketAdoptionScore}%), Pricing (${pricingAccessibilityScore}%).`;
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
 
-    console.log("✅ AI Generated Metadata:", jsonResponse);
-    return NextResponse.json(jsonResponse);
+    // Instruct GPT to output valid JSON by setting response_format to "json_object"
+    const responseGPT = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: prompt }],
+      response_format: {
+        type: "json_object",
+      },
+    });
 
+    // GPT should return JSON in .choices[0].message.content
+    const jsonResponse = responseGPT.choices[0].message.content;
+    console.log("GPT Response:", jsonResponse);
+    // Parse the JSON
+    const parsedResponse = jsonResponse ? JSON.parse(jsonResponse) : {};
+
+    // Safely extract needed fields (with defaults to avoid NaN)
+    const {
+      userReviewsScore = 0,
+      featureRobustnessScore = 0,
+      marketAdoptionScore = 0,
+      pricingAccessibilityScore = 0,
+      radarTrustExplanation = "",
+    } = parsedResponse;
+
+    // Compute normalized radarTrust (scaled 0-10)
+    let radarTrust =
+      (0.4 * userReviewsScore +
+        0.3 * featureRobustnessScore +
+        0.2 * marketAdoptionScore +
+        0.1 * pricingAccessibilityScore) /
+      10;
+
+    radarTrust = parseFloat(radarTrust.toFixed(1));
+
+    // Optionally refine or augment the explanation
+    const finalExplanation =
+      radarTrustExplanation ||
+      `Based on weighted scoring: Reviews (${userReviewsScore}%), Features (${featureRobustnessScore}%), Market (${marketAdoptionScore}%), Pricing (${pricingAccessibilityScore}%).`;
+
+    // Combine the original JSON with the computed radarTrust fields
+    const returnObj = {
+      ...parsedResponse,
+      radarTrust,
+      radarTrustExplanation: finalExplanation,
+    };
+
+    console.log("Final Return Object:", returnObj);
+
+    // Return as JSON response
+    return NextResponse.json(returnObj);
   } catch (error) {
     console.error("❌ Error generating metadata:", error);
-    return new NextResponse("Failed to generate metadata", { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to generate metadata" },
+      { status: 500 }
+    );
   }
 }
