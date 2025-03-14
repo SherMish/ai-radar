@@ -131,23 +131,6 @@ FORMAT:
 
     let content = data.choices[0].message.content;
     console.log("🔍 AI Response:", content);
-    // content = content
-    //   // Remove thinking process
-    //   .replace(/<think>[\s\S]*?<\/think>/g, '')
-    //   // Remove json tags and code fences
-    //   .replace(/```json\n?|\n?```|json\n/g, '')
-    //   // Clean up any remaining whitespace
-    //   .trim();
-
-    // let jsonResponse;
-    // try {
-    //   jsonResponse = JSON.parse(content);
-    // } catch (parseError) {
-    //   console.error("Failed to parse AI response as JSON:", parseError);
-    //   console.error("Raw content:", data.choices[0].message.content);
-    //   throw new Error("Invalid response format from AI (JSON parse failed).");
-    // }
-    //do mock json
 
     const prompt = `return JSON response with the following fields:
     shortDescription: 10-word summary,
@@ -185,10 +168,10 @@ FORMAT:
 
     // Safely extract needed fields (with defaults to avoid NaN)
     const {
-      userReviewsScore = 0,
-      featureRobustnessScore = 0,
-      marketAdoptionScore = 0,
-      pricingAccessibilityScore = 0,
+      userReviewsScore = 70,
+      featureRobustnessScore = 70,
+      marketAdoptionScore = 70,
+      pricingAccessibilityScore = 70,
       radarTrustExplanation = "",
     } = parsedResponse;
 
