@@ -30,6 +30,8 @@ export function Header() {
     router.push(`/search?q=${encodeURIComponent(query)}`);
     setShowMobileSearch(false);
   };
+
+  const isBusinessHome = pathname === "/business";
   const isBusinessRegister = pathname === "/business/register";
 
   const isRegularSite = pathname?.includes("/business") !== true;
@@ -112,6 +114,15 @@ export function Header() {
                   className="text-base font-medium text-muted-foreground transition-colors hover:text-foreground"
                 >
                   Consumer Site
+                </Link>
+              )}
+
+              {isBusinessHome && (
+                <Link
+                  href="/business/register"
+                  className="inline-flex items-center gap-1 px-4 py-2 text-sm font-semibold text-white bg-primary rounded-full hover:bg-primary/90 transition-colors"
+                >
+                  Create free account
                 </Link>
               )}
 
@@ -211,6 +222,16 @@ export function Header() {
                   onClick={() => setIsOpen(false)}
                 >
                   Consumer Site
+                </Link>
+              )}
+
+              {isBusinessHome && (
+                <Link
+                  href="/business/register"
+                  className="block rounded-md px-3 py-4 text-base font-medium text-primary hover:bg-muted/50 hover:text-primary/80 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Create free account
                 </Link>
               )}
 

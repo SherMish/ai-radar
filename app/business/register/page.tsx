@@ -100,9 +100,9 @@ export default function BusinessRegistration() {
       {/* Content */}
       <div className="relative max-w-4xl mx-auto px-4 py-8">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Register Your Business</h1>
+          <h1 className="text-4xl font-bold mb-4">Create a Free Account</h1>
           <p className="text-muted-foreground text-lg">
-            Join AI Radar&apos;s business community and showcase your AI tool
+            Stand out in a crowded AI market-get verified and trusted today!
           </p>
         </div>
 
