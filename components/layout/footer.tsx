@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Github, Twitter, Linkedin } from "lucide-react";
+import { FaGithub, FaXTwitter, FaLinkedin } from "react-icons/fa6";
 
 const navigation = {
   main: [
@@ -10,19 +10,14 @@ const navigation = {
   ],
   social: [
     {
-      name: "Twitter",
-      href: "https://twitter.com",
-      icon: Twitter,
-    },
-    {
-      name: "GitHub",
-      href: "https://github.com",
-      icon: Github,
+      name: "X",
+      href: "https://x.com/_AIRadar",
+      icon: FaXTwitter,
     },
     {
       name: "LinkedIn",
-      href: "https://linkedin.com",
-      icon: Linkedin,
+      href: "https://www.linkedin.com/company/airadaris",
+      icon: FaLinkedin,
     },
   ],
 };
@@ -38,7 +33,8 @@ export function Footer() {
               AI-Radar
             </Link>
             <p className="text-sm text-muted-foreground">
-              Discover and share insights on the best AI tools. Your trusted source for AI tool reviews and recommendations.
+              Discover and share insights on the best AI tools. Your trusted
+              source for AI tool reviews and recommendations.
             </p>
           </div>
 
