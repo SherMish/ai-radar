@@ -100,9 +100,12 @@ export default function BusinessRegistration() {
       {/* Content */}
       <div className="relative max-w-4xl mx-auto px-4 py-8">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Create a Free Account</h1>
+          <h1 className="text-3xl font-bold mb-4">
+            Claim Your Spot Among the Most Trusted AI Tools
+          </h1>
           <p className="text-muted-foreground text-lg">
-            Stand out in a crowded AI market-get verified and trusted today!
+            Join the platform where professionals find, trust, and adopt AI
+            solutions.
           </p>
         </div>
 
@@ -207,6 +210,74 @@ export default function BusinessRegistration() {
             )}
           </CardContent>
         </Card>
+      </div>
+
+      {/* Why Join Section */}
+      <div className="mt-12 max-w-4xl mx-auto px-4 pb-12 relative z-10">
+        <h2 className="text-3xl font-bold text-center mb-8">
+          Why Join AI-Radar?
+        </h2>
+        <div className="grid md:grid-cols-2 gap-8">
+          <div className="bg-background/80 backdrop-blur-sm border border-border/50 rounded-xl p-6 shadow-md">
+            <h3 className="text-xl font-semibold mb-4 text-primary">
+              Be Seen by the Right Audience
+            </h3>
+            <ul className="space-y-3">
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                <span>
+                  Make your AI tool visible to business professionals actively
+                  searching for trusted AI solutions.
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-background/80 backdrop-blur-sm border border-border/50 rounded-xl p-6 shadow-md">
+            <h3 className="text-xl font-semibold mb-4 text-primary">
+              Gain Credibility with RadarTrust™
+            </h3>
+            <ul className="space-y-3">
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                <span>
+                  Show professionals you’re a verified, high-quality AI tool
+                  that stands out from the rest.
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-background/80 backdrop-blur-sm border border-border/50 rounded-xl p-6 shadow-md">
+            <h3 className="text-xl font-semibold mb-4 text-primary">
+              Drive Business Growth
+            </h3>
+            <ul className="space-y-3">
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                <span>
+                  Attract decision-makers looking for AI solutions they can
+                  trust—not just casual browsers.
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-background/80 backdrop-blur-sm border border-border/50 rounded-xl p-6 shadow-md">
+            <h3 className="text-xl font-semibold mb-4 text-primary">
+              Earn Trust Faster
+            </h3>
+            <ul className="space-y-3">
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                <span>
+                  94% of AI tools that actively engage with user reviews see a
+                  TrustRadar™ Score improvement.
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );
