@@ -39,26 +39,31 @@ export function LatestToolCard({ website, index }: LatestToolCardProps) {
       <Link href={`/tool/${encodeURIComponent(website.url)}`}>
         <Card className=" h-[178px] p-6 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors border-zinc-700/50">
           <div className="flex flex-col sm:flex-row items-start gap-4">
-            <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center overflow-hidden">
-              {website.logo ? (
-                <Image
-                  src={website.logo}
-                  alt={website.name}
-                  width={48}
-                  height={48}
-                  className="rounded-xl object-cover"
-                />
-              ) : (
-                <div className="w-6 h-6 bg-zinc-700 rounded-full flex items-center justify-center">
-                  <span className="text-xs text-zinc-400">
-                    {website.name.charAt(0)}
-                  </span>
-                </div>
-              )}
+            <div className="flex items-center gap-3 sm:block">
+              <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center overflow-hidden">
+                {website.logo ? (
+                  <Image
+                    src={website.logo}
+                    alt={website.name}
+                    width={48}
+                    height={48}
+                    className="rounded-xl object-cover"
+                  />
+                ) : (
+                  <div className="w-6 h-6 bg-zinc-700 rounded-full flex items-center justify-center">
+                    <span className="text-xs text-zinc-400">
+                      {website.name.charAt(0)}
+                    </span>
+                  </div>
+                )}
+              </div>
+              <h2 className="text-lg font-semibold text-zinc-50 sm:hidden">
+                {website.name}
+              </h2>
             </div>
             <div className="flex-1 min-w-0 space-y-3">
               <div>
-                <h2 className="text-lg font-semibold text-zinc-50">
+                <h2 className="hidden sm:block text-lg font-semibold text-zinc-50">
                   {website.name}
                 </h2>
                 <div className="flex flex-col gap-2">
