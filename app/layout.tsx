@@ -77,10 +77,10 @@ export default async function RootLayout({
         )}
       </head>
       <body className={inter.className}>
-        <ErrorTrackingWrapper />
+        {/* <ErrorTrackingWrapper /> */}
         <Providers>
           <AnalyticsProvider />
-          <ErrorBoundary>
+          {/* <ErrorBoundary> */}
           <div className="flex min-h-screen flex-col">
             <Header />
             <main className="flex-1">{children}</main>
@@ -89,7 +89,7 @@ export default async function RootLayout({
           <LoginModal />
           <Toaster />
           <CookieBanner />
-          </ErrorBoundary>
+          {/* </ErrorBoundary> */}
         </Providers>
       </body>
     </html>

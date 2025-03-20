@@ -18,10 +18,15 @@ export async function middleware(request: NextRequest) {
   });
 
   // For /business route (not dashboard)
-  if (request.nextUrl.pathname === '/business') {
+  if (
+    request.nextUrl.pathname === "/business" ||
+    request.nextUrl.pathname === "/business/register"
+  ) {
     // Check both role and websites to ensure complete setup
-    if (token?.role === 'business_owner' && token?.websites) {
-      return NextResponse.redirect(new URL('/business/dashboard', request.url));
+    if (token?.role === "business_owner" && token?.websites) {
+      return NextResponse.redirect(
+        new URL("/business/dashboard", request.url)
+      );
     }
     return NextResponse.next();
   }
@@ -44,6 +49,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/business',
+    '/business/register',
     '/business/dashboard/:path*'
   ]
 }; 
