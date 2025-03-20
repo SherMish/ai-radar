@@ -12,6 +12,8 @@ import {
   ArrowRight,
   FileText,
 } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
+import { UserNav } from "@/components/user-nav";
 
 const menuItems = [
   {
@@ -38,9 +40,10 @@ const menuItems = [
 
 export function SideNav() {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   return (
-    <nav className="w-64 border-r border-white/[0.08] bg-black/50 backdrop-blur supports-[backdrop-filter]:bg-black/30">
+    <nav className="sticky top-0 h-[100vh] w-64 border-r border-white/[0.08] bg-black/50 backdrop-blur supports-[backdrop-filter]:bg-black/30 z-40">
       <div className="flex flex-col h-full">
         <div className="p-6">
           <h2 className="text-lg font-semibold bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] bg-clip-text text-transparent">
@@ -61,12 +64,12 @@ export function SideNav() {
                     : "text-gray-400 hover:text-gray-200"
                 )}
               >
-                <Icon className={cn(
-                  "w-4 h-4",
-                  pathname === item.href
-                    ? "text-white"
-                    : "text-gray-400"
-                )} />
+                <Icon
+                  className={cn(
+                    "w-4 h-4",
+                    pathname === item.href ? "text-white" : "text-gray-400"
+                  )}
+                />
                 {item.title}
               </Link>
             );
@@ -84,7 +87,24 @@ export function SideNav() {
           </Link>
         </div> */}
         <div className="flex-1" />
+
+        {/* User Profile at Bottom */}
+        {session?.user && (
+          <div className="px-3 py-4 mt-auto border-t border-white/[0.08]">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-300 truncate">
+                  {session.user.name}
+                </p>
+                <p className="text-xs text-gray-500 truncate">
+                  {session.user.email}
+                </p>
+              </div>
+              <UserNav user={session.user} onSignOut={() => signOut()} />
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );
-} 
+}
