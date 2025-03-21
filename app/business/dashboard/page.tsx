@@ -16,6 +16,8 @@ import {
   ThumbsUp,
   Sparkles,
   AlertTriangle,
+  TrendingUp,
+  X,
 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import Link from "next/link";
@@ -25,12 +27,23 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 import { useBusinessGuard } from "@/hooks/use-business-guard";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { BarChart, LineChart } from "@tremor/react";
 import { Review } from "@/components/reviews-section";
 import { RadarTrustInfo } from "@/components/radar-trust-info";
+import { RadarTrustImprovementDialog } from "@/app/components/radar-trust-improvement-dialog";
 import trustStatuses from "@/lib/data/trustStatuses.json";
 
 type Feature = {
@@ -149,6 +162,7 @@ export default function DashboardPage() {
   const [isLoadingReviews, setIsLoadingReviews] = useState(true);
   const [totalViews, setTotalViews] = useState(0);
   const [totalClicks, setTotalClicks] = useState(0);
+  const [isImprovementDialogOpen, setIsImprovementDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -371,7 +385,23 @@ export default function DashboardPage() {
                 </>
               )}
             </div>
-            <RadarIcon className="w-8 h-8 text-primary opacity-75" />
+            <div className="flex flex-col items-end gap-2">
+              <RadarIcon className="w-8 h-8 text-primary opacity-75" />
+
+              {/* Only show improve button when there is a score */}
+              {website?.radarTrust && (
+                <RadarTrustImprovementDialog>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs h-8 mt-4 bg-primary/10 border-primary/20 text-primary hover:bg-primary/20 hover:text-primary"
+                  >
+                    <TrendingUp className="w-3.5 h-3.5 mr-1.5" />
+                    Improve your score
+                  </Button>
+                </RadarTrustImprovementDialog>
+              )}
+            </div>
           </div>
         </Card>
       </div>
