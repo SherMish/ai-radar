@@ -262,7 +262,7 @@ export default async function Home() {
             <div className="container max-w-6xl mx-auto px-4">
               <div className="grid lg:grid-cols-[1fr,400px] gap-12 items-center">
                 {/* Left Column - Content */}
-                <RadarTrustContent />
+                <RadarTrustContent/>
 
                 {/* Right Column - Visual */}
                 <RadarTrustVisual />

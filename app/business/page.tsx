@@ -23,6 +23,8 @@ import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/autoplay";
 import { formatPricingModel } from "@/lib/utils/formatting";
+import { RadarTrustContent } from "../components/radar-trust-content";
+import { RadarTrustVisual } from "../components/radar-trust-visual";
 
 const benefits = [
   {
@@ -132,7 +134,6 @@ function useCountUp(
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-
     let startTimestamp: number | null = null;
     const step = (timestamp: number) => {
       if (!startTimestamp) startTimestamp = timestamp;
@@ -198,7 +199,7 @@ export default function BusinessPage() {
           averageRating: website.averageRating || 0,
           reviewCount: website.reviewCount || 0,
           radarTrust: website.radarTrust || 0,
-          businessModel: formatPricingModel(website.pricingModel || 'Free'),
+          businessModel: formatPricingModel(website.pricingModel || "Free"),
         }));
 
         setLatestTools(toolsData);
@@ -241,10 +242,10 @@ export default function BusinessPage() {
     if (websiteUrl) {
       // Store URL in localStorage with the correct key and format
       localStorage.setItem(
-        "businessRegistration", 
+        "businessRegistration",
         JSON.stringify({ websiteUrl: websiteUrl })
       );
-      
+
       // Redirect to registration page
       router.push(`/business/register`);
     }
@@ -380,7 +381,7 @@ export default function BusinessPage() {
                   value={websiteUrl}
                   onChange={(e) => setWebsiteUrl(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
+                    if (e.key === "Enter") {
                       handleUrlSubmit();
                     }
                   }}
@@ -454,7 +455,7 @@ export default function BusinessPage() {
         </div>
       </section>
 
-{/* Latest Listings Section */}
+      {/* Latest Listings Section */}
       <section className="relative py-24 bg-secondary/50 backdrop-blur-sm">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
@@ -484,7 +485,7 @@ export default function BusinessPage() {
               >
                 {latestTools.map((tool) => (
                   <SwiperSlide key={tool._id}>
-                    <Card 
+                    <Card
                       className="p-4 bg-zinc-900/50 border-zinc-700/50 h-[230px] flex flex-col cursor-pointer hover:bg-zinc-800/50 transition-colors"
                       onClick={() => router.push(`/tool/${tool.url}`)}
                     >
@@ -514,7 +515,7 @@ export default function BusinessPage() {
                             {tool.url}
                           </p>
                         </div>
-                        
+
                         {/* Move RadarTrust to more prominent position */}
                         {tool.radarTrust && (
                           <div className="flex items-center px-2 py-1 bg-primary/10 rounded-lg border border-primary/20">
@@ -522,7 +523,9 @@ export default function BusinessPage() {
                               {tool.radarTrust}
                             </span>
                             <RadarIcon className="w-3 h-3 text-primary" />
-                            <span className="text-[10px] font-medium text-primary ml-1">RadarTrust™</span>
+                            <span className="text-[10px] font-medium text-primary ml-1">
+                              RadarTrust™
+                            </span>
                           </div>
                         )}
                       </div>
@@ -560,7 +563,8 @@ export default function BusinessPage() {
                                 ))}
                               </div>
                               <span className="text-xs text-zinc-400">
-                                {tool.averageRating.toFixed(1)} ({tool.reviewCount})
+                                {tool.averageRating.toFixed(1)} (
+                                {tool.reviewCount})
                               </span>
                             </div>
                           ) : (
@@ -579,7 +583,18 @@ export default function BusinessPage() {
         </div>
       </section>
 
-      
+      {/* TrustRadar Section */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="container max-w-6xl mx-auto px-4">
+          <div className="grid lg:grid-cols-[1fr,400px] gap-12 items-center">
+            {/* Left Column - Content */}
+            <RadarTrustContent isBusiness={true} />
+
+            {/* Right Column - Visual */}
+            <RadarTrustVisual />
+          </div>
+        </div>
+      </section>
 
       {/* Control Section */}
       <section className="relative py-20 bg-secondary/5">
@@ -600,15 +615,15 @@ export default function BusinessPage() {
             ))}
           </div>
           <div className="mt-16 text-center">
-              <Button
-                size="lg"
-                className="gradient-button"
-                onClick={() => router.push("/business/register")}
-              >
-                List Your AI Tool
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </div>
+            <Button
+              size="lg"
+              className="gradient-button"
+              onClick={() => router.push("/business/register")}
+            >
+              List Your AI Tool
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </div>
         </div>
       </section>
 
@@ -657,7 +672,6 @@ export default function BusinessPage() {
           </div>
         </div>
       </section>
-
 
       {/* Final CTA Section */}
       <section className="relative py-20">
