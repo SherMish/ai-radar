@@ -63,8 +63,7 @@ FORMAT:
    - Convert star ratings to a percentage.
    - Identify common praise/complaints.
    - Weight trusted platforms higher (G2 > random Reddit threads).
-   - If there are no reviews, return 85.
-   - Normalize to a **0-100 scale**, where 100 represents excellent feedback.
+   - Normalize to a **0-100 scale**, where 100 represents excellent feedback, and 0 represents bad feedback or absolute lack of feedback.
 
 2) **Feature Robustness Score ("featureRobustnessScore" [0-100])**
    - Check **Futurepedia, Product Hunt, company websites, etc.**
