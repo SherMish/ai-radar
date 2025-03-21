@@ -565,10 +565,11 @@ export default async function ToolPage({ params }: PageProps) {
                             </TooltipProvider>
                           </div>
                           <div className="text-xs text-zinc-400">
-                            <div className="flex items-center gap-1">
-                              Learn how this score is calculated
-                              <RadarTrustInfo />
-                            </div>
+                            <RadarTrustInfo>
+                              <span className="cursor-pointer hover:text-primary hover:underline transition-colors">
+                                Learn how this score is calculated
+                              </span>
+                            </RadarTrustInfo>
                           </div>
                         </div>
                       </>
