@@ -9,21 +9,35 @@ import {
   Eye,
   MessageSquare,
   MousePointer,
+  Percent,
+  Radar as RadarIcon,
+  Info,
+  Award,
+  ThumbsUp,
+  Sparkles,
+  AlertTriangle,
 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import Link from "next/link";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 import { useBusinessGuard } from "@/hooks/use-business-guard";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { BarChart, LineChart } from "@tremor/react";
 import { Review } from "@/components/reviews-section";
+import { RadarTrustInfo } from "@/components/radar-trust-info";
+import trustStatuses from "@/lib/data/trustStatuses.json";
 
 type Feature = {
   id: string;
   title: string;
   description: string;
 };
-
 
 // Add this function to fetch analytics
 const fetchTotalViews = async (websiteId: string) => {
@@ -64,6 +78,57 @@ const fetchTotalClicks = async (websiteId: string) => {
   }
 };
 
+// Function to get trust status based on score
+function getTrustStatus(score: number) {
+  const status = trustStatuses.find(
+    (status) => score >= status.from && score <= status.to
+  );
+  return (
+    status || {
+      status: "Unrated",
+      description: "This tool has not been rated yet.",
+    }
+  );
+}
+
+// Function to get the appropriate icon based on trust level
+function getTrustStatusIcon(score: number) {
+  if (score >= 8.6) return Award; // Industry Leader
+  if (score >= 7.1) return ThumbsUp; // Market Approved
+  if (score >= 5.1) return Sparkles; // Emerging Player
+  return AlertTriangle; // Low Market Confidence
+}
+
+// Function to get styles based on trust level
+function getTrustStatusStyles(score: number) {
+  if (score >= 8.6) {
+    return {
+      badge: "bg-blue-950/40 border-blue-500/30 text-blue-400",
+      icon: "text-blue-400",
+      gradient: "from-blue-600/20 to-blue-400/5",
+    };
+  }
+  if (score >= 7.1) {
+    return {
+      badge: "bg-green-950/40 border-green-500/30 text-green-400",
+      icon: "text-green-400",
+      gradient: "from-green-600/20 to-green-400/5",
+    };
+  }
+  if (score >= 5.1) {
+    return {
+      badge: "bg-yellow-950/40 border-yellow-500/30 text-yellow-400",
+      icon: "text-yellow-400",
+      gradient: "from-yellow-600/20 to-yellow-400/5",
+    };
+  }
+  return {
+    badge: "bg-red-950/40 border-red-500/30 text-red-400",
+    icon: "text-red-400",
+    gradient: "from-red-600/20 to-red-400/5",
+  };
+}
+
 export default function DashboardPage() {
   const { isLoading, website, user } = useBusinessGuard();
   const [logo, setLogo] = useState<File | null>(null);
@@ -88,7 +153,9 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await fetch(`/api/reviews/get?websiteId=${website?._id}`);
+        const response = await fetch(
+          `/api/reviews/get?websiteId=${website?._id}`
+        );
         const data = await response.json();
         setReviews(data);
       } catch (error) {
@@ -108,6 +175,11 @@ export default function DashboardPage() {
   if (isLoading || isLoadingReviews) {
     return <LoadingSpinner />;
   }
+
+  // Calculate conversion rate
+  const conversionRate =
+    totalViews > 0 ? ((totalClicks / totalViews) * 100).toFixed(1) : "0.0";
+
   return (
     <div className="container mx-auto px-4 py-12 min-h-screen">
       <div className="mb-8 flex justify-between items-center">
@@ -190,6 +262,116 @@ export default function DashboardPage() {
               <h3 className="text-2xl font-bold mt-2">{totalClicks}</h3>
             </div>
             <MousePointer className="w-8 h-8 text-primary opacity-75" />
+          </div>
+        </Card>
+      </div>
+
+      {/* Second Row of Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        {/* Conversion Rate Card */}
+        <Card className="p-6 hover:shadow-lg transition-all bg-black/50 backdrop-blur supports-[backdrop-filter]:bg-black/30 border border-white/[0.08]">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">
+                Conversion Rate
+              </p>
+              <h3 className="text-2xl font-bold mt-2">{conversionRate}%</h3>
+              <p className="text-xs text-muted-foreground mt-1">
+                Website visits to button clicks
+              </p>
+            </div>
+            <Percent className="w-8 h-8 text-primary opacity-75" />
+          </div>
+        </Card>
+
+        {/* RadarTrust Score Card */}
+        <Card className="p-6 hover:shadow-lg transition-all bg-black/50 backdrop-blur supports-[backdrop-filter]:bg-black/30 border border-white/[0.08]">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">
+                RadarTrust™ Score
+              </p>
+
+              {website?.radarTrust ? (
+                <>
+                  <div className="flex items-center gap-2 mt-2">
+                    <h3 className="text-2xl font-bold">
+                      {website.radarTrust.toFixed(1)}
+                    </h3>
+                    <span className="text-sm text-muted-foreground">/10</span>
+                  </div>
+
+                  {/* Trust Status Badge */}
+                  <div className="mt-3">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          {(() => {
+                            const status = getTrustStatus(website.radarTrust);
+                            const styles = getTrustStatusStyles(
+                              website.radarTrust
+                            );
+                            const StatusIcon = getTrustStatusIcon(
+                              website.radarTrust
+                            );
+                            return (
+                              <div
+                                className={`relative inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border ${styles.badge}`}
+                              >
+                                <div
+                                  className={`absolute inset-0 rounded-lg bg-gradient-to-r ${styles.gradient} opacity-50`}
+                                ></div>
+                                <StatusIcon
+                                  className={`w-4 h-4 ${styles.icon} relative z-10`}
+                                />
+                                <span className="relative z-10 font-medium text-sm">
+                                  {status.status}
+                                </span>
+                              </div>
+                            );
+                          })()}
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-[250px] p-3">
+                          <p className="text-xs">
+                            {getTrustStatus(website.radarTrust).description}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+
+                  <div className="text-xs text-zinc-400 mt-2">
+                    <RadarTrustInfo>
+                      <span className="cursor-pointer hover:text-primary hover:underline transition-colors">
+                        Learn how this score is calculated
+                      </span>
+                    </RadarTrustInfo>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="mt-2 py-2">
+                    <div className="w-16 h-3 bg-primary/10 rounded-full animate-pulse mb-3"></div>
+                    <h3 className="text-muted-foreground text-sm font-medium">
+                      AI Radar is calculating your score
+                    </h3>
+                    <p className="text-xs text-zinc-500 mt-2 max-w-[250px]">
+                      Your RadarTrust™ score is being processed and will be
+                      available within a few days. This score will help users
+                      understand your tool&apos;s market position.
+                    </p>
+                    <div className="text-xs text-zinc-400 mt-3">
+                      <RadarTrustInfo>
+                        <span className="cursor-pointer hover:text-primary hover:underline transition-colors">
+                          Learn how this score is calculated
+                        </span>
+                      </RadarTrustInfo>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+            <RadarIcon className="w-8 h-8 text-primary opacity-75" />
           </div>
         </Card>
       </div>
