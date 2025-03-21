@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
@@ -46,9 +47,17 @@ export function SideNav() {
     <nav className="sticky top-0 h-[100vh] w-64 border-r border-white/[0.08] bg-black/50 backdrop-blur supports-[backdrop-filter]:bg-black/30 z-40">
       <div className="flex flex-col h-full">
         <div className="p-6">
-          <h2 className="text-lg font-semibold bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] bg-clip-text text-transparent">
-            AI Radar
-          </h2>
+          <Link
+            href="/business"
+            className="flex items-center hover:opacity-90 transition-opacity"
+          >
+            <div className="flex items-center gap-2">
+              <Image src="/logo.svg" alt="AI-Radar" width={150} height={28} />
+              <span className="text-sm font-medium text-gray-400 border-border/50 mt-[11px]">
+                Business
+              </span>
+            </div>
+          </Link>
         </div>
         <div className="px-3 space-y-1">
           {menuItems.map((item) => {
