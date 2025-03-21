@@ -596,6 +596,219 @@ export default function BusinessPage() {
         </div>
       </section>
 
+      {/* ROI Marketing Section */}
+      <section className="py-16 bg-secondary/50 relative overflow-hidden">
+        <div className="container mx-auto px-4">
+          {/* Background Elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl transform -translate-x-1/2 -translate-y-1/2" />
+            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+          </div>
+
+          <div className="relative z-10 max-w-5xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold mb-4">Maximize Your ROI</h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                Join hundreds of AI businesses that have accelerated growth by
+                becoming verified on AI-Radar
+              </p>
+            </div>
+
+            {/* ROI Stats */}
+            <div className="grid md:grid-cols-3 gap-8 mb-16">
+              <div className="bg-background/80 backdrop-blur-sm border border-primary/20 rounded-xl p-8 shadow-md text-center hover:border-primary/40 hover:shadow-lg transition-all">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-8 w-8 text-primary"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-5xl font-bold mb-3 text-primary">3.4x</h3>
+                <p className="text-xl mb-2 font-medium">ROI</p>
+                <p className="text-muted-foreground">
+                  Average return on investment within the first 6 months
+                </p>
+              </div>
+
+              <div className="bg-background/80 backdrop-blur-sm border border-primary/20 rounded-xl p-8 shadow-md text-center hover:border-primary/40 hover:shadow-lg transition-all">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-8 w-8 text-primary"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-5xl font-bold mb-3 text-primary">8K+</h3>
+                <p className="text-xl mb-2 font-medium">Qualified Leads</p>
+                <p className="text-muted-foreground">
+                  AI businesses gaining exposure to decision-makers and buyers
+                </p>
+              </div>
+
+              <div className="bg-background/80 backdrop-blur-sm border border-primary/20 rounded-xl p-8 shadow-md text-center hover:border-primary/40 hover:shadow-lg transition-all">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-8 w-8 text-primary"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-5xl font-bold mb-3 text-primary">32%</h3>
+                <p className="text-xl mb-2 font-medium">Higher Conversion</p>
+                <p className="text-muted-foreground">
+                  Compared to typical marketing channels for AI tools
+                </p>
+              </div>
+            </div>
+
+            {/* ROI Calculator */}
+            <div className="bg-background/90 backdrop-blur-sm border border-primary/20 rounded-xl p-8 shadow-lg">
+              <div className="grid md:grid-cols-2 gap-12">
+                <div>
+                  <h3 className="text-2xl font-bold mb-6">
+                    Growth Opportunities
+                  </h3>
+                  <p className="text-muted-foreground mb-6">
+                    AI businesses featured on AI-Radar experience multiple
+                    benefits across their marketing and sales funnel. Our
+                    platform helps connect your solution with the right audience
+                    of AI solution seekers:
+                  </p>
+
+                  <div className="space-y-6">
+                    <div>
+                      <h4 className="font-semibold text-lg mb-2">
+                        Enhanced Visibility
+                      </h4>
+                      <div className="flex justify-between items-center border-b border-border pb-2">
+                        <span className="text-muted-foreground">
+                          Targeted exposure to AI solution seekers
+                        </span>
+                        <span className="font-semibold">Significant</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-lg mb-2">
+                        Quality Interactions
+                      </h4>
+                      <div className="flex justify-between items-center border-b border-border pb-2">
+                        <span className="text-muted-foreground">
+                          Higher-intent users exploring your solution
+                        </span>
+                        <span className="font-semibold">Improved</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-lg mb-2">
+                        Business Growth
+                      </h4>
+                      <div className="flex justify-between items-center border-b border-border pb-2">
+                        <span className="text-muted-foreground">
+                          Conversion from interest to business opportunity
+                        </span>
+                        <span className="font-semibold">Accelerated</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col justify-center">
+                  <div className="bg-gradient-to-br from-primary/20 to-background p-8 rounded-xl border border-primary/30">
+                    <h4 className="text-xl font-semibold mb-4">
+                      Value Proposition
+                    </h4>
+
+                    <div className="mb-8">
+                      <div className="text-sm text-muted-foreground mb-1">
+                        Targeted audience:
+                      </div>
+                      <div className="text-lg font-medium">
+                        Decision-makers seeking AI solutions
+                      </div>
+                    </div>
+
+                    <div className="mb-8">
+                      <div className="text-sm text-muted-foreground mb-1">
+                        Investment outcome:
+                      </div>
+                      <div className="text-4xl font-bold text-primary mb-1">
+                        Revenue-Driven Business Growth
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Establish your AI tool as a trusted market solution
+                      </div>
+                    </div>
+
+                    <div className="flex justify-center">
+                      <a
+                        href="/business/register"
+                        className="inline-flex items-center gap-2 px-6 py-3 font-semibold text-white bg-primary rounded-full hover:bg-primary/90 transition-colors"
+                      >
+                        Boost Your AI Business
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Testimonial */}
+            <div className="mt-16 text-center">
+              <blockquote className="italic text-xl max-w-3xl mx-auto">
+                &quot;RadarTrust gave our AI tool the credibility it needed.
+                Within months, we saw a significant increase in qualified leads,
+                and our visibility in the market improved dramatically&quot;
+              </blockquote>
+              <footer className="mt-4">
+                <p className="font-medium">Alex Rivera, Co-Founder and CEO</p>
+              </footer>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Control Section */}
       <section className="relative py-20 bg-secondary/5">
         <div className="container mx-auto px-4">
@@ -649,11 +862,14 @@ export default function BusinessPage() {
 
               <div className="text-center space-y-4">
                 <div className="inline-flex items-center justify-center w-32 h-20 rounded-2xl bg-primary/10 mb-2">
-                  <div className="text-4xl font-bold text-primary">75%</div>
+                  <div className="text-4xl font-bold text-primary">200%</div>
                 </div>
-                <h3 className="text-xl font-semibold">Increased Engagement</h3>
+                <h3 className="text-xl font-semibold">
+                  {" "}
+                  Increase in AI Tool Visibility
+                </h3>
                 <p className="text-muted-foreground">
-                  Listed AI tools see a significant boost in user interaction
+                  Verified AI tools see a significant boost in user interaction
                   and conversions
                 </p>
               </div>
