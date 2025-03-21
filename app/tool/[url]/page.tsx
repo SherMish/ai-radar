@@ -14,6 +14,11 @@ import {
   Clock,
   ArrowRight,
   Radar as RadarIcon,
+  Info,
+  Award,
+  ThumbsUp,
+  Sparkles,
+  AlertTriangle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import connectDB from "@/lib/mongodb";
@@ -40,8 +45,12 @@ import { SuggestedToolCard } from "@/components/suggested-tool-card";
 import { RadarTrustInfo } from "@/components/radar-trust-info";
 import { ClaimToolButton } from "@/app/components/claim-tool-button";
 import { trackEvent } from "@/lib/analytics";
-import { VisitToolButtonDesktop, VisitToolButtonMobile } from "@/app/components/VisitToolButton";
+import {
+  VisitToolButtonDesktop,
+  VisitToolButtonMobile,
+} from "@/app/components/VisitToolButton";
 import { TrackPageVisit } from "@/app/components/TrackPageVisit";
+import trustStatuses from "@/lib/data/trustStatuses.json";
 
 interface WebsiteDoc {
   _id: Types.ObjectId;
@@ -268,6 +277,57 @@ async function getSuggestedTools(
   }
 }
 
+// Function to get trust status based on score
+function getTrustStatus(score: number) {
+  const status = trustStatuses.find(
+    (status) => score >= status.from && score <= status.to
+  );
+  return (
+    status || {
+      status: "Unrated",
+      description: "This tool has not been rated yet.",
+    }
+  );
+}
+
+// Function to get the appropriate icon based on trust level
+function getTrustStatusIcon(score: number) {
+  if (score >= 8.6) return Award; // Industry Leader
+  if (score >= 7.1) return ThumbsUp; // Market Approved
+  if (score >= 5.1) return Sparkles; // Emerging Player
+  return AlertTriangle; // Low Market Confidence
+}
+
+// Function to get styles based on trust level
+function getTrustStatusStyles(score: number) {
+  if (score >= 8.6) {
+    return {
+      badge: "bg-blue-950/40 border-blue-500/30 text-blue-400",
+      icon: "text-blue-400",
+      gradient: "from-blue-600/20 to-blue-400/5",
+    };
+  }
+  if (score >= 7.1) {
+    return {
+      badge: "bg-green-950/40 border-green-500/30 text-green-400",
+      icon: "text-green-400",
+      gradient: "from-green-600/20 to-green-400/5",
+    };
+  }
+  if (score >= 5.1) {
+    return {
+      badge: "bg-yellow-950/40 border-yellow-500/30 text-yellow-400",
+      icon: "text-yellow-400",
+      gradient: "from-yellow-600/20 to-yellow-400/5",
+    };
+  }
+  return {
+    badge: "bg-red-950/40 border-red-500/30 text-red-400",
+    icon: "text-red-400",
+    gradient: "from-red-600/20 to-red-400/5",
+  };
+}
+
 export default async function ToolPage({ params }: PageProps) {
   const decodedUrl = decodeURIComponent(params.url);
   const website = await getWebsiteData(decodedUrl);
@@ -383,15 +443,20 @@ export default async function ToolPage({ params }: PageProps) {
                             )}
                           </div>
                           <div className="hidden lg:flex flex-row gap-3">
-
-                          <VisitToolButtonMobile websiteId={website._id.toString()} url={website.url} />
-                          <WriteReviewButton url={params.url} />
+                            <VisitToolButtonMobile
+                              websiteId={website._id.toString()}
+                              url={website.url}
+                            />
+                            <WriteReviewButton url={params.url} />
                           </div>
                         </div>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3 lg:hidden">
-                      <VisitToolButtonDesktop websiteId={website._id.toString()} url={website.url} />
+                      <VisitToolButtonDesktop
+                        websiteId={website._id.toString()}
+                        url={website.url}
+                      />
                       <WriteReviewButton url={params.url} />
                     </div>
                   </div>
@@ -455,9 +520,53 @@ export default async function ToolPage({ params }: PageProps) {
                           <div className="text-sm font-medium text-primary mb-1">
                             RadarTrust™ Score
                           </div>
-                          <div className="text-sm text-zinc-400">
+                          {/* Trust Status Badge */}
+                          <div className="mb-3">
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger>
+                                  {(() => {
+                                    const status = getTrustStatus(
+                                      website.radarTrust
+                                    );
+                                    const styles = getTrustStatusStyles(
+                                      website.radarTrust
+                                    );
+                                    const StatusIcon = getTrustStatusIcon(
+                                      website.radarTrust
+                                    );
+                                    return (
+                                      <div
+                                        className={`relative inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border ${styles.badge}`}
+                                      >
+                                        <div
+                                          className={`absolute inset-0 rounded-lg bg-gradient-to-r ${styles.gradient} opacity-50`}
+                                        ></div>
+                                        <StatusIcon
+                                          className={`w-4 h-4 ${styles.icon} relative z-10`}
+                                        />
+                                        <span className="relative z-10 font-medium text-sm">
+                                          {status.status}
+                                        </span>
+                                        <Info className="w-3.5 h-3.5 relative z-10 opacity-70" />
+                                      </div>
+                                    );
+                                  })()}
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-[250px] p-3">
+                                  <p className="text-xs">
+                                    {
+                                      getTrustStatus(website.radarTrust)
+                                        .description
+                                    }
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
+                          <div className="text-xs text-zinc-400">
                             <div className="flex items-center gap-1">
-                              AI-powered analysis
+                              Learn how this score is calculated
                               <RadarTrustInfo />
                             </div>
                           </div>
