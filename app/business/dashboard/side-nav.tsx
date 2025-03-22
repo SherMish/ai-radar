@@ -28,6 +28,11 @@ const menuItems = [
     icon: MessageSquare,
   },
   {
+    title: "Reviews Generator",
+    href: "/business/dashboard/reviews-generator",
+    icon: Users,
+  },
+  {
     title: "Tool Page",
     href: "/business/dashboard/tool",
     icon: FileText,
