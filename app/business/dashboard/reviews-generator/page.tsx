@@ -191,77 +191,56 @@ Your review helps other users make informed decisions and gives us valuable insi
   };
 
   const getFullEmailTemplate = (bodyText: string) => {
-    return `
-  <!DOCTYPE html>
+    return `<!DOCTYPE html>
   <html lang="en">
     <head>
       <meta charset="UTF-8" />
       <title>RadarTrust Invitation</title>
     </head>
-    <body style="margin: 0; padding: 0; background-color: #f9f9fb; font-family: Arial, sans-serif; color: #333;">
-      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f9f9fb; padding: 16px 0;">
+    <body style="margin:0;padding:0;background-color:#121212;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif;color:#ffffff;">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#121212;padding:16px 0;">
         <tr>
           <td align="center">
-            <!-- Outer wrapper with max-width -->
-            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" 
-                   style="background-color: #ffffff; border-radius: 8px; padding: 24px; text-align: left;">
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#1a1a1a;border-radius:8px;padding:28px 24px;">
               <tr>
-                <td align="center" style="padding-bottom:16px;">
-                  <img 
-                    src="https://res.cloudinary.com/dwqdhp70e/image/upload/v1742649740/h3eegg5ibuwwufzevlax.png" 
-                    alt="AI-Radar" 
-                    width="150" 
-                    style="display:block;"
-                  />
+                <td align="center" style="padding-bottom:20px;">
+                  <img src=https://res.cloudinary.com/dwqdhp70e/image/upload/v1742649740/h3eegg5ibuwwufzevlax.png" alt="AI-Radar" width="160" style="display:block;" />
                 </td>
               </tr>
               <tr>
-                <td style="font-size:18px; font-weight:bold; padding-bottom:12px; color:#333;">
+                <td style="font-size:17px;font-weight:600;padding-bottom:14px;color:#ffffff;">
                   Hello {{userName}},
                 </td>
               </tr>
               <tr>
-                <td style="font-size:15px; line-height:1.5; color:#555; padding-bottom:20px;">
+                <td style="font-size:15px;line-height:1.6;color:#cccccc;padding-bottom:24px;">
                   ${bodyText.replace(/\n/g, "<br>")}
                 </td>
               </tr>
               <tr>
-                <td align="center" style="padding-bottom:20px;">
-                  <a href="{{reviewLink}}" 
-                     style="
-                       background: #6366f1;
-                       color: #fff;
-                       padding: 8px 16px;
-                       text-decoration: none;
-                       border-radius: 4px;
-                       font-weight: 600;
-                       font-size: 14px;
-                       display: inline-block;
-                     "
-                  >
+                <td align="center" style="padding-bottom:24px;">
+                  <a href="{{reviewLink}}" style="background:#6366f1;color:#ffffff;padding:10px 20px;text-decoration:none;border-radius:5px;font-weight:600;font-size:14px;display:inline-block;">
                     Share Your Experience
                   </a>
                 </td>
               </tr>
               <tr>
-                <td style="font-size:14px; color:#777; text-align:center; padding-bottom:16px;">
+                <td style="text-align:center;font-size:13px;color:#aaa;padding-bottom:12px;">
                   Thank you for being a part of the journey.
                 </td>
               </tr>
               <tr>
-                <td style="font-size:12px; color:#aaa; text-align:center;">
+                <td style="text-align:center;font-size:12px;color:#666;">
                   — The {{toolName}} Team<br />
-                  Sent via <strong style="color:#888;">AI-Radar</strong>
+                  Sent via <strong style="color:#aaa;">AI-Radar</strong>
                 </td>
               </tr>
             </table>
-            <!-- End of main container -->
           </td>
         </tr>
       </table>
     </body>
-  </html>
-  `;
+  </html>`;
   };
   const handleSendInvitations = async () => {
     if (emailRecipients.length === 0) {
