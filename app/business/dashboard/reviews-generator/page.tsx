@@ -190,7 +190,6 @@ Your review helps other users make informed decisions and gives us valuable insi
     }
   };
 
-  // This function will generate the full HTML email template with the user's body text
   const getFullEmailTemplate = (bodyText: string) => {
     return `<!DOCTYPE html>
   <html lang="en">
@@ -198,35 +197,35 @@ Your review helps other users make informed decisions and gives us valuable insi
       <meta charset="UTF-8" />
       <title>RadarTrust Invitation</title>
     </head>
-    <body style="margin:0;padding:0;background-color:#0f0f11;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif;color:#ffffff;">
-      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#0f0f11;">
+    <body style="margin:0;padding:0;background-color:#121212;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif;color:#ffffff;">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#121212;padding:16px 0;">
         <tr>
-          <td align="center" style="padding:24px 0;">
-            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#1a1a1a;border-radius:10px;padding:32px 28px;">
+          <td align="center">
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#1a1a1a;border-radius:8px;padding:28px 24px;">
               <tr>
-                <td align="center" style="padding-bottom:24px;">
-                  <img src="https://res.cloudinary.com/dwqdhp70e/image/upload/v1742647671/zblhujwocgkexrzptugl.png" alt="AI-Radar" width="180" style="display:block;" />
+                <td align="center" style="padding-bottom:20px;">
+                  <img src="https://res.cloudinary.com/dwqdhp70e/image/upload/v1742647671/zblhujwocgkexrzptugl.png" alt="AI-Radar" width="160" style="display:block;" />
                 </td>
               </tr>
               <tr>
-                <td style="font-size:18px;font-weight:600;padding-bottom:18px;color:#ffffff;">
+                <td style="font-size:17px;font-weight:600;padding-bottom:14px;color:#ffffff;">
                   Hello {{userName}},
                 </td>
               </tr>
               <tr>
-                <td style="font-size:15px;line-height:1.6;color:#dddddd;padding-bottom:28px;">
+                <td style="font-size:15px;line-height:1.6;color:#cccccc;padding-bottom:24px;">
                   ${bodyText.replace(/\n/g, "<br>")}
                 </td>
               </tr>
               <tr>
-                <td align="center" style="padding-bottom:32px;">
-                  <a href="{{reviewLink}}" style="background:linear-gradient(to right,#6366f1,#8b5cf6);color:#ffffff;padding:12px 24px;text-decoration:none;border-radius:6px;font-weight:600;font-size:15px;display:inline-block;">
+                <td align="center" style="padding-bottom:24px;">
+                  <a href="{{reviewLink}}" style="background:#6366f1;color:#ffffff;padding:10px 20px;text-decoration:none;border-radius:5px;font-weight:600;font-size:14px;display:inline-block;">
                     Share Your Experience
                   </a>
                 </td>
               </tr>
               <tr>
-                <td style="text-align:center;font-size:14px;color:#aaa;padding-bottom:20px;">
+                <td style="text-align:center;font-size:13px;color:#aaa;padding-bottom:12px;">
                   Thank you for being a part of the journey.
                 </td>
               </tr>
@@ -243,7 +242,6 @@ Your review helps other users make informed decisions and gives us valuable insi
     </body>
   </html>`;
   };
-
   const handleSendInvitations = async () => {
     if (emailRecipients.length === 0) {
       toast({
