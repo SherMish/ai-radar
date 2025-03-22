@@ -11,6 +11,7 @@ import {
   AlertCircle,
   Send,
   X,
+  Loader2,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -40,20 +41,10 @@ export default function ReviewsGeneratorPage() {
   const [emailRecipients, setEmailRecipients] = useState<EmailRecipient[]>([]);
   const [newRecipientName, setNewRecipientName] = useState("");
   const [newRecipientEmail, setNewRecipientEmail] = useState("");
-  const [emailTemplate, setEmailTemplate] = useState(
-    `Hello {{userName}},
+  const [emailBodyText, setEmailBodyText] = useState(
+    `We noticed you've been using {{toolName}} and would love to hear your honest feedback.
 
-We noticed you've been using {{toolName}} and would love to hear your honest feedback.
-
-Your review helps other users make informed decisions and gives us valuable insights to improve our tool.
-
-Please take a moment to share your experience:
-{{reviewLink}}
-
-Thank you for your support!
-
-Regards,
-The {{toolName}} Team`
+Your review helps other users make informed decisions and gives us valuable insights to improve our tool.`
   );
   const [isSending, setIsSending] = useState(false);
   const [sentStatus, setSentStatus] = useState<{
@@ -199,6 +190,61 @@ The {{toolName}} Team`
     }
   };
 
+  // This function will generate the full HTML email template with the user's body text
+  const getFullEmailTemplate = (bodyText: string) => {
+    return `<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; color: #333; }
+    .email-container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .logo-container { text-align: center; margin-bottom: 20px; }
+    .greeting { font-size: 18px; font-weight: bold; margin-bottom: 20px; }
+    .content { line-height: 1.5; margin-bottom: 25px; }
+    .button-container { text-align: center; margin: 30px 0; }
+    .button { 
+      background: linear-gradient(to right, #6366f1, #8b5cf6);
+      color: white;
+      padding: 12px 24px;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: bold;
+      display: inline-block;
+    }
+    .footer { color: #666; font-size: 14px; margin-top: 20px; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="logo-container">
+      <img src="${
+        process.env.NEXT_PUBLIC_BASE_URL || "https://ai-radar.co"
+      }/logo.svg" alt="AI-Radar" width="150" height="28" />
+    </div>
+    
+    <div class="greeting">Hello {{userName}},</div>
+    
+    <div class="content">
+${bodyText.replace(/\n/g, "<br>")}
+    </div>
+    
+    <div class="button-container">
+      <a href="{{reviewLink}}" class="button">Share Your Experience</a>
+    </div>
+    
+    <div class="content">
+Thank you for your support!
+    </div>
+    
+    <div class="footer">
+      Regards,<br>
+      The {{toolName}} Team
+    </div>
+  </div>
+</body>
+</html>`;
+  };
+
   const handleSendInvitations = async () => {
     if (emailRecipients.length === 0) {
       toast({
@@ -215,8 +261,11 @@ The {{toolName}} Team`
     try {
       const results = await Promise.all(
         emailRecipients.map(async (recipient) => {
+          // Generate the full HTML template with the user's body text
+          const fullTemplate = getFullEmailTemplate(emailBodyText);
+
           // Replace template variables
-          const personalizedMessage = emailTemplate
+          const personalizedMessage = fullTemplate
             .replace(/{{userName}}/g, recipient.name)
             .replace(/{{toolName}}/g, website?.name || "our tool")
             .replace(/{{reviewLink}}/g, reviewLink);
@@ -430,16 +479,17 @@ The {{toolName}} Team`
             )}
 
             <div>
-              <Label htmlFor="emailTemplate">Email Template</Label>
+              <Label htmlFor="emailTemplate">Email Body Text</Label>
               <div className="mt-1 text-xs text-muted-foreground mb-2">
-                Customize your message. Available variables: {"{{userName}}"},
-                {"{{toolName}}"}, {"{{reviewLink}}"}
+                Customize your message. Available variables: {"{{userName}}"},{" "}
+                {"{{toolName}}"}, {"{{reviewLink}}"}.
               </div>
               <Textarea
                 id="emailTemplate"
-                value={emailTemplate}
-                onChange={(e) => setEmailTemplate(e.target.value)}
+                value={emailBodyText}
+                onChange={(e) => setEmailBodyText(e.target.value)}
                 className="min-h-[150px]"
+                placeholder="Enter your message here..."
               />
             </div>
 
@@ -447,17 +497,17 @@ The {{toolName}} Team`
               <Button
                 onClick={handleSendInvitations}
                 disabled={emailRecipients.length === 0 || isSending}
-                className="w-full"
+                className="w-full flex items-center justify-center"
               >
                 {isSending ? (
                   <>
-                    <LoadingSpinner className="mr-2 h-4 w-4" /> Sending
-                    Invitations...
+                    <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                    Sending Invitations...
                   </>
                 ) : (
                   <>
-                    <Send className="mr-2 h-4 w-4" /> Send Invitations (
-                    {emailRecipients.length})
+                    <Send className="mr-2 h-4 w-4" />
+                    Send Invitations ({emailRecipients.length})
                   </>
                 )}
               </Button>
