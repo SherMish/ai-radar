@@ -193,98 +193,54 @@ Your review helps other users make informed decisions and gives us valuable insi
   // This function will generate the full HTML email template with the user's body text
   const getFullEmailTemplate = (bodyText: string) => {
     return `<!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-        background-color: #f9f9fb;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        color: #1a1a1a;
-      }
-      .email-container {
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 32px 24px;
-        background: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-      }
-      .logo-container {
-        text-align: center;
-        margin-bottom: 28px;
-      }
-      .logo-container img {
-        width: 140px;
-        height: auto;
-      }
-      .greeting {
-        font-size: 20px;
-        font-weight: 600;
-        margin-bottom: 16px;
-      }
-      .content {
-        font-size: 16px;
-        line-height: 1.6;
-        margin-bottom: 32px;
-      }
-      .button-container {
-        text-align: center;
-        margin-bottom: 32px;
-      }
-      .button {
-        background: linear-gradient(to right, #6366f1, #8b5cf6);
-        color: #ffffff;
-        padding: 12px 24px;
-        text-decoration: none;
-        border-radius: 6px;
-        font-weight: 600;
-        font-size: 16px;
-        display: inline-block;
-      }
-      .thank-you {
-        font-size: 15px;
-        color: #444;
-        text-align: center;
-        margin-bottom: 24px;
-      }
-      .footer {
-        font-size: 13px;
-        color: #999;
-        text-align: center;
-        line-height: 1.4;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="email-container">
-      <div class="logo-container">
-        <img src="https://res.cloudinary.com/dwqdhp70e/image/upload/v1742647671/zblhujwocgkexrzptugl.png" alt="AI-Radar" />
-      </div>
-  
-      <div class="greeting">Hello {{userName}},</div>
-  
-      <div class="content">
-        ${bodyText.replace(/\n/g, "<br>")}
-      </div>
-  
-      <div class="button-container">
-        <a href="{{reviewLink}}" class="button">Share Your Experience</a>
-      </div>
-  
-      <div class="thank-you">
-        Thank you for being a part of the journey.
-      </div>
-  
-      <div class="footer">
-        — The {{toolName}} Team<br />
-        Sent via <strong>AI-Radar</strong>
-      </div>
-    </div>
-  </body>
+  <html>
+    <head>
+      <meta charset="UTF-8" />
+      <title>Review Invitation</title>
+    </head>
+    <body style="margin:0;padding:0;background-color:#f9f9fb;font-family:Arial,sans-serif;">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#f9f9fb;padding:20px 0;">
+        <tr>
+          <td align="center">
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff;border-radius:8px;padding:40px 30px;">
+              <tr>
+                <td align="center" style="padding-bottom:24px;">
+                  <img src="https://res.cloudinary.com/dwqdhp70e/image/upload/v1742647671/zblhujwocgkexrzptugl.png" alt="AI-Radar" width="140" style="display:block;" />
+                </td>
+              </tr>
+              <tr>
+                <td style="font-size:18px;font-weight:bold;padding-bottom:16px;">
+                  Hello {{userName}},
+                </td>
+              </tr>
+              <tr>
+                <td style="font-size:15px;line-height:1.6;color:#333;padding-bottom:28px;">
+                  ${bodyText.replace(/\n/g, "<br>")}
+                </td>
+              </tr>
+              <tr>
+                <td align="center" style="padding-bottom:32px;">
+                  <a href="{{reviewLink}}" style="background:#6366f1;color:#ffffff;padding:12px 24px;text-decoration:none;border-radius:4px;font-weight:bold;display:inline-block;">
+                    Share Your Experience
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td style="text-align:center;font-size:14px;color:#555;padding-bottom:20px;">
+                  Thank you for being a part of the journey.
+                </td>
+              </tr>
+              <tr>
+                <td style="text-align:center;font-size:12px;color:#999;">
+                  — The {{toolName}} Team<br />
+                  Sent via <strong>AI-Radar</strong>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
   </html>`;
   };
 
