@@ -217,6 +217,7 @@ Your insights help others explore trusted AI tools — and support the community
                 <td style="font-size:15px;line-height:1.6;color:#555;padding-bottom:20px;">
                   We'd love to know what you think of {{toolName}}!
                   <br />
+                  <br />
                   Your insights help others explore trusted AI tools — and support the community in making smarter, faster decisions.
                 </td>
               </tr>
