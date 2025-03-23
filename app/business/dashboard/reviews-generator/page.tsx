@@ -42,9 +42,9 @@ export default function ReviewsGeneratorPage() {
   const [newRecipientName, setNewRecipientName] = useState("");
   const [newRecipientEmail, setNewRecipientEmail] = useState("");
   const [emailBodyText, setEmailBodyText] = useState(
-    `We noticed you've been using {{toolName}} and would love to hear your honest feedback.
+    `We'd love to know what you think of {{toolName}}!
 
-Your review helps other users make informed decisions and gives us valuable insights to improve our tool.`
+Your insights help others explore trusted AI tools — and support the community in making smarter, faster decisions. `
   );
   const [isSending, setIsSending] = useState(false);
   const [sentStatus, setSentStatus] = useState<{
@@ -215,7 +215,7 @@ Your review helps other users make informed decisions and gives us valuable insi
               </tr>
               <tr>
                 <td style="font-size:15px;line-height:1.6;color:#555;padding-bottom:20px;">
-                  We’d love to know what you think of {{toolName}}.
+                  We'd love to know what you think of {{toolName}}!
                   <br />
                   Your insights help others explore trusted AI tools — and support the community in making smarter, faster decisions.
                 </td>
@@ -489,17 +489,24 @@ Your review helps other users make informed decisions and gives us valuable insi
             )}
 
             <div>
-              <Label htmlFor="emailTemplate">Email Body Text</Label>
+              <div className="flex items-center mb-2">
+                <Label htmlFor="emailTemplate" className="mr-2">
+                  Edit Email Body Text
+                </Label>
+                <span className="text-xs bg-yellow-900/30 text-yellow-300 px-2 py-0.5 rounded">
+                  Coming Soon
+                </span>
+              </div>
               <div className="mt-1 text-xs text-muted-foreground mb-2">
-                Customize your message. Available variables: {"{{userName}}"},{" "}
-                {"{{toolName}}"}, {"{{reviewLink}}"}.
+                Custom email templates will be available in an upcoming update.
               </div>
               <Textarea
                 id="emailTemplate"
                 value={emailBodyText}
                 onChange={(e) => setEmailBodyText(e.target.value)}
-                className="min-h-[150px]"
+                className="min-h-[150px] opacity-70"
                 placeholder="Enter your message here..."
+                disabled
               />
             </div>
 
