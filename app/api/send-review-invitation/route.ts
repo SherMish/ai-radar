@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
       );
     }
     // Send email
-    const subject = `Share your experience with ${website.name}`;
+    const subject = `We’d love your thoughts on ${website.name} 📝`;
     await sendEmail({
       to,
       subject,

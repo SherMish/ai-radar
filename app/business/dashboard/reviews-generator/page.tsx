@@ -210,12 +210,14 @@ Your review helps other users make informed decisions and gives us valuable insi
               </tr>
               <tr>
                 <td style="font-size:17px;font-weight:600;padding-bottom:10px;">
-                  Hello {{userName}},
+                  Hi {{userName}},
                 </td>
               </tr>
               <tr>
                 <td style="font-size:15px;line-height:1.6;color:#555;padding-bottom:20px;">
-                  ${bodyText.replace(/\n/g, "<br>")}
+                  We’d love to know what you think of {{toolName}}.
+                  <br />
+                  Your insights help others explore trusted AI tools — and support the community in making smarter, faster decisions.
                 </td>
               </tr>
               <tr>
@@ -242,7 +244,6 @@ Your review helps other users make informed decisions and gives us valuable insi
               </tr>
               <tr>
                 <td style="text-align:center;font-size:12px;color:#aaa;">
-                  — The {{toolName}} Team<br/>
                   Sent via <strong style="color:#888;">AI-Radar</strong>
                 </td>
               </tr>
