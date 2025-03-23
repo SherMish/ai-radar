@@ -15,7 +15,6 @@ export async function POST(req: NextRequest) {
         { status: 401 }
       );
     }
-    console.log("DEBUG 1")
     // Parse request body
     const body = await req.json();
     const { to, name, websiteId, message } = body;
@@ -26,7 +25,6 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    console.log("DEBUG 2")
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(to)) {
@@ -35,15 +33,12 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    console.log("DEBUG 3")
     // Connect to database and verify website ownership
     await connectDB();
     const website = await Website.findById(websiteId).lean();
-    console.log("DEBUG 4")
     if (!website) {
       return NextResponse.json({ error: "Website not found" }, { status: 404 });
     }
-    console.log("DEBUG 5")
     // Verify ownership
     if (session.user.id !== website.owner?.toString()) {
       return NextResponse.json(
@@ -54,17 +49,14 @@ export async function POST(req: NextRequest) {
         { status: 403 }
       );
     }
-    console.log("DEBUG 6")
     // Send email
     const subject = `Share your experience with ${website.name}`;
-    console.log("DEBUG 7")
     await sendEmail({
       to,
       subject,
       html: message.replace(/\n/g, "<br />"),
       text: message,
     });
-    console.log("DEBUG 8")
     return NextResponse.json({
       success: true,
       message: "Invitation sent successfully",
