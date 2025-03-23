@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
     await sendEmail({
       to,
       subject,
-      html: message.replace(/\n/g, "<br />"),
+      html: message,
       text: message,
     });
     return NextResponse.json({
