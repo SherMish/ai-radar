@@ -488,7 +488,7 @@ Your insights help others explore trusted AI tools — and support the community
               </div>
             )}
 
-            <div>
+            <div className="opacity-70 pointer-events-none">
               <div className="flex items-center mb-2">
                 <Label htmlFor="emailTemplate" className="mr-2">
                   Edit Email Body Text
@@ -497,16 +497,17 @@ Your insights help others explore trusted AI tools — and support the community
                   Coming Soon
                 </span>
               </div>
-              <div className="mt-1 text-xs text-muted-foreground mb-2">
-                Custom email templates will be available in an upcoming update.
-              </div>
+              <p className="mt-1 text-xs text-muted-foreground mb-2">
+                Customize your message. Available variables: {"{{userName}}"},{" "}
+                {"{{toolName}}"}, {"{{reviewLink}}"}
+              </p>
               <Textarea
                 id="emailTemplate"
                 value={emailBodyText}
-                onChange={(e) => setEmailBodyText(e.target.value)}
-                className="min-h-[150px] opacity-70"
-                placeholder="Enter your message here..."
                 disabled
+                readOnly
+                className="min-h-[150px] bg-muted/50 cursor-not-allowed"
+                placeholder="Enter your message here..."
               />
             </div>
 
