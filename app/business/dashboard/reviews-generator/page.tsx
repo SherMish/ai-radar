@@ -205,7 +205,7 @@ Your insights help others explore trusted AI tools — and support the community
             <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff;border-radius:8px;padding:24px 24px 20px 24px;">
               <tr>
                 <td align="center" style="padding-bottom:16px;">
-                  <img src="https://res.cloudinary.com/dwqdhp70e/image/upload/v1742649740/h3eegg5ibuwwufzevlax.png" alt="AI-Radar" width="140" style="display:block;" />
+                  <img src="https://res.cloudinary.com/dwqdhp70e/image/upload/v1742649740/h3eegg5ibuwwufzevlax.png" alt="AI-Radar Logo" width="180" style="display:block;" />
                 </td>
               </tr>
               <tr>
