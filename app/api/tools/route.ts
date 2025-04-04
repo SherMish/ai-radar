@@ -15,14 +15,14 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { 
-      url, 
-      name, 
+    const {
+      url,
+      name,
       category,
       description,
       shortDescription,
       logo,
-      radarTrust
+      radarTrust,
     } = body;
 
     // Validate required fields
@@ -47,10 +47,11 @@ export async function POST(req: Request) {
     await connectDB();
 
     // Normalize URL before checking
-    const normalizedUrl = url.toLowerCase()
+    const normalizedUrl = url
+      .toLowerCase()
       .replace(/^(?:https?:\/\/)?(?:www\.)?/i, "")
-      .split('/')[0]
-      .split(':')[0];
+      .split("/")[0]
+      .split(":")[0];
 
     // Check if website with same URL exists
     const existingWebsite = await Website.findOne({ url: normalizedUrl });
@@ -68,23 +69,30 @@ export async function POST(req: Request) {
       category,
       description: description || undefined,
       shortDescription: shortDescription || undefined,
-      logo: process.env.NEXT_PUBLIC_IS_PRODUCTION === 'false' ? (logo || undefined) : undefined,
-      radarTrust: radarTrust || 5, // Default to 5 if not provided
+      logo:
+        process.env.NEXT_PUBLIC_IS_PRODUCTION === "false"
+          ? logo || undefined
+          : undefined,
+      radarTrust: radarTrust || 0, // Default to 5 if not provided
       createdBy: session.user.id,
       isActive: true,
     });
 
-    return NextResponse.json({
-      message: "Website added successfully",
-      url: website.url,  // Return normalized URL for redirection
-      id: website._id
-    }, { status: 201 });
-
+    return NextResponse.json(
+      {
+        message: "Website added successfully",
+        url: website.url, // Return normalized URL for redirection
+        id: website._id,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Error creating website:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Failed to add website" },
+      {
+        error: error instanceof Error ? error.message : "Failed to add website",
+      },
       { status: 500 }
     );
   }
-} 
+}

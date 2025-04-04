@@ -502,7 +502,7 @@ export default async function ToolPage({ params }: PageProps) {
                     )}
 
                     {/* RadarTrust Score */}
-                    {website.radarTrust && (
+                    {website.radarTrust > 0 && (
                       <>
                         {website.reviewCount > 0 && (
                           <div className="hidden md:block w-px bg-border/50 self-stretch" />
